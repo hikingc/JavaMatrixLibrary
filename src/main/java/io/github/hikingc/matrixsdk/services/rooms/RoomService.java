@@ -8,7 +8,6 @@ import io.github.hikingc.matrixsdk.api.identifiers.Validator;
 import io.github.hikingc.matrixsdk.api.rooms.*;
 import io.github.hikingc.matrixsdk.api.rooms.models.ResolvedAlias;
 import io.github.hikingc.matrixsdk.api.rooms.models.RoomSummary;
-import io.github.hikingc.matrixsdk.api.rooms.queries.CreationRoomType;
 import io.github.hikingc.matrixsdk.api.rooms.queries.JoinRoomRequest;
 import io.github.hikingc.matrixsdk.api.rooms.queries.VisibilityRoomType;
 import io.github.hikingc.matrixsdk.context.ClientContext;
@@ -53,50 +52,25 @@ public class RoomService implements Room {
   }
 
   @Override
-  public String create(
-      boolean isFederated,
-      String name,
-      String aliasName,
-      String topic,
-      CreationRoomType type,
-      boolean isVisible) {
-
-    String visibility = isVisible ? "public" : "private";
-
-    MatrixRoom roomPayload =
-        new MatrixRoom(
-            new MatrixRoom.CreationContent(isFederated),
-            null,
-            null,
-            null,
-            name,
-            type.getValue(),
-            aliasName,
-            topic,
-            visibility);
+  public String create(InitialRoomConfiguration configuration) {
 
     String jsonPayload;
     try {
-      jsonPayload = objectMapper.writeValueAsString(roomPayload);
+      jsonPayload = objectMapper.writeValueAsString(configuration);
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }
 
     String responseBody;
-    try {
-      responseBody =
-          httpTransport.postEvent(
-              URI.create(
-                  context.discoveryResponse().homeserver().baseUrl()
-                      + "/_matrix/client/v3/createRoom"),
-              jsonPayload,
-              context.token());
+    responseBody =
+        httpTransport.postEvent(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl()
+                    + "/_matrix/client/v3/createRoom"),
+            jsonPayload,
+            context.token());
 
-      return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
-
-    } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
-    }
+    return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
 
   @Override
@@ -175,19 +149,20 @@ public class RoomService implements Room {
 
   @Override
   public void inviteUser(RoomID roomId, RoomMembershipRequest event) {
+    String serializedInputData;
     try {
-      var serializedInputData = objectMapper.writeValueAsString(event);
-      httpTransport.postEvent(
-          URI.create(
-              context.discoveryResponse().homeserver().baseUrl()
-                  + ROOM_ENDPOINT
-                  + roomId
-                  + "/invite"),
-          serializedInputData,
-          this.context.token());
+      serializedInputData = objectMapper.writeValueAsString(event);
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
+      throw new MatrixIOException("Failed to parse input data", e);
     }
+    httpTransport.postEvent(
+        URI.create(
+            context.discoveryResponse().homeserver().baseUrl()
+                + ROOM_ENDPOINT
+                + roomId
+                + "/invite"),
+        serializedInputData,
+        this.context.token());
   }
 
   @Override
@@ -204,13 +179,14 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             "/_matrix/client/v3/join/" + roomIdOrAlias,
             params);
+    String serializedInputData;
     try {
-      var serializedInputData = objectMapper.writeValueAsString(request);
-      var responseBody = httpTransport.postEvent(uri, serializedInputData, context.token());
-      return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
+      serializedInputData = objectMapper.writeValueAsString(request);
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
+      throw new MatrixIOException("Failed to parse input data", e);
     }
+    var responseBody = httpTransport.postEvent(uri, serializedInputData, context.token());
+    return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
 
   @Override
@@ -222,13 +198,14 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/join",
             params);
+    String serializedInputData;
     try {
-      var serializedInputData = objectMapper.writeValueAsString(request);
-      var responseBody = httpTransport.postEvent(uri, serializedInputData, context.token());
-      return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
+      serializedInputData = objectMapper.writeValueAsString(request);
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
+      throw new MatrixIOException("Failed to parse input data", e);
     }
+    var responseBody = httpTransport.postEvent(uri, serializedInputData, context.token());
+    return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
 
   @Override
@@ -277,70 +254,63 @@ public class RoomService implements Room {
 
   @Override
   public void kick(RoomID roomId, RoomMembershipRequest event) {
+    String serializedInputData;
     try {
-      var serializedInputData = objectMapper.writeValueAsString(event);
-      httpTransport.postEvent(
-          URI.create(
-              context.discoveryResponse().homeserver().baseUrl()
-                  + ROOM_ENDPOINT
-                  + roomId
-                  + "/kick"),
-          serializedInputData,
-          this.context.token());
+      serializedInputData = objectMapper.writeValueAsString(event);
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
+      throw new MatrixIOException("Failed to parse input data", e);
     }
+    httpTransport.postEvent(
+        URI.create(
+            context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/kick"),
+        serializedInputData,
+        this.context.token());
   }
 
   @Override
   public void ban(RoomID roomId, RoomMembershipRequest event) {
+    String serializedInputData;
     try {
-      var serializedInputData = objectMapper.writeValueAsString(event);
-      httpTransport.postEvent(
-          URI.create(
-              context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/ban"),
-          serializedInputData,
-          this.context.token());
+      serializedInputData = objectMapper.writeValueAsString(event);
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
+      throw new MatrixIOException("Failed to parse input data", e);
     }
+    httpTransport.postEvent(
+        URI.create(
+            context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/ban"),
+        serializedInputData,
+        this.context.token());
   }
 
   @Override
   public void unban(RoomID roomId, RoomMembershipRequest event) {
+    String responseBody;
     try {
-      var responseBody = objectMapper.writeValueAsString(event);
-      httpTransport.postEvent(
-          URI.create(
-              context.discoveryResponse().homeserver().baseUrl()
-                  + ROOM_ENDPOINT
-                  + roomId
-                  + "/unban"),
-          responseBody,
-          this.context.token());
+      responseBody = objectMapper.writeValueAsString(event);
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
+      throw new MatrixIOException("Failed to parse input data", e);
     }
+    httpTransport.postEvent(
+        URI.create(
+            context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/unban"),
+        responseBody,
+        this.context.token());
   }
 
   @Override
   public String getRoomDirectoryVisibilityType(RoomID roomId) {
-    try {
-      var responseBody =
-          httpTransport.getEvent(
-              URI.create(
-                  context.discoveryResponse().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
-              null);
-      return Mapper.getStringValueOfAJsonKey(responseBody, "visibility");
-    } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
-    }
+    var responseBody =
+        httpTransport.getEvent(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
+            null);
+    return Mapper.getStringValueOfAJsonKey(responseBody, "visibility");
   }
 
   @Override
   public void setRoomDirectoryVisibilityType(RoomID roomId, VisibilityRoomType roomType) {
     Map<String, Object> map = new HashMap<>();
-    map.put("visibility", roomType.getValue());
+    map.put("visibility", roomType);
 
     httpTransport.putEvent(
         URI.create(
