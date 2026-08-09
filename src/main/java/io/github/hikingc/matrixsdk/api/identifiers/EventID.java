@@ -1,5 +1,8 @@
 package io.github.hikingc.matrixsdk.api.identifiers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -25,6 +28,7 @@ public final class EventID implements Validator {
   /// @return a [RoomID].
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
+  @JsonCreator
   public static EventID parse(String rawRoomId) {
     Objects.requireNonNull(rawRoomId, "Room ID" + " must not be null");
 
@@ -61,6 +65,7 @@ public final class EventID implements Validator {
   }
 
   @Override
+  @JsonValue
   public String toString() {
     return "$" + opaqueId;
   }
