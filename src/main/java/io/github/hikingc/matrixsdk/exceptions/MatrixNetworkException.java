@@ -1,7 +1,7 @@
 package io.github.hikingc.matrixsdk.exceptions;
 
 /// Thrown to indicate that the code has not received a successful HTTP status code.
-public class MatrixNetworkException extends RuntimeException {
+public class MatrixNetworkException extends MatrixException {
   /// Constructs a [MatrixNetworkException] with a message.
   ///
   /// @param message The detail message. The detail message is saved for later retrieval by the

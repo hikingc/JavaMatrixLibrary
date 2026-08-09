@@ -40,6 +40,7 @@ public class Mapper {
   /// @param json a JSON [String].
   /// @param key the key of the JSON Object.
   /// @return the corresponding value.
+  /// @throws MatrixIOException when the key was not in the response
   public static String getStringValueOfAJsonKey(String json, String key) {
     JsonNode tree = INSTANCE.readTree(json);
     if (tree == null || tree.isMissingNode()) {
@@ -57,6 +58,7 @@ public class Mapper {
   /// @param elementType the [Class] to deserialize each element into.
   /// @param <T> the type to deserialize each element into
   /// @return the deserialized [List] of values for the given key
+  /// @throws MatrixIOException when the key was not in the response or the key value was not an Array
   public static <T> List<T> getListFromAJsonKey(String json, String key, Class<T> elementType) {
     JsonNode tree = INSTANCE.readTree(json);
     JsonNode value = tree.get(key);
@@ -107,7 +109,7 @@ public class Mapper {
   /// @param type the target class to deserialize into
   /// @param <T> the [Class] type to deserialize into
   /// @return the deserialized [Object]
-  /// @throws MatrixIOException if the JSON cannot be parsed into the target type
+  /// @throws MatrixIOException if the response cannot be parsed into the target type.
   public static <T> T getObjectFromString(@Nullable String responseBody, @Nullable Class<T> type) {
     if (responseBody == null || type == null) {
       throw new IllegalArgumentException("responseBody and type must not be null");
@@ -128,7 +130,7 @@ public class Mapper {
   /// @param type a [TypeReference]
   /// @param <T> the [Class] type to deserialize into
   /// @return the deserialized [Object]
-  /// @throws MatrixIOException if the JSON cannot be parsed into the target type
+  /// @throws MatrixIOException if the response cannot be parsed into the target type
   public static <T> T getObjectFromString(
       @Nullable String responseBody, @Nullable TypeReference<T> type) {
     if (responseBody == null || type == null) {
