@@ -2,6 +2,8 @@ package io.github.hikingc.matrixsdk.api.rooms.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.hikingc.matrixsdk.api.Room;
+import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
+import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.api.identifiers.Validator;
 import java.net.URI;
 import java.util.List;
@@ -25,12 +27,12 @@ import org.jspecify.annotations.NonNull;
 ///   additional values for a determinate room
 public record PublishedRoomsChunk(
     URI avatarUrl,
-    String canonicalAlias,
+    RoomAlias canonicalAlias,
     @JsonProperty(required = true) boolean guestCanJoin,
     String joinRule,
     String name,
     @JsonProperty(required = true) int numJoinedMembers,
-    @NonNull @JsonProperty(required = true) String roomId,
+    @NonNull @JsonProperty(required = true) RoomID roomId,
     String roomType,
     String topic,
     @JsonProperty(required = true) boolean worldReadable) {}

@@ -1,5 +1,7 @@
 package io.github.hikingc.matrixsdk.api.identifiers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Objects;
 
 /// This class allows for the representation and validation of a Room Identifier in Matrix.
@@ -32,6 +34,7 @@ public final class RoomID implements Validator {
   /// @return a [RoomID].
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
+  @JsonCreator
   public static RoomID parse(String rawRoomId) {
     Objects.requireNonNull(rawRoomId, "Room ID" + " must not be null");
 
@@ -58,6 +61,7 @@ public final class RoomID implements Validator {
   }
 
   @Override
+  @JsonValue
   public String toString() {
     return "!" + opaqueId + ":" + domain;
   }

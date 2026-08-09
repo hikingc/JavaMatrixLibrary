@@ -3,7 +3,6 @@ package io.github.hikingc.matrixsdk.api;
 import io.github.hikingc.matrixsdk.api.events.*;
 import io.github.hikingc.matrixsdk.api.events.content.MessageEventContent;
 import io.github.hikingc.matrixsdk.api.events.content.StateEventContent;
-import io.github.hikingc.matrixsdk.api.events.model.RoomMemberEvent;
 import io.github.hikingc.matrixsdk.api.events.queries.ChronologicalDirection;
 import io.github.hikingc.matrixsdk.api.events.queries.Membership;
 import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersMessages;
@@ -12,6 +11,7 @@ import io.github.hikingc.matrixsdk.api.events.sync.Sync;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixNetworkException;
+import io.github.hikingc.matrixsdk.api.events.model.RoomMemberEvent;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -33,9 +33,8 @@ public interface Event {
   /// @param roomId the room ID where the event is.
   /// @param eventId the event ID to retrieve.
   /// @return the full event.
-  /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
-  ClientEvent getEvent(RoomID roomId, String eventId);
+  @SuppressWarnings("java:S1452")
+  ClientEvent<?> getEvent(RoomID roomId, String eventId);
 
   /// Returns currently-joined members
   ///
@@ -79,9 +78,7 @@ public interface Event {
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws MatrixNetworkException when the response status is not successful.
   @SuppressWarnings("java:S1452")
-  // Caller doesn't know content type ahead of time; polymorphic dispatch via @JsonTypeInfo resolves
-  // it
-  ClientEvent<?> getStateEvent(RoomID roomId, String eventType, String stateKey);
+  StateEvent<?> getStateEvent(RoomID roomId, String eventType, String stateKey);
 
   /// Returns a list of message and state events for a room. It uses pagination query parameters to
   /// paginate history in the room. The content is not parsed or escaped which means newlines (`\n`)

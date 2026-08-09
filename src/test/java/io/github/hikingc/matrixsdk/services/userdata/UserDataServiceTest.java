@@ -40,18 +40,21 @@ class UserDataServiceTest {
             .willReturn(
                 okJson(
                     """
-                        {
-                          "results": [
-                            {"user_id": "@searchterm:matrix.org", "display_name": "Search Term"}
-                          ],
-                          "limited": false
-                        }
-                        """)));
+                            {
+                              "results": [
+                                {"user_id": "@user:example.com", "display_name": "Search Term"}
+                              ],
+                              "limited": false
+                            }
+                            """)));
 
     var results = client.userData().searchUsersByTerm(10, "searchterm");
 
     assertThat(results).isNotNull();
     assertThat(results.results()).hasSize(1);
+    assertThat(results.results().getFirst().userId()).isEqualTo(USER_ID);
+    assertThat(results.results().getFirst().displayName()).isEqualTo("Search Term");
+    assertThat(results.limited()).isFalse();
   }
 
   @Test
