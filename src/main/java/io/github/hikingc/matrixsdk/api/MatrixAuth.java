@@ -85,7 +85,7 @@ public class MatrixAuth implements Auth {
     var uri =
         httpTransport.generateEncodedURI(
             discoveryResponse.homeserver().baseUrl(), "/_matrix/client/v1/auth_metadata", null);
-    var responseBody = httpTransport.getEvent(uri, null);
+    var responseBody = httpTransport.getRequest(uri, null);
     return Mapper.getObjectFromString(responseBody, AuthMetadata.class);
   }
 
@@ -102,7 +102,7 @@ public class MatrixAuth implements Auth {
   public DiscoveryResponse fetchWellKnown() {
     try {
       URI uri = URI.create(baseUrl + "/.well-known/matrix/client");
-      var response = httpTransport.getEvent(uri, null);
+      var response = httpTransport.getRequest(uri, null);
       return Mapper.getObjectFromString(response, DiscoveryResponse.class);
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse Matrix discovery JSON", e);
@@ -135,7 +135,7 @@ public class MatrixAuth implements Auth {
     var mappedInput = Mapper.createObjectFromMap(map);
 
     // Send the payload using the aforementioned record obtained and get the client_id
-    var responseBody = httpTransport.postEvent(metadata.registrationEndpoint(), mappedInput, null);
+    var responseBody = httpTransport.postRequest(metadata.registrationEndpoint(), mappedInput, null);
     logger.info("Registration response: {}", responseBody);
 
     var clientId = Mapper.getStringValueOfAJsonKey(responseBody, "client_id");
@@ -231,7 +231,7 @@ public class MatrixAuth implements Auth {
             + "&code_verifier="
             + URLEncoder.encode(codeVerifier, StandardCharsets.UTF_8);
 
-    var tokenRes = httpTransport.postEventAuth(metadata.tokenEndpoint(), tokenRequestBody);
+    var tokenRes = httpTransport.postAuth(metadata.tokenEndpoint(), tokenRequestBody);
 
     return Mapper.getObjectFromString(tokenRes, TokenMetadata.class);
   }
