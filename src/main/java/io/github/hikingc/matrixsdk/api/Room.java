@@ -17,6 +17,10 @@ import java.util.List;
 /// All operations in this interface are blocking. Implementations must ensure thread safety and
 /// avoid synchronization blocks that cause carrier thread pinning during network I/O.
 ///
+/// Unless otherwise noted, every method in this interface throws [MatrixIOException] if the request
+/// or response payload cannot be processed, and [MatrixNetworkException] if the server's response
+/// status is not successful.
+///
 /// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#rooms">Matrix Client-Server API
 ///   Specification for Rooms</a>
 public interface Room {
@@ -24,8 +28,8 @@ public interface Room {
   ///
   /// @param configuration of the room.
   /// @return the created room’s ID.
-  /// @throws MatrixIOException when the payload cannot be processed
-  /// @throws MatrixNetworkException when the response status is not successful
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   String create(InitialRoomConfiguration configuration);
 
   /// Requests the server to resolve a room alias if not possible, the server will use the
@@ -34,18 +38,24 @@ public interface Room {
   /// @param roomAlias the room alias.
   /// @return a [ResolvedAlias] containing the room ids for the requested alias and which servers
   ///   are aware of it.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   ResolvedAlias resolveAlias(RoomAlias roomAlias);
 
   /// Sets a room alias to a room.
   ///
   /// @param roomAlias a [RoomAlias].
   /// @param roomId the [RoomID] to receive the alias.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   void setAlias(RoomAlias roomAlias, RoomID roomId);
 
   /// Requests the server to remove a mapping of a room alias to a room id. On success, servers
   /// might modify `m.room.canonical_alias`
   ///
   /// @param roomAlias the [RoomAlias] to remove.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   void deleteAlias(RoomAlias roomAlias);
 
   /// Requests a list of aliases maintained by the local server for the given room, requires to be
@@ -56,12 +66,16 @@ public interface Room {
   ///
   /// @param roomId the [RoomID] to find local aliases of.
   /// @return a [List] of Room aliases.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   List<String> getAliasesOfARoom(RoomID roomId);
 
   /// Requests the server to retrieve a list of the user's current rooms (in simple terms whoever
   /// calls this method).
   ///
   /// @return a [List] of the rooms.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   List<String> getJoinedRooms();
 
   /// Send an invitation to a user to participate in a room, this endpoint requires the caller to be
@@ -80,7 +94,10 @@ public interface Room {
   /// @param request a [JoinRoomRequest] where additional information can be passed.
   /// @param via the servers to attempt to join the room through. One of the servers must be
   ///   participating in the room.
-  /// @return the room ID
+  /// @return the room ID.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws IllegalArgumentException when using an incorrect [Validator].
   String joinByRoomIdOrAliasIfAllowed(
       Validator roomIdOrAlias, JoinRoomRequest request, List<String> via);
 
@@ -90,7 +107,9 @@ public interface Room {
   /// @param request a [JoinRoomRequest] where additional information can be passed.
   /// @param via the servers to attempt to join the room through. One of the servers must be
   ///   participating in the room.
-  /// @return the room ID
+  /// @return the room ID.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   String joinByRoomIdIfAllowed(RoomID roomId, JoinRoomRequest request, List<String> via);
 
   /// Knock on a room to ask for permission to join. Acceptance of this request happens out of band.
@@ -100,6 +119,8 @@ public interface Room {
   /// @param via the servers to attempt to join the room through. One of the servers must be
   ///   participating in the room.
   /// @return the room ID of the knocked room.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   String knockOn(Validator roomIdOrAlias, String reason, List<String> via);
 
   /// Sends a request to leave the room, upon success, you will forget all messages from this room.
@@ -171,8 +192,7 @@ public interface Room {
   /// @param since a pagination token from a previous request, allowing you to get the next or
   ///   previous batch of rooms. The direction of pagination is specified by which token is
   ///   supplied.
-  /// @return a [PublicRoomDirectory] containing [io.github.hikingc.matrixsdk.api.rooms.models.PublishedRoomsChunk] records of the published
-  ///   rooms on the server.
+  /// @return a [PublicRoomDirectory] containing records of the published rooms on the server.
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws NullPointerException when the roomId is null.
   /// @see #getPublishedRoomDirectory(PublicRoomRequest)
@@ -182,18 +202,21 @@ public interface Room {
   /// Lists a server’s published room directory.
   ///
   /// @param request a [PublicRoomRequest] with additional filters for the request.
-  /// @return a [PublicRoomDirectory] containing [io.github.hikingc.matrixsdk.api.rooms.models.PublishedRoomsChunk] records of the published
-  ///   rooms on the server.
+  /// @return a [PublicRoomDirectory] containing records of the published rooms on the server.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   PublicRoomDirectory getPublishedRoomDirectory(PublicRoomRequest request);
 
   /// Retrieves a summary for a room. The response data might yield outdated, partial or even with
   /// no data.
   ///
-  /// @param roomIdOrAlias a [RoomID] or [RoomAlias] of the room to target
+  /// @param roomIdOrAlias a [RoomID] or [RoomAlias] of the room to target.
   /// @param via the servers to attempt to request the summary from when the local server cannot
-  ///   generate it
+  ///   generate it.
   /// @return a [RoomSummary] containing all the information about the room.
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws NullPointerException when the roomId is null.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   RoomSummary getRoomSummary(Validator roomIdOrAlias, List<String> via);
 }

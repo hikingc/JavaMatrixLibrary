@@ -20,6 +20,10 @@ import java.util.List;
 /// All operations in this interface are blocking. Implementations must ensure thread safety and
 /// avoid synchronization blocks that cause carrier thread pinning during network I/O.
 ///
+/// Unless otherwise noted, every method in this interface throws [MatrixIOException] if the request
+/// or response payload cannot be processed, and [MatrixNetworkException] if the server's response
+/// status is not successful.
+///
 /// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#events">Matrix Client-Server API
 ///   Specification for Events</a>
 public interface Event {
@@ -29,12 +33,16 @@ public interface Event {
   /// @param roomId the room ID where the event is.
   /// @param eventId the event ID to retrieve.
   /// @return the full event.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   ClientEvent getEvent(RoomID roomId, String eventId);
 
   /// Returns currently-joined members
   ///
   /// @param roomId the room ID to fetch data from.
   /// @return a list of room members.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   RoomMembers getJoinedMembers(RoomID roomId);
 
   /// Returns a filterable list of members and their current membership state in a room.
@@ -47,14 +55,18 @@ public interface Event {
   /// @param notMembership the kind of membership to exclude from the results. Defaults to no
   ///   filtering if unspecified.
   /// @return a list of [ClientEvent]s with the membership information of room members.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   List<RoomMemberEvent> getMembers(
       RoomID roomId, String at, Membership membership, Membership notMembership);
 
   /// Get the state events for the current state of a room.
   ///
   /// @param roomId the room ID to fetch data from.
-  /// @return the current state of the room
-  List<ClientEvent<?>> getStateEvents(RoomID roomId);
+  /// @return the current state of the room.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
+  List<StateEvent<?>> getStateEvents(RoomID roomId);
 
   /// Looks up the contents of a state event in a room. If the user is joined to the room then the
   /// state is taken from the current state of the room. If the user has left the room then the
@@ -64,6 +76,8 @@ public interface Event {
   /// @param eventType the type of state to look up.
   /// @param stateKey the room to look up the state in.
   /// @return the content of the event, including all additional metadata fields.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   @SuppressWarnings("java:S1452")
   // Caller doesn't know content type ahead of time; polymorphic dispatch via @JsonTypeInfo resolves
   // it
@@ -78,6 +92,7 @@ public interface Event {
   /// @param dir the [ChronologicalDirection] in which to search
   /// @return [Messages] with available data.
   /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   /// @throws NullPointerException when the roomId is null.
   Messages getMessages(RoomID roomId, ChronologicalDirection dir, QueryParametersMessages params);
 
@@ -88,6 +103,8 @@ public interface Event {
   /// @param dir the [ChronologicalDirection] in which to search
   /// @param timestamp the timestamp to search from, as given in milliseconds since the Unix epoch.
   /// @return [EventMetadata] if an event was found.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   EventMetadata getEventClosestToTimestamp(
       RoomID roomId, ChronologicalDirection dir, int timestamp);
 
@@ -96,6 +113,8 @@ public interface Event {
   ///
   /// @param roomId the room ID to fetch data from.
   /// @return [RoomInfo] with current state of the room.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   RoomInfo getInitialSync(RoomID roomId);
 
   /// Sends a state event.
@@ -106,15 +125,19 @@ public interface Event {
   /// @return a [String] representing a unique identifier of the event.
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   String sendStateEvent(RoomID roomId, String stateKey, StateEventContent content);
 
   /// Sends a message event.
   ///
-  /// @param roomId  the room ID where to send the event.
-  /// @param txnId   for this event. Clients should generate an ID unique across requests with the
+  /// @param roomId the room ID where to send the event.
+  /// @param txnId for this event. Clients should generate an ID unique across requests with the
   ///   same access token; it will be used by the server to ensure idempotency of requests.
   /// @param content of any type of message event.
   /// @return a [String] representing a unique identifier of the event.
+  /// @throws MatrixIOException when the payload cannot be processed.
+  /// @throws MatrixNetworkException when the response status is not successful.
   String sendMessageEvent(RoomID roomId, String txnId, MessageEventContent content);
 
   /// Strips all information out of an event which isn’t critical to the integrity of the
