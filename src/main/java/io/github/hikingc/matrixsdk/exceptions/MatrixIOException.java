@@ -1,7 +1,7 @@
 package io.github.hikingc.matrixsdk.exceptions;
 
 /// Thrown to indicate that the code has attempted to process an I/O event to which it has failed.
-public class MatrixIOException extends RuntimeException {
+public class MatrixIOException extends MatrixException {
   /// Constructs a [MatrixIOException] with a message.
   ///
   /// @param message The detail message. The detail message is saved for later retrieval by the
