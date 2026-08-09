@@ -37,11 +37,11 @@ public final class EventID implements Validator {
     }
 
     if (rawRoomId.charAt(0) != '$') {
-      throw new IllegalArgumentException("Event ID must start with \'$\'");
+      throw new IllegalArgumentException("Event ID must start with '$'");
     }
 
     if (rawRoomId.contentEquals("$")) {
-      throw new IllegalArgumentException("Event ID must not only contain \'$\'");
+      throw new IllegalArgumentException("Event ID must not only contain '$'");
     }
 
     return new EventID(rawRoomId);

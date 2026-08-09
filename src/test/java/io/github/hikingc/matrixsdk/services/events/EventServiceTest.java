@@ -9,7 +9,9 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.events.*;
+import io.github.hikingc.matrixsdk.api.events.content.RoomJoinRules;
 import io.github.hikingc.matrixsdk.api.events.content.RoomMessage;
+import io.github.hikingc.matrixsdk.api.events.content.StateEventContent;
 import io.github.hikingc.matrixsdk.api.events.content.roommessages.FileContent;
 import io.github.hikingc.matrixsdk.api.events.content.roommessages.TextContent;
 import io.github.hikingc.matrixsdk.api.events.queries.ChronologicalDirection;
@@ -538,7 +540,9 @@ class EventServiceTest {
 
   @Test
   void sendStateEvent_WithACorrectPayload_ThenReturnAString() {
-    // TODO pending interface to confirm fields to assert
+    StateEventContent content = new RoomJoinRules(new RoomJoinRules.AllowCondition("EXAMPLE","TYPE"),"JOINRULE");
+    var response = client.events().sendStateEvent(ROOM_ID,"",content);
+    assertThat(response).isNotNull();
   }
 
   @Test

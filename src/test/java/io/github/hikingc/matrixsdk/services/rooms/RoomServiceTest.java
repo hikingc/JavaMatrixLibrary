@@ -9,6 +9,7 @@ import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.events.content.RoomPowerLevels;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
+import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.api.identifiers.Validator;
 import io.github.hikingc.matrixsdk.api.rooms.*;
 import io.github.hikingc.matrixsdk.api.rooms.queries.CreationRoomType;
@@ -17,7 +18,6 @@ import io.github.hikingc.matrixsdk.api.rooms.queries.VisibilityRoomType;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 class RoomServiceTest {
 
   private static final RoomID ROOM_ID = RoomID.parse("!ekkTuJPNWnbuCJHvYB:kde.org");
+  private static final UserID USER_ID = UserID.parse("@example:example.com");
   private static final String AUTH_TOKEN = "1234";
   private static MatrixClient client;
   private static DiscoveryResponse DISCOVERY_RESPONSE;
@@ -116,51 +117,40 @@ class RoomServiceTest {
                         { "room_id": "%s" }
                         """
                         .formatted(expectedRoomId))));
-    InitialRoomConfiguration config = new InitialRoomConfiguration(
+    InitialRoomConfiguration config =
+        new InitialRoomConfiguration(
             new InitialRoomConfiguration.CreationContent(false), // m.federate: false
             List.of(
-                    new InitialRoomConfiguration.StateEvent(
-                            Map.of("join_rule", "public"),
-                            "",
-                            "m.room.join_rules"),
-                    new InitialRoomConfiguration.StateEvent(
-                            Map.of("history_visibility", "shared"),
-                            "",
-                            "m.room.history_visibility")
-            ),
+                new InitialRoomConfiguration.StateEvent(
+                    Map.of("join_rule", "public"), "", "m.room.join_rules"),
+                new InitialRoomConfiguration.StateEvent(
+                    Map.of("history_visibility", "shared"), "", "m.room.history_visibility")),
             List.of("@alice:example.com", "@bob:example.com"),
             List.of(
-                    new InitialRoomConfiguration.Invite3pid(
-                            "alice@example.com",
-                            "abc123_OpaqueString",
-                            "identity.example.com",
-                            "email")
-            ),
+                new InitialRoomConfiguration.Invite3pid(
+                    "alice@example.com", "abc123_OpaqueString", "identity.example.com", "email")),
             false, // is_direct
             "The Grand Duke Pub",
             new RoomPowerLevels(
-                    50,   // ban
-                    Map.of(
-                            "m.room.name", 50,
-                            "m.room.power_levels", 100
-                    ),    // events
-                    0,    // eventsDefault
-                    0,    // invite
-                    50,   // kick
-                    null, // notifications — not present in source JSON
-                    50,   // redact
-                    50,   // stateDefault
-                    Map.of("@alice:example.com", 100), // users
-                    0     // users_default
-            ),
+                50, // ban
+                Map.of(
+                    "m.room.name", 50,
+                    "m.room.power_levels", 100), // events
+                0, // eventsDefault
+                0, // invite
+                50, // kick
+                null, // notifications — not present in source JSON
+                50, // redact
+                50, // stateDefault
+                Map.of("@alice:example.com", 100), // users
+                0 // users_default
+                ),
             CreationRoomType.PRIVATE_CHAT,
             "thepub",
             "11",
             "All about happy hour",
-            VisibilityRoomType.PRIVATE
-    );
-    var response =
-        client.room().create(config);
+            VisibilityRoomType.PRIVATE);
+    var response = client.room().create(config);
     assertEquals(expectedRoomId, response);
   }
 
@@ -209,7 +199,7 @@ class RoomServiceTest {
     var response = client.room().resolveAlias(alias);
 
     assertNotNull(response);
-    assertEquals(ROOM_ID.toString(), response.roomId());
+    assertEquals(ROOM_ID, response.roomId());
     assertFalse(response.servers().isEmpty());
   }
 
@@ -286,7 +276,8 @@ class RoomServiceTest {
                     true))
             .willReturn(okJson("{}")));
 
-    client.room().inviteUser(ROOM_ID, new RoomMembershipRequest("Welcome!", "@alice:example.com"));
+    client.room().inviteUser(
+            ROOM_ID, new RoomMembershipRequest("Welcome!", UserID.parse("@alice:example.com")));
 
     verify(postRequestedFor(urlEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/invite")));
   }
@@ -373,14 +364,14 @@ class RoomServiceTest {
                     """
                         {
                           "reason": "Test reason",
-                          "user_id": "user"
+                          "user_id": "@example:example.com"
                         }
                         """,
                     true,
                     true))
             .willReturn(okJson("{}")));
 
-    client.room().kick(ROOM_ID, new RoomMembershipRequest("Test reason", "user"));
+    client.room().kick(ROOM_ID, new RoomMembershipRequest("Test reason", USER_ID));
 
     verify(postRequestedFor(urlEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/kick")));
   }
@@ -394,14 +385,14 @@ class RoomServiceTest {
                     """
                         {
                           "reason": "Test reason",
-                          "user_id": "user"
+                          "user_id": "@example:example.com"
                         }
                         """,
                     true,
                     true))
             .willReturn(okJson("{}")));
 
-    client.room().ban(ROOM_ID, new RoomMembershipRequest("Test reason", "user"));
+    client.room().ban(ROOM_ID, new RoomMembershipRequest("Test reason", USER_ID));
 
     verify(postRequestedFor(urlEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/ban")));
   }
@@ -415,14 +406,14 @@ class RoomServiceTest {
                     """
                         {
                           "reason": "Test reason",
-                          "user_id": "user"
+                          "user_id": "@example:example.com"
                         }
                         """,
                     true,
                     true))
             .willReturn(okJson("{}")));
 
-    client.room().unban(ROOM_ID, new RoomMembershipRequest("Test reason", "user"));
+    client.room().unban(ROOM_ID, new RoomMembershipRequest("Test reason", USER_ID));
 
     verify(postRequestedFor(urlEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/unban")));
   }
@@ -488,7 +479,7 @@ class RoomServiceTest {
 
     assertNotNull(response);
     assertNotNull(response.chunk());
-    assertEquals("!abc123:example.com", response.chunk().getFirst().roomId());
+    assertEquals(RoomID.parse("!abc123:example.com"), response.chunk().getFirst().roomId());
     assertEquals("General", response.chunk().getFirst().name());
     assertEquals(1, response.totalRoomCountEstimate());
   }
@@ -520,7 +511,7 @@ class RoomServiceTest {
 
     assertNotNull(response);
     assertFalse(response.chunk().isEmpty());
-    assertEquals("!abc123:example.com", response.chunk().getFirst().roomId());
+    assertEquals(RoomID.parse("!abc123:example.com"), response.chunk().getFirst().roomId());
   }
 
   @Test

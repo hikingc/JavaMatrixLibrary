@@ -1,5 +1,7 @@
 package io.github.hikingc.matrixsdk.api.identifiers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Objects;
 
 /// This class allows for the representation and validation of a User Identifier in Matrix.
@@ -30,6 +32,7 @@ public final class UserID implements Validator {
   /// @return a [UserID].
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
+  @JsonCreator
   public static UserID parse(String rawUserId) {
     Objects.requireNonNull(rawUserId, "User ID" + " must not be null");
 
@@ -61,6 +64,7 @@ public final class UserID implements Validator {
   }
 
   @Override
+  @JsonValue
   public String toString() {
     return "@" + localpart + ":" + domain;
   }
