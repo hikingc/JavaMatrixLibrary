@@ -36,7 +36,7 @@ public class FilterService implements Filter {
             context.discoveryResponse().homeserver().baseUrl(),
             USER_FILTER_ENDPOINT + userId + "/filter",
             null);
-    String responseBody = httpTransport.postEvent(uri, serializedInputData, context.token());
+    String responseBody = httpTransport.postRequest(uri, serializedInputData, context.token());
 
     return Mapper.getStringValueOfAJsonKey(responseBody, "filter_id");
   }
@@ -50,6 +50,6 @@ public class FilterService implements Filter {
             USER_FILTER_ENDPOINT + userId + "/filter/" + filterId,
             null);
     return Mapper.getObjectFromString(
-        httpTransport.getEvent(uri, context.token()), FilterDefinition.class);
+        httpTransport.getRequest(uri, context.token()), FilterDefinition.class);
   }
 }
