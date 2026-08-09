@@ -86,7 +86,7 @@ public class EventService implements Event {
   }
 
   @Override
-  public List<ClientEvent<?>> getStateEvents(RoomID roomId) {
+  public List<StateEvent<?>> getStateEvents(RoomID roomId) {
     String response =
         httpTransport.getRequest(
             URI.create(
@@ -100,7 +100,7 @@ public class EventService implements Event {
   }
 
   @Override
-  public ClientEvent<?> getStateEvent(RoomID roomId, String eventType, String stateKey) {
+  public StateEvent<?> getStateEvent(RoomID roomId, String eventType, String stateKey) {
 
     Map<String, Object> args = new HashMap<>();
     args.put("format", Format.EVENT.getValue()); // Hardcode this for now
@@ -111,7 +111,7 @@ public class EventService implements Event {
             args);
     String response = httpTransport.getRequest(uri, context.token());
 
-    return Mapper.getObjectFromString(response, ClientEvent.class);
+    return Mapper.getObjectFromString(response, StateEvent.class);
   }
 
   @Override
