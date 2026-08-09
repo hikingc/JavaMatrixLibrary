@@ -62,6 +62,6 @@ public final class UserID implements Validator {
 
   @Override
   public String toString() {
-    return "!" + localpart + ":" + domain;
+    return "@" + localpart + ":" + domain;
   }
 }
