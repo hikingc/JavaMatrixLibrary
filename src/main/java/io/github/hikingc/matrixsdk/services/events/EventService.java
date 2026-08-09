@@ -39,7 +39,7 @@ public class EventService implements Event {
   public ClientEvent<?> getEvent(RoomID roomId, String eventId) {
     Objects.requireNonNull(eventId, "The event ID must not be null");
     String response =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + ROOM_ENDPOINT
@@ -55,7 +55,7 @@ public class EventService implements Event {
   public RoomMembers getJoinedMembers(RoomID roomId) {
 
     String response =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + ROOM_ENDPOINT
@@ -78,7 +78,7 @@ public class EventService implements Event {
             ROOM_ENDPOINT + roomId + "/members",
             args);
 
-    String response = httpTransport.getEvent(uri, context.token());
+    String response = httpTransport.getRequest(uri, context.token());
     // We can skip the chunk parent, we don't use ObjectFromString because it is NOT a raw Array as
     // detailed
     // on the spec.
@@ -88,7 +88,7 @@ public class EventService implements Event {
   @Override
   public List<ClientEvent<?>> getStateEvents(RoomID roomId) {
     String response =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + ROOM_ENDPOINT
@@ -109,7 +109,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/state/" + eventType + "/" + stateKey,
             args);
-    String response = httpTransport.getEvent(uri, context.token());
+    String response = httpTransport.getRequest(uri, context.token());
 
     return Mapper.getObjectFromString(response, ClientEvent.class);
   }
@@ -128,7 +128,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/messages",
             args);
-    String queryResponse = httpTransport.getEvent(uri, context.token());
+    String queryResponse = httpTransport.getRequest(uri, context.token());
     return Mapper.getObjectFromString(queryResponse, Messages.class);
   }
 
@@ -145,7 +145,7 @@ public class EventService implements Event {
     var uri =
         httpTransport.generateEncodedURI(
             context.discoveryResponse().homeserver().baseUrl(), ROOM_ENDPOINT + roomId, args);
-    String response = httpTransport.getEvent(uri, context.token());
+    String response = httpTransport.getRequest(uri, context.token());
     return Mapper.getObjectFromString(response, EventMetadata.class);
   }
 
@@ -153,7 +153,7 @@ public class EventService implements Event {
   public RoomInfo getInitialSync(RoomID roomId) {
 
     String response =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + ROOM_ENDPOINT
@@ -178,7 +178,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/state/" + type + "/" + stateKey,
             null);
-    String response = httpTransport.putEvent(uri, jsonPayload, context.token());
+    String response = httpTransport.putRequest(uri, jsonPayload, context.token());
     return Mapper.getStringValueOfAJsonKey(response, "event_id");
   }
 
@@ -198,7 +198,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/send/" + type + "/" + txnId,
             null);
-    String response = httpTransport.putEvent(uri, jsonPayload, context.token());
+    String response = httpTransport.putRequest(uri, jsonPayload, context.token());
     return Mapper.getStringValueOfAJsonKey(response, "event_id");
   }
 
@@ -211,7 +211,7 @@ public class EventService implements Event {
       json = Mapper.createObjectFromMap(Map.ofEntries(Map.entry("reason", reason)));
     }
     String response =
-        httpTransport.putEvent(
+        httpTransport.putRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + ROOM_ENDPOINT
@@ -261,7 +261,7 @@ public class EventService implements Event {
         httpTransport.generateEncodedURI(
             context.discoveryResponse().homeserver().baseUrl(), "/_matrix/client/v3/sync", args);
 
-    String response = httpTransport.getEvent(query, context.token());
+    String response = httpTransport.getRequest(query, context.token());
     return Mapper.getObjectFromString(response, Sync.class);
   }
 
@@ -270,7 +270,7 @@ public class EventService implements Event {
   /// @return a [String] representing the MXC
   private String createAndReserveMXC() throws JacksonException {
     String queryResponse =
-        httpTransport.postEvent(
+        httpTransport.postRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + "/_matrix"

@@ -63,7 +63,7 @@ public class RoomService implements Room {
 
     String responseBody;
     responseBody =
-        httpTransport.postEvent(
+        httpTransport.postRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + "/_matrix/client/v3/createRoom"),
@@ -81,7 +81,7 @@ public class RoomService implements Room {
             DIRECTORY_ENDPOINT_ROOM + roomAlias,
             null);
 
-    var responseBody = httpTransport.getEvent(uri, context.token());
+    var responseBody = httpTransport.getRequest(uri, context.token());
     return Mapper.getObjectFromString(responseBody, ResolvedAlias.class);
   }
 
@@ -96,7 +96,7 @@ public class RoomService implements Room {
     Map<String, Object> map = new HashMap<>();
     map.put(ROOM_ID, roomId);
 
-    httpTransport.putEvent(uri, Mapper.createObjectFromMap(map), context.token());
+    httpTransport.putRequest(uri, Mapper.createObjectFromMap(map), context.token());
   }
 
   @Override
@@ -106,14 +106,14 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             DIRECTORY_ENDPOINT_ROOM + roomAlias,
             null);
-    httpTransport.deleteEvent(uri, context.token());
+    httpTransport.deleteRequest(uri, context.token());
   }
 
   @Override
   public List<String> getAliasesOfARoom(RoomID roomId) {
 
     String response =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + ROOM_ENDPOINT
@@ -137,7 +137,7 @@ public class RoomService implements Room {
   @Override
   public List<String> getJoinedRooms() {
     String response =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + "/_matrix"
@@ -155,7 +155,7 @@ public class RoomService implements Room {
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }
-    httpTransport.postEvent(
+    httpTransport.postRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl()
                 + ROOM_ENDPOINT
@@ -169,7 +169,7 @@ public class RoomService implements Room {
   public String joinByRoomIdOrAliasIfAllowed(
       Validator roomIdOrAlias, JoinRoomRequest request, List<String> via) {
     if (Objects.requireNonNull(roomIdOrAlias) instanceof UserID) {
-      throw new MatrixException("Wrong format type");
+      throw new IllegalArgumentException("Wrong format type");
     }
 
     Map<String, Object> params = new HashMap<>();
@@ -185,7 +185,7 @@ public class RoomService implements Room {
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }
-    var responseBody = httpTransport.postEvent(uri, serializedInputData, context.token());
+    var responseBody = httpTransport.postRequest(uri, serializedInputData, context.token());
     return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
 
@@ -204,7 +204,7 @@ public class RoomService implements Room {
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }
-    var responseBody = httpTransport.postEvent(uri, serializedInputData, context.token());
+    var responseBody = httpTransport.postRequest(uri, serializedInputData, context.token());
     return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
 
@@ -223,7 +223,7 @@ public class RoomService implements Room {
     map.put("reason", reason);
 
     String responseBody =
-        httpTransport.postEvent(uri, Mapper.createObjectFromMap(map), context.token());
+        httpTransport.postRequest(uri, Mapper.createObjectFromMap(map), context.token());
     try {
       return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
     } catch (JacksonException e) {
@@ -233,7 +233,7 @@ public class RoomService implements Room {
 
   @Override
   public void forget(RoomID roomId) {
-    httpTransport.postEvent(
+    httpTransport.postRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl()
                 + ROOM_ENDPOINT
@@ -245,7 +245,7 @@ public class RoomService implements Room {
 
   @Override
   public void leave(RoomID roomId) {
-    httpTransport.postEvent(
+    httpTransport.postRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/leave"),
         null,
@@ -260,7 +260,7 @@ public class RoomService implements Room {
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }
-    httpTransport.postEvent(
+    httpTransport.postRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/kick"),
         serializedInputData,
@@ -275,7 +275,7 @@ public class RoomService implements Room {
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }
-    httpTransport.postEvent(
+    httpTransport.postRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/ban"),
         serializedInputData,
@@ -290,7 +290,7 @@ public class RoomService implements Room {
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }
-    httpTransport.postEvent(
+    httpTransport.postRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/unban"),
         responseBody,
@@ -300,7 +300,7 @@ public class RoomService implements Room {
   @Override
   public String getRoomDirectoryVisibilityType(RoomID roomId) {
     var responseBody =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
             null);
@@ -312,7 +312,7 @@ public class RoomService implements Room {
     Map<String, Object> map = new HashMap<>();
     map.put("visibility", roomType);
 
-    httpTransport.putEvent(
+    httpTransport.putRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
         Mapper.createObjectFromMap(map),
@@ -332,7 +332,7 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             "/_matrix/client/v3/publicRooms",
             params);
-    var responseBody = httpTransport.getEvent(uri, context.token());
+    var responseBody = httpTransport.getRequest(uri, context.token());
 
     return Mapper.getObjectFromString(responseBody, PublicRoomDirectory.class);
   }
@@ -342,7 +342,7 @@ public class RoomService implements Room {
     String serializedInputData = objectMapper.writeValueAsString(request);
 
     var responseBody =
-        httpTransport.postEvent(
+        httpTransport.postRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + "/_matrix/client/v3/publicRooms"),
@@ -365,7 +365,7 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             "/_matrix/client/v1/room_summary/" + roomIdOrAlias,
             args);
-    var responseBody = httpTransport.getEvent(uri, context.token());
+    var responseBody = httpTransport.getRequest(uri, context.token());
 
     return Mapper.getObjectFromString(responseBody, RoomSummary.class);
   }

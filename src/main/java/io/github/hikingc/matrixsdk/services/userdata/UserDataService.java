@@ -44,7 +44,7 @@ public class UserDataService implements UserData {
             .formatted(limitToUse, searchTerm);
 
     String responseBody =
-        httpTransport.postEvent(
+        httpTransport.postRequest(
             URI.create(context.discoveryResponse().homeserver().baseUrl() + USER_DIR),
             rawTextPayload,
             context.token());
@@ -54,7 +54,7 @@ public class UserDataService implements UserData {
   @Override
   public UserProfile getUserProfile(UserID userId) {
     String responseBody =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(context.discoveryResponse().homeserver().baseUrl() + PROFILE_DIR + userId),
             context.token());
     return Mapper.getObjectFromString(responseBody, UserProfile.class);
@@ -64,7 +64,7 @@ public class UserDataService implements UserData {
   public String getUserProfileByProperty(UserID userId, @Nullable String keyName) {
     Objects.requireNonNull(keyName, "The key name must no be null");
     String responseBody =
-        httpTransport.getEvent(
+        httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + PROFILE_DIR
@@ -82,7 +82,7 @@ public class UserDataService implements UserData {
     Objects.requireNonNull(valueName, "The value name must no be null");
     var serializedJson = Mapper.createObjectFromMap(Map.ofEntries(Map.entry(keyName, valueName)));
 
-    httpTransport.putEvent(
+    httpTransport.putRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl()
                 + PROFILE_DIR
@@ -97,7 +97,7 @@ public class UserDataService implements UserData {
   public void deleteUserProfileProperty(UserID userId, String keyName) {
     Objects.requireNonNull(keyName, "The key name must no be null");
 
-    httpTransport.deleteEvent(
+    httpTransport.deleteRequest(
         URI.create(
             context.discoveryResponse().homeserver().baseUrl()
                 + PROFILE_DIR
