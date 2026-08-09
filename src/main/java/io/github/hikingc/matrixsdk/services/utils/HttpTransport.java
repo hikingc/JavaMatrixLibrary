@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.exc.StreamReadException;
 
@@ -31,7 +32,7 @@ import tools.jackson.core.exc.StreamReadException;
 /// Failed requests are validated against the server's response and throw [MatrixNetworkException],
 /// populated with the HTTP status code and any error message returned by the server, and
 /// [MatrixIOException] if the server JSON response wasn't even sent.
-@Nullable
+@NullMarked
 public class HttpTransport {
   private static final String CONTENT_TYPE = "Content-Type";
   private static final String APPLICATION_JSON = "application/json";
@@ -83,7 +84,7 @@ public class HttpTransport {
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixNetworkException if the operation has been interrupted.
   /// @throws IllegalArgumentException if the path was not supplied.
-  public String getRequest(URI path, String authToken) {
+  public String getRequest(URI path, @Nullable String authToken) {
     var builderRequest =
         HttpRequest.newBuilder().uri(path).header(CONTENT_TYPE, APPLICATION_JSON).GET();
 
@@ -115,7 +116,7 @@ public class HttpTransport {
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixNetworkException if the operation has been interrupted.
   /// @throws IllegalArgumentException if the path was not supplied.
-  public String postRequest(URI path, String body, String authToken) {
+  public String postRequest(URI path, @Nullable String body, @Nullable String authToken) {
     var builderRequest = HttpRequest.newBuilder().uri(path);
 
     if (body != null) {
@@ -156,7 +157,7 @@ public class HttpTransport {
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixNetworkException if the operation has been interrupted.
   /// @throws IllegalArgumentException if the path was not supplied.
-  public String postAuth(URI path, String body) {
+  public String postAuth(URI path, @Nullable String body) {
     var builderRequest = HttpRequest.newBuilder().uri(path);
 
     builderRequest.header(CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -191,7 +192,7 @@ public class HttpTransport {
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixNetworkException if the operation has been interrupted.
   /// @throws IllegalArgumentException if the path was not supplied.
-  public String putRequest(URI path, String body, String authToken) {
+  public String putRequest(URI path, @Nullable String body, String authToken) {
 
     var builderRequest =
         HttpRequest.newBuilder()
@@ -304,7 +305,7 @@ public class HttpTransport {
   /// @param params query parameters; accepts wrapped primitives and Lists for repeated parameters.
   ///   Null values, null list items, or a null/empty map are all safely ignored.
   /// @return a safe, fully composed [URI].
-  public URI generateEncodedURI(String baseUrl, String path, Map<String, Object> params) {
+  public URI generateEncodedURI(String baseUrl, String path, @Nullable Map<String, Object> params) {
     String query = encodeQueryParams(params);
     try {
       URI base = URI.create(baseUrl);
@@ -334,7 +335,7 @@ public class HttpTransport {
     }
   }
 
-  private String encodeQueryParams(Map<String, Object> params) {
+  private String encodeQueryParams(@Nullable Map<String, @Nullable Object> params) {
     if (params == null || params.isEmpty()) return "";
     return params.entrySet().stream()
         .filter(e -> e.getValue() != null)
@@ -343,7 +344,7 @@ public class HttpTransport {
         .collect(Collectors.joining("&"));
   }
 
-  private String rawQueryParams(Map<String, Object> params) {
+  private String rawQueryParams(@Nullable Map<String, @Nullable Object> params) {
     if (params == null || params.isEmpty()) return "";
     return params.entrySet().stream()
         .filter(e -> e.getValue() != null)
