@@ -2,7 +2,7 @@ package io.github.hikingc.matrixsdk.api.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/// Holds the data from the access token response as defined in the OAuth 2.0 spec.
+/// Holds access token data as defined in the OAuth 2.0 spec.
 ///
 /// @param accessToken the access token issued by the server.
 /// @param tokenType information on the type of token to use.

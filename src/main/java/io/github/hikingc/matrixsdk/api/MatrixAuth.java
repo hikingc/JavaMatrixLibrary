@@ -79,7 +79,10 @@ public class MatrixAuth implements Auth {
     return null;
   }
 
-  @Override
+  /// Get the OAuth 2.0 authorization server metadata, as defined in RFC 8414
+  ///
+  /// @return an [AuthMetadata] object.
+  /// @throws MatrixIOException when the payload cannot be processed
   public AuthMetadata getAuthMetadata() {
     DiscoveryResponse discoveryResponse = this.fetchWellKnown();
     var uri =
@@ -90,15 +93,17 @@ public class MatrixAuth implements Auth {
   }
 
   @Override
-  public WhoAmI getCurrentAccountInformation() {
-    throw new UnsupportedOperationException("getCurrentAccountInformation is not yet implemented");
+  public WhoAmI getCurrentAccountInformation(String token) {
+    DiscoveryResponse discoveryResponse = this.fetchWellKnown();
+    var response =
+        httpTransport.getRequest(
+            URI.create(
+                discoveryResponse.homeserver().baseUrl() + "/_matrix/client/v3/account/whoami"),
+            token);
+    return Mapper.getObjectFromString(response, WhoAmI.class);
   }
 
-  /// Method used to obtain the .well-known data and store the base url.
-  ///
-  /// @return a [DiscoveryResponse] with data.
-  /// @throws IllegalArgumentException when the homeserver url violates RFC 2396 or is null
-  /// @throws MatrixIOException when the payload cannot be processed
+  @Override
   public DiscoveryResponse fetchWellKnown() {
     try {
       URI uri = URI.create(baseUrl + "/.well-known/matrix/client");
@@ -135,7 +140,8 @@ public class MatrixAuth implements Auth {
     var mappedInput = Mapper.createObjectFromMap(map);
 
     // Send the payload using the aforementioned record obtained and get the client_id
-    var responseBody = httpTransport.postRequest(metadata.registrationEndpoint(), mappedInput, null);
+    var responseBody =
+        httpTransport.postRequest(metadata.registrationEndpoint(), mappedInput, null);
     logger.info("Registration response: {}", responseBody);
 
     var clientId = Mapper.getStringValueOfAJsonKey(responseBody, "client_id");
