@@ -1,9 +1,11 @@
 package io.github.hikingc.matrixsdk.api.events.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.SingletonStateEvent;
 import io.github.hikingc.matrixsdk.api.events.UnsignedData;
 import io.github.hikingc.matrixsdk.api.events.content.RoomCanonicalAlias;
 
+@JsonTypeName("m.room.canonical.alias")
 public record RoomCanonicalAliasEvent(
     RoomCanonicalAlias content,
     String eventId,

@@ -1,10 +1,12 @@
 package io.github.hikingc.matrixsdk.api.events.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.MessageEvent;
 import io.github.hikingc.matrixsdk.api.events.content.RoomMessage;
 import io.github.hikingc.matrixsdk.api.events.UnsignedData;
 
 /// Represents all the types `m.room.message` events from the server.
+@JsonTypeName("m.room.message")
 public record RoomMessageEvent(
     RoomMessage content,
     String eventId,

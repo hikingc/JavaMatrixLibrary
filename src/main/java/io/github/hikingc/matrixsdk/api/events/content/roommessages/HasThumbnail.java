@@ -2,17 +2,14 @@ package io.github.hikingc.matrixsdk.api.events.content.roommessages;
 
 import io.github.hikingc.matrixsdk.api.events.crypto.EncryptedFile;
 
+import java.net.URI;
+
 /// Marks event content that includes thumbnail metadata such as E2E metadata their width, size and
 /// height and url `info` object.
-///
-/// @see FileContent.FileInfo
-/// @see LocationContent.LocationInfo
-/// @see ImageContent.ImageInfo
-/// @see VideoContent.VideoInfo
 public sealed interface HasThumbnail
     permits FileContent.FileInfo,
         LocationContent.LocationInfo,
-        ImageContent.ImageInfo,
+        ImageInfo,
         VideoContent.VideoInfo {
   /// @return not implemented yet.
   EncryptedFile thumbnailFile();
@@ -22,5 +19,5 @@ public sealed interface HasThumbnail
 
   /// @return the URL to the thumbnail of the resource. Only present if the thumbnail is
   ///   unencrypted.
-  String thumbnailUrl();
+  URI thumbnailUrl();
 }

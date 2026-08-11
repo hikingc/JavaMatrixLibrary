@@ -36,7 +36,7 @@ public record FileContent(
     return "m.file";
   }
 
-  /// Additional file information referred in the [FileContent] `url` field.
+  /// Additional file information referred about the file in the `url` field.
   ///
   /// @param mimetype the mimetype of the file.
   /// @param size the size of the file in bytes.
@@ -49,6 +49,6 @@ public record FileContent(
       Integer size,
       EncryptedFile thumbnailFile,
       ThumbnailInfo thumbnailInfo,
-      String thumbnailUrl)
+      URI thumbnailUrl)
       implements HasInfo, HasThumbnail {}
 }

@@ -46,13 +46,14 @@ public record VideoContent(
   ///   unencrypted.
   /// @param duration the duration of the video in milliseconds.
   public record VideoInfo(
-      Integer duration,
       Integer h,
-      String mimetype,
+      Integer w,
       Integer size,
+      String mimetype,
+      Boolean isAnimated,
       EncryptedFile thumbnailFile,
       ThumbnailInfo thumbnailInfo,
-      String thumbnailUrl,
-      Integer w)
-      implements HasThumbnail, HasInfo {}
+      URI thumbnailUrl,
+      Integer duration)
+      implements HasThumbnail, HasInfo, HasArea {}
 }

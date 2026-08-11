@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.content.RoomMessage;
 import io.github.hikingc.matrixsdk.api.events.crypto.EncryptedFile;
 
+import java.net.URI;
+
 /// This type of message represents a real-world location.
 ///
 /// @param body the filename of the original upload if `filename` is unset or identical to it;
@@ -26,6 +28,6 @@ public record LocationContent(String body, String geoUri, LocationInfo info)
   /// @param thumbnailUrl the URL to the thumbnail of the file. Only present if the thumbnail is
   ///   unencrypted.
   public record LocationInfo(
-      EncryptedFile thumbnailFile, ThumbnailInfo thumbnailInfo, String thumbnailUrl)
+      EncryptedFile thumbnailFile, ThumbnailInfo thumbnailInfo, URI thumbnailUrl)
       implements HasThumbnail {}
 }

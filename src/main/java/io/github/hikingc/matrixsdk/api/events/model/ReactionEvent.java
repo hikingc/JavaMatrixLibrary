@@ -1,22 +1,23 @@
 package io.github.hikingc.matrixsdk.api.events.model;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.github.hikingc.matrixsdk.api.events.SingletonStateEvent;
+import io.github.hikingc.matrixsdk.api.events.MessageEvent;
 import io.github.hikingc.matrixsdk.api.events.UnsignedData;
-import io.github.hikingc.matrixsdk.api.events.content.RoomJoinRules;
+import io.github.hikingc.matrixsdk.api.events.content.Reaction;
 
-@JsonTypeName("m.room.join_rules")
-public record RoomJoinRulesEvent(
-    RoomJoinRules content,
+@JsonTypeName("m.reaction")
+public record ReactionEvent(
+    Reaction content,
     String eventId,
     Long originServerTs,
     String roomId,
     String sender,
+    String stateKey,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomJoinRules> {
+    implements MessageEvent<Reaction> {
 
   @Override
   public String type() {
-    return "m.room.join_rules";
+    return "m.reaction";
   }
 }

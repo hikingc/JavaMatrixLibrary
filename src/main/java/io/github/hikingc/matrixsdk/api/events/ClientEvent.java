@@ -1,10 +1,7 @@
 package io.github.hikingc.matrixsdk.api.events;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.hikingc.matrixsdk.api.events.model.*;
-import io.github.hikingc.matrixsdk.api.events.model.RoomNameEvent;
 
 /// Interface that enforces fields required by both State and Message events when the event is
 /// retrieved from the server via the Client-Server API, or sent to an Application Service via the
@@ -15,20 +12,6 @@ import io.github.hikingc.matrixsdk.api.events.model.RoomNameEvent;
 ///   event format as defined in the specification.</a>
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = RoomCreateEvent.class, name = "m.room.create"),
-        @JsonSubTypes.Type(value = RoomMemberEvent.class, name = "m.room.member"),
-        @JsonSubTypes.Type(value = RoomPowerLevelsEvent.class, name = "m.room.power_levels"),
-        @JsonSubTypes.Type(value = RoomJoinRulesEvent.class, name = "m.room.join_rules"),
-        @JsonSubTypes.Type(value = RoomHistoryVisibilityEvent.class, name = "m.room.history_visibility"),
-        @JsonSubTypes.Type(value = RoomGuestAcessEvent.class, name = "m.room.guest_access"),
-        @JsonSubTypes.Type(value = RoomNameEvent.class, name = "m.room.name"),
-        @JsonSubTypes.Type(value = RoomTopicEvent.class, name = "m.room.topic"),
-        @JsonSubTypes.Type(value = RoomAvatarEvent.class, name = "m.room.avatar"),
-        @JsonSubTypes.Type(value = RoomCanonicalAliasEvent.class, name = "m.room.canonical_alias"),
-        @JsonSubTypes.Type(value = RoomPinnedEventsEvent.class, name = "m.room.pinned_events"),
-        @JsonSubTypes.Type(value = RoomMessageEvent.class, name = "m.room.message"),
-})
 // This interface CANNOT permit anything other than these two.
 public sealed interface ClientEvent<T> permits StateEvent, MessageEvent {
 
