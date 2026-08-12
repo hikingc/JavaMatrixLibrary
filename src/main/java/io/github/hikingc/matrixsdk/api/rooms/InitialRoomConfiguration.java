@@ -2,7 +2,7 @@ package io.github.hikingc.matrixsdk.api.rooms;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.hikingc.matrixsdk.api.events.content.RoomPowerLevels;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomPowerLevels;
 import io.github.hikingc.matrixsdk.api.rooms.queries.CreationRoomType;
 import io.github.hikingc.matrixsdk.api.rooms.queries.VisibilityRoomType;
 import java.util.Collections;

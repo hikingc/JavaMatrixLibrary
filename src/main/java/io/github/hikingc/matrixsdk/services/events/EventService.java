@@ -2,8 +2,10 @@ package io.github.hikingc.matrixsdk.services.events;
 
 import io.github.hikingc.matrixsdk.api.Event;
 import io.github.hikingc.matrixsdk.api.events.*;
-import io.github.hikingc.matrixsdk.api.events.content.*;
-import io.github.hikingc.matrixsdk.api.events.model.RoomMemberEvent;
+import io.github.hikingc.matrixsdk.api.events.matrix.*;
+import io.github.hikingc.matrixsdk.api.events.matrix.call.*;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.*;
+import io.github.hikingc.matrixsdk.api.events.server.state.RoomMemberEvent;
 import io.github.hikingc.matrixsdk.api.events.queries.*;
 import io.github.hikingc.matrixsdk.api.events.sync.Sync;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
@@ -308,6 +310,15 @@ public class EventService implements Event {
   private static String resolveMessageWireType(MessageEventContent content) {
     return switch (content) {
       case RoomMessage _ -> "m.room.message";
+        case CallAnswer callAnswer -> null;
+        case CallCandidates callCandidates -> null;
+        case CallInvite callInvite -> null;
+        case CallNegotiate callNegotiate -> null;
+        case CallSelectAnswer callSelectAnswer -> null;
+        case Reaction reaction -> null;
+        case RoomRedaction roomRedaction -> null;
+        case Sticker sticker -> null;
+        case CallReject callReject -> null;
     };
   }
 }

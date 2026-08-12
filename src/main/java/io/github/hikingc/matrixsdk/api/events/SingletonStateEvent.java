@@ -1,8 +1,7 @@
 package io.github.hikingc.matrixsdk.api.events;
 
-import io.github.hikingc.matrixsdk.api.events.content.StateEventContent;
-import io.github.hikingc.matrixsdk.api.events.model.*;
-import io.github.hikingc.matrixsdk.api.events.model.RoomNameEvent;
+import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
+import io.github.hikingc.matrixsdk.api.events.server.state.*;
 
 /// Interface that represents all state events which hold an empty `state_key` [String].
 ///

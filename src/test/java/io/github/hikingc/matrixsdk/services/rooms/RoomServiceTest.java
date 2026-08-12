@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
-import io.github.hikingc.matrixsdk.api.events.content.RoomPowerLevels;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomPowerLevels;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;

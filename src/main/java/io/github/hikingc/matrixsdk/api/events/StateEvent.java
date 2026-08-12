@@ -1,7 +1,9 @@
 package io.github.hikingc.matrixsdk.api.events;
 
-import io.github.hikingc.matrixsdk.api.events.content.StateEventContent;
-import io.github.hikingc.matrixsdk.api.events.model.RoomMemberEvent;
+import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
+import io.github.hikingc.matrixsdk.api.events.server.state.RoomMemberEvent;
+import io.github.hikingc.matrixsdk.api.events.server.state.SpaceChildEvent;
+import io.github.hikingc.matrixsdk.api.events.server.state.SpaceParentEvent;
 
 /// These are events which update the metadata state of the room (e.g. room topic, room membership
 /// etc.). State is keyed by a tuple of event type and a state_key. State in the room with the same
@@ -9,8 +11,7 @@ import io.github.hikingc.matrixsdk.api.events.model.RoomMemberEvent;
 ///
 /// @param <C>
 public sealed interface StateEvent<C extends StateEventContent> extends ClientEvent<C>
-    permits SingletonStateEvent,
-        RoomMemberEvent { // Stripped state events are missing from this tree...
+        permits SingletonStateEvent, RoomMemberEvent, SpaceChildEvent, SpaceParentEvent { // Stripped state events are missing from this tree...
 
   String stateKey();
 }

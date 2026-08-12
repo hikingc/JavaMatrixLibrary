@@ -52,7 +52,7 @@ class UserDataServiceTest {
 
     assertThat(results).isNotNull();
     assertThat(results.results()).hasSize(1);
-    assertThat(results.results().getFirst().userId()).isEqualTo(USER_ID);
+    assertThat(results.results().getFirst().userId()).isEqualTo(USER_ID.toString());
     assertThat(results.results().getFirst().displayName()).isEqualTo("Search Term");
     assertThat(results.limited()).isFalse();
   }

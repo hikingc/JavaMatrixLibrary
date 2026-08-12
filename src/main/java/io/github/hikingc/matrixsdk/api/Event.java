@@ -1,8 +1,8 @@
 package io.github.hikingc.matrixsdk.api;
 
 import io.github.hikingc.matrixsdk.api.events.*;
-import io.github.hikingc.matrixsdk.api.events.content.MessageEventContent;
-import io.github.hikingc.matrixsdk.api.events.content.StateEventContent;
+import io.github.hikingc.matrixsdk.api.events.matrix.MessageEventContent;
+import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
 import io.github.hikingc.matrixsdk.api.events.queries.ChronologicalDirection;
 import io.github.hikingc.matrixsdk.api.events.queries.Membership;
 import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersMessages;
@@ -11,7 +11,7 @@ import io.github.hikingc.matrixsdk.api.events.sync.Sync;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixNetworkException;
-import io.github.hikingc.matrixsdk.api.events.model.RoomMemberEvent;
+import io.github.hikingc.matrixsdk.api.events.server.state.RoomMemberEvent;
 import java.nio.file.Path;
 import java.util.List;
 

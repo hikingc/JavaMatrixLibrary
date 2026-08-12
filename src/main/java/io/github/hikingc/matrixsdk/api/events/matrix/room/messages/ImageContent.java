@@ -1,0 +1,37 @@
+package io.github.hikingc.matrixsdk.api.events.matrix.room.messages;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
+import io.github.hikingc.matrixsdk.api.events.crypto.EncryptedFile;
+import java.net.URI;
+
+/// This type of message represents an image
+///
+/// @param body the filename of the original upload if `filename` is unset or identical to it;
+///   otherwise, a caption for the image.
+/// @param file information on the encrypted file, as specified in End-to-end encryption. Required
+///   if the file is encrypted.
+/// @param filename the original filename of the uploaded file.
+/// @param format the format used in `formattedBody`. Required if `formattedBody` is specified;
+///   currently only `org.matrix.custom.html` is supported.
+/// @param formattedBody the formatted version of `body`, when it acts as a caption. Required if
+///   `format` is specified.
+/// @param info metadata for the audio clip referred to by `url`.
+/// @param url required if the file is unencrypted.
+@JsonTypeName("m.image")
+public record ImageContent(
+    String body,
+    EncryptedFile file,
+    String filename,
+    String format,
+    String formattedBody,
+    ImageInfo info,
+    URI url)
+    implements RoomMessage {
+
+  @Override
+  public String msgtype() {
+    return "m.image";
+  }
+
+}

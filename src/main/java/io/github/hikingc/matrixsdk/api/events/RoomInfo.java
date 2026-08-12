@@ -3,7 +3,7 @@ package io.github.hikingc.matrixsdk.api.events;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import io.github.hikingc.matrixsdk.api.Room;
-import io.github.hikingc.matrixsdk.api.events.content.RoomMessage;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
 import io.github.hikingc.matrixsdk.api.events.queries.ChronologicalDirection;
 import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersMessages;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
