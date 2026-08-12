@@ -6,13 +6,13 @@ import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomRedaction;
 
 /// Marker interface for input message events.
 public sealed interface MessageEventContent
-    permits CallAnswer,
+    permits Reaction,
+        Sticker,
+        CallAnswer,
         CallCandidates,
         CallInvite,
         CallNegotiate,
         CallReject,
         CallSelectAnswer,
-        Reaction,
         RoomMessage,
-        RoomRedaction,
-        Sticker {}
+        RoomRedaction {}

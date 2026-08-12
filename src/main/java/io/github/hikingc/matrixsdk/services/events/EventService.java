@@ -5,8 +5,11 @@ import io.github.hikingc.matrixsdk.api.events.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.call.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.*;
-import io.github.hikingc.matrixsdk.api.events.server.state.RoomMemberEvent;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.ThirdPartyInvite;
+import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceChild;
+import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceParent;
 import io.github.hikingc.matrixsdk.api.events.queries.*;
+import io.github.hikingc.matrixsdk.api.events.server.state.RoomMemberEvent;
 import io.github.hikingc.matrixsdk.api.events.sync.Sync;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.context.ClientContext;
@@ -300,6 +303,12 @@ public class EventService implements Event {
       case RoomAvatar _ -> "m.room.avatar";
       case RoomCanonicalAlias _ -> "m.room.canonical_alias";
       case RoomMember _ -> "m.room.member";
+      case ThirdPartyInvite thirdPartyInvite -> null;
+      case SpaceChild spaceChild -> null;
+      case SpaceParent spaceParent -> null;
+      case RoomEncryption roomEncryption -> null;
+      case ServerACL serverACL -> null;
+      case Tombstone tombstone -> null;
     };
   }
 
@@ -310,15 +319,15 @@ public class EventService implements Event {
   private static String resolveMessageWireType(MessageEventContent content) {
     return switch (content) {
       case RoomMessage _ -> "m.room.message";
-        case CallAnswer callAnswer -> null;
-        case CallCandidates callCandidates -> null;
-        case CallInvite callInvite -> null;
-        case CallNegotiate callNegotiate -> null;
-        case CallSelectAnswer callSelectAnswer -> null;
-        case Reaction reaction -> null;
-        case RoomRedaction roomRedaction -> null;
-        case Sticker sticker -> null;
-        case CallReject callReject -> null;
+      case CallAnswer callAnswer -> null;
+      case CallCandidates callCandidates -> null;
+      case CallInvite callInvite -> null;
+      case CallNegotiate callNegotiate -> null;
+      case CallSelectAnswer callSelectAnswer -> null;
+      case Reaction reaction -> null;
+      case RoomRedaction roomRedaction -> null;
+      case Sticker sticker -> null;
+      case CallReject callReject -> null;
     };
   }
 }
