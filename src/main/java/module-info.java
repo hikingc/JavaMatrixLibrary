@@ -26,9 +26,13 @@ module io.github.hikingc.matrixsdk {
   // Records and Interfaces
   exports io.github.hikingc.matrixsdk.api.rooms;
   exports io.github.hikingc.matrixsdk.api.events;
-  exports io.github.hikingc.matrixsdk.api.events.model;
-  exports io.github.hikingc.matrixsdk.api.events.content;
-  exports io.github.hikingc.matrixsdk.api.events.content.roommessages;
+  exports io.github.hikingc.matrixsdk.api.events.server.message;
+  exports io.github.hikingc.matrixsdk.api.events.server.state;
+  exports io.github.hikingc.matrixsdk.api.events.matrix;
+  exports io.github.hikingc.matrixsdk.api.events.matrix.room.messages;
+  exports io.github.hikingc.matrixsdk.api.events.matrix.room;
+  exports io.github.hikingc.matrixsdk.api.events.matrix.call;
+  exports io.github.hikingc.matrixsdk.api.events.matrix.space;
   exports io.github.hikingc.matrixsdk.api.events.queries;
   exports io.github.hikingc.matrixsdk.api.events.sync;
   exports io.github.hikingc.matrixsdk.api.events.crypto;
@@ -40,4 +44,8 @@ module io.github.hikingc.matrixsdk {
 
   // Exceptions
   exports io.github.hikingc.matrixsdk.exceptions;
+    exports io.github.hikingc.matrixsdk.api.events.matrix.call;
+  exports io.github.hikingc.matrixsdk.api.events.matrix.room;
+  exports io.github.hikingc.matrixsdk.api.events.server.message;
+  exports io.github.hikingc.matrixsdk.api.events.server.state;
 }
