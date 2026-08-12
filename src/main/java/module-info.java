@@ -44,8 +44,4 @@ module io.github.hikingc.matrixsdk {
 
   // Exceptions
   exports io.github.hikingc.matrixsdk.exceptions;
-    exports io.github.hikingc.matrixsdk.api.events.matrix.call;
-  exports io.github.hikingc.matrixsdk.api.events.matrix.room;
-  exports io.github.hikingc.matrixsdk.api.events.server.message;
-  exports io.github.hikingc.matrixsdk.api.events.server.state;
 }
