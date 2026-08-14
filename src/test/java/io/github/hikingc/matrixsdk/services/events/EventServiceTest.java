@@ -9,9 +9,9 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.events.*;
+import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomJoinRules;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
-import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.FileContent;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.TextContent;
 import io.github.hikingc.matrixsdk.api.events.queries.ChronologicalDirection;
@@ -19,7 +19,9 @@ import io.github.hikingc.matrixsdk.api.events.queries.Membership;
 import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersMessages;
 import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersSync;
 import io.github.hikingc.matrixsdk.api.events.sync.Sync;
+import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
+import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import java.io.IOException;
@@ -98,7 +100,7 @@ class EventServiceTest {
 
     var response = client.events().getEvent(ROOM_ID, eventId);
     assertThat(response).isNotNull();
-    assertThat(response.eventId()).isEqualTo(eventId);
+    assertThat(response.eventId()).isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
   }
 
   @Test
@@ -163,6 +165,14 @@ class EventServiceTest {
     var response = client.events().getMembers(ROOM_ID, TOKEN, Membership.JOIN, Membership.JOIN);
     assertThat(response).isNotNull();
     assertThat(response).hasSize(1);
+    assertThat(response.getFirst().content().avatarUrl())
+        .isEqualTo(URI.create("mxc://example.org/SEsfnsuifSDFSSEF"));
+    assertThat(response.getFirst().content().displayname()).isEqualTo("Alice Margatroid");
+    assertThat(response.getFirst().content().membership()).isEqualTo("join");
+    assertThat(response.getFirst().content().reason()).isEqualTo("Looking for support");
+    assertThat(response.getFirst().eventId())
+        .isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
+    assertThat(response.getFirst().originServerTs()).isEqualTo(1234);
     assertThat(response.getFirst().eventId()).isEqualTo("$143273582443PhrSn:example.org");
   }
 
@@ -298,14 +308,14 @@ class EventServiceTest {
                         """)));
     var response = client.events().getStateEvent(ROOM_ID, EVENT_TYPE, STATE_KEY);
     assertThat(response).isNotNull();
-    assertThat(response.eventId()).isEqualTo("$143273582443PhrSn:example.org");
-    assertThat(response.sender()).isEqualTo("@alice:example.org");
+    assertThat(response.eventId()).isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
+    assertThat(response.sender()).isEqualTo(UserID.parse("@alice:example.org"));
     assertThat(response.unsigned().age()).isEqualTo(1234);
   }
 
   @Test
   void getMessages_WithValidQueryParameters_thenReturnMessagesResponse() {
-    String expectedChunkEventId = "$abcdefg12345:matrix.org";
+    EventID expectedChunkEventId = EventID.parse("$abcdefg12345:matrix.org");
 
     QueryParametersMessages mockParams =
         new QueryParametersMessages("some_start_token", 20, "some_end_token");
@@ -540,8 +550,10 @@ class EventServiceTest {
 
   @Test
   void sendStateEvent_WithACorrectPayload_ThenReturnAString() {
-    StateEventContent content = new RoomJoinRules(new RoomJoinRules.AllowCondition("EXAMPLE","TYPE"),"JOINRULE");
-    var response = client.events().sendStateEvent(ROOM_ID,"",content);
+    StateEventContent content =
+        new RoomJoinRules(
+            new RoomJoinRules.AllowCondition(ROOM_ID, "TYPE"), "JOINRULE");
+    var response = client.events().sendStateEvent(ROOM_ID, "", content);
     assertThat(response).isNotNull();
   }
 
