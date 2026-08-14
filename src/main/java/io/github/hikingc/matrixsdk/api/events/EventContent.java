@@ -1,6 +1,8 @@
 package io.github.hikingc.matrixsdk.api.events;
 
+import io.github.hikingc.matrixsdk.api.events.queries.Membership;
 import java.net.URI;
+import org.jspecify.annotations.Nullable;
 
 /// Represents the contents of an event
 ///
@@ -29,9 +31,9 @@ import java.net.URI;
 ///   `m.room.third_party_invite` event.
 public record EventContent(
     URI avatarUrl,
-    String displayName, // can be null
+    @Nullable String displayName, // can be null
     Boolean isDirect,
     String joinAuthorizedViaUsersServer,
-    String membership, // Some payloads aren't guaranteed to send this...?
+    Membership membership,
     String reason,
     ThirdPartyInvite thirdPartyInvite) {}
