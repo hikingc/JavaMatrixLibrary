@@ -1,6 +1,8 @@
 package io.github.hikingc.matrixsdk.api.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.hikingc.matrixsdk.api.identifiers.UserID;
+
 import java.util.Map;
 
 /// @param displayName a name which can be displayed to represent the user instead of their
@@ -23,7 +25,7 @@ public record ThirdPartyInvite(
   ///   href="https://spec.matrix.org/v1.19/identity-service-api/#post_matrixidentityv2store-invite">Identity
   ///   Service API</a>
   public record SignedThirdPartyInvite(
-      @JsonProperty(required = true) String mxid,
+      @JsonProperty(required = true) UserID mxid,
       @JsonProperty(required = true) Map<String, Map<String, String>> signatures,
       @JsonProperty(required = true) String token) {}
 }
