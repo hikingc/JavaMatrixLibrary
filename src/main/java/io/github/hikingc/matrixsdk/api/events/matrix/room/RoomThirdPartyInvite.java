@@ -6,7 +6,7 @@ import java.net.URI;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 
-public record ThirdPartyInvite(
+public record RoomThirdPartyInvite(
     @NonNull @JsonProperty(required = true) String displayName,
     @NonNull @JsonProperty(required = true) URI keyValidityUrl,
     @NonNull @JsonProperty(required = true) String publicKey,
