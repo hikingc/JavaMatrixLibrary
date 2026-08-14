@@ -9,7 +9,6 @@ import org.jspecify.annotations.NonNull;
 
 public record RoomCreate(
     List<String> additionalCreators,
-    String creator,
     @JsonProperty(namespace = "m.federate") Boolean mFederate,
     PreviousRoom predecessor,
     String roomVersion,
