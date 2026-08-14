@@ -1,5 +1,7 @@
 package io.github.hikingc.matrixsdk.api.events;
 
+import io.github.hikingc.matrixsdk.api.events.queries.ChronologicalDirection;
+
 import java.util.List;
 
 /// Holds a list of messages and state events from a room.
