@@ -1,8 +1,14 @@
 package io.github.hikingc.matrixsdk.api.events.matrix.room;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
+import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
+import org.jspecify.annotations.NonNull;
 
-public record RoomJoinRules(AllowCondition allow, String joinRule) implements StateEventContent {
+public record RoomJoinRules(
+    AllowCondition allow, @NonNull @JsonProperty(required = true) String joinRule)
+    implements StateEventContent {
 
-  public record AllowCondition(String roomId, String type) {}
+  public record AllowCondition(
+      RoomID roomId, @NonNull @JsonProperty(required = true) String type) {}
 }

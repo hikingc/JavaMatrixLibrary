@@ -1,3 +1,5 @@
 package io.github.hikingc.matrixsdk.api.events.matrix.key;
 
-public record VerificationRelatesTo(String eventId, String relType) {}
+import io.github.hikingc.matrixsdk.api.identifiers.EventID;
+
+public record VerificationRelatesTo(EventID eventId, String relType) {}

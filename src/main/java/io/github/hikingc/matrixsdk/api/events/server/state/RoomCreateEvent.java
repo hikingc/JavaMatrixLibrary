@@ -4,14 +4,17 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.SingletonStateEvent;
 import io.github.hikingc.matrixsdk.api.events.UnsignedData;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomCreate;
+import io.github.hikingc.matrixsdk.api.identifiers.EventID;
+import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
+import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 
 @JsonTypeName("m.room.create")
 public record RoomCreateEvent(
     RoomCreate content,
-    String eventId,
+    EventID eventId,
     Long originServerTs,
-    String roomId,
-    String sender,
+    RoomID roomId,
+    UserID sender,
     String type,
     UnsignedData unsigned)
     implements SingletonStateEvent<RoomCreate> {}

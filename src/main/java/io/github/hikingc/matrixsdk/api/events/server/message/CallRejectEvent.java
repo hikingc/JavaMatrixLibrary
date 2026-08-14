@@ -4,16 +4,17 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.MessageEvent;
 import io.github.hikingc.matrixsdk.api.events.UnsignedData;
 import io.github.hikingc.matrixsdk.api.events.matrix.call.CallReject;
+import io.github.hikingc.matrixsdk.api.identifiers.EventID;
+import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
+import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 
 @JsonTypeName("m.call.reject")
 public record CallRejectEvent(
     CallReject content,
-    String eventId,
+    EventID eventId,
     Long originServerTs,
-    String roomId,
-    String sender,
+    RoomID roomId,
+    UserID sender,
     String type,
     UnsignedData unsigned)
-    implements MessageEvent<CallReject> {
-
-}
+    implements MessageEvent<CallReject> {}
