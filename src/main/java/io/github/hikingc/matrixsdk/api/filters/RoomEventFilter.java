@@ -1,7 +1,9 @@
 package io.github.hikingc.matrixsdk.api.filters;
 
-import java.util.List;
+import io.github.hikingc.matrixsdk.api.Event;
 
+import java.util.List;
+import java.net.URI;
 /// Holds additional granular filters for events in a room.
 ///
 /// @param containsUrl if `true`, includes only events with a [URI] key in their content. If
@@ -28,10 +30,8 @@ import java.util.List;
 /// @param types a [List] of event types to include. If this [List] is absent then all event types
 ///   are included. A "*" can be used as a wildcard to match any sequence of characters.
 /// @param unreadThreadNotifications if true, enables per-thread notification counts. Only applies
-///   to the [Event#sync(QueryParametersSync)] endpoint. Defaults to `false`.
-/// @see <a
-///   href="https://spec.matrix.org/v1.19/client-server-api/#lazy-loading-room-members">Documentation
-///   about Lazy-loading room members.</a>
+///   to the [Event#(QueryParametersSync)] endpoint. Defaults to `false`.
+/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#lazy-loading-room-members">Documentation about Lazy-loading room members.</a>
 public record RoomEventFilter(
     Boolean containsUrl,
     Boolean includeRedundantMembers,
