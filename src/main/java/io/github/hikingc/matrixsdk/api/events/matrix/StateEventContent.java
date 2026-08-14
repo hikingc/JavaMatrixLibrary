@@ -6,4 +6,20 @@ import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceParent;
 
 /// Marker interface for input state events.
 public sealed interface StateEventContent
-        permits RoomAvatar, RoomCanonicalAlias, RoomCreate, RoomEncryption, RoomGuestAccess, RoomHistoryVisibility, RoomJoinRules, RoomMember, RoomName, RoomPinnedEvents, RoomPowerLevels, RoomTopic, ServerACL, ThirdPartyInvite, Tombstone, SpaceChild, SpaceParent {}
+    permits RoomAvatar,
+        RoomCanonicalAlias,
+        RoomCreate,
+        RoomEncryption,
+        RoomGuestAccess,
+        RoomHistoryVisibility,
+        RoomJoinRules,
+        RoomMember,
+        RoomName,
+        RoomPinnedEvents,
+        RoomPowerLevels,
+        RoomTopic,
+        ServerACL,
+        RoomThirdPartyInvite,
+        Tombstone,
+        SpaceChild,
+        SpaceParent {}
