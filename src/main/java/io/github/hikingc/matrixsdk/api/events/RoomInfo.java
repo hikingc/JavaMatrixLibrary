@@ -24,7 +24,7 @@ public record RoomInfo(
     List<Event> accountData,
     String membership,
     PaginationChunk messages,
-    @JsonProperty(required = true) String roomId,
+    @JsonProperty(required = true) RoomID roomId,
     List<ClientEvent<?>> state,
     String visibility) {
 

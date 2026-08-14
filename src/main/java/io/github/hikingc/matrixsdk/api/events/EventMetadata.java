@@ -1,6 +1,7 @@
 package io.github.hikingc.matrixsdk.api.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 
 /// Holds the ID of an event and its timestamp in milliseconds since the Unix epoch.
 ///
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 ///
 ///   This makes it easy to do a quick comparison to see if the `event_id` fetched is too far out of
 ///   range to be useful for your use case.
+
 public record EventMetadata(
-    @JsonProperty(required = true) String eventId,
+    @JsonProperty(required = true) EventID eventId,
     @JsonProperty(required = true) long originServerTs) {}
