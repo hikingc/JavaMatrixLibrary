@@ -44,10 +44,13 @@ public class Mapper {
   public static String getStringValueOfAJsonKey(String json, String key) {
     JsonNode tree = INSTANCE.readTree(json);
     if (tree == null || tree.isMissingNode()) {
+      throw new MatrixIOException("Empty or malformed server response");
+    }
+    JsonNode value = tree.get(key);
+    if (value == null) {
       throw new MatrixIOException("Missing '%s' in server response".formatted(key));
     }
-
-    return tree.get(key).stringValue();
+    return value.asString();
   }
 
   /// Attempts to extract a key value from a deserialized JSON Object to a [List]. Useful for
@@ -58,7 +61,8 @@ public class Mapper {
   /// @param elementType the [Class] to deserialize each element into.
   /// @param <T> the type to deserialize each element into
   /// @return the deserialized [List] of values for the given key
-  /// @throws MatrixIOException when the key was not in the response or the key value was not an Array
+  /// @throws MatrixIOException when the key was not in the response or the key value was not an
+  ///   Array
   public static <T> List<T> getListFromAJsonKey(String json, String key, Class<T> elementType) {
     JsonNode tree = INSTANCE.readTree(json);
     JsonNode value = tree.get(key);
