@@ -2,7 +2,6 @@ package io.github.hikingc.matrixsdk.api.identifiers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -67,6 +66,6 @@ public final class EventID implements Validator {
   @Override
   @JsonValue
   public String toString() {
-    return "$" + opaqueId;
+    return opaqueId;
   }
 }
