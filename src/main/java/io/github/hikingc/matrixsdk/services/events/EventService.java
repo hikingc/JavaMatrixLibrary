@@ -76,8 +76,8 @@ public class EventService implements Event {
       RoomID roomId, String at, Membership membership, Membership notMembership) {
     Map<String, Object> args = new HashMap<>();
     args.put("at", at);
-    args.put("membership", membership.getValue());
-    args.put("not_membership", notMembership.getValue());
+    args.put("membership", membership);
+    args.put("not_membership", notMembership);
     URI uri =
         httpTransport.generateEncodedURI(
             context.discoveryResponse().homeserver().baseUrl(),
