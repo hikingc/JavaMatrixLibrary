@@ -324,9 +324,12 @@ public class RoomService implements Room {
       Integer limit, @Nullable String server, @Nullable String since) {
     Map<String, Object> params = new HashMap<>();
     params.put("limit", String.valueOf(limit));
-    params.put("server", server);
-    params.put("since", since);
-
+    if (server != null) {
+      params.put("server", server);
+    }
+    if (since != null) {
+      params.put("since", since);
+    }
     URI uri =
         this.httpTransport.generateEncodedURI(
             context.discoveryResponse().homeserver().baseUrl(),
