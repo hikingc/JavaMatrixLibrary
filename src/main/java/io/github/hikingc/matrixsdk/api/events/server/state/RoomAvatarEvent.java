@@ -12,11 +12,6 @@ public record RoomAvatarEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomAvatar> {
-
-  @Override
-  public String type() {
-    return "m.room.avatar";
-  }
-}
+    implements SingletonStateEvent<RoomAvatar> {}

@@ -171,7 +171,8 @@ public record Sync(
       String sender,
       String stateKey,
       String type,
-      UnsignedData unsigned) {
+      String type,
+    UnsignedData unsigned) {
 
     /// Additional, unsigned metadata about an event.
     ///

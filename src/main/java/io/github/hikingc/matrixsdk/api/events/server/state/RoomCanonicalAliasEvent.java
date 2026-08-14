@@ -12,11 +12,6 @@ public record RoomCanonicalAliasEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomCanonicalAlias> {
-
-  @Override
-  public String type() {
-    return "m.room.canonical_alias";
-  }
-}
+    implements SingletonStateEvent<RoomCanonicalAlias> {}

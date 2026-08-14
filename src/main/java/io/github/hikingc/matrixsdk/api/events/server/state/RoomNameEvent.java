@@ -12,11 +12,6 @@ public record RoomNameEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomName> {
-
-  @Override
-  public String type() {
-    return "m.room.name";
-  }
-}
+    implements SingletonStateEvent<RoomName> {}

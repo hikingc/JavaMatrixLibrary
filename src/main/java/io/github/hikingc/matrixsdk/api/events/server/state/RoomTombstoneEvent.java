@@ -13,11 +13,6 @@ public record RoomTombstoneEvent(
     String roomId,
     String sender,
     String stateKey,
+    String type,
     UnsignedData unsigned)
-    implements StateEvent<Tombstone> {
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.room.tombstone";
-  }
-}
+    implements StateEvent<Tombstone> {}

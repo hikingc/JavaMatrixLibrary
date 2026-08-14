@@ -13,6 +13,7 @@ public record RoomMessageEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
     implements MessageEvent<RoomMessage> {
 

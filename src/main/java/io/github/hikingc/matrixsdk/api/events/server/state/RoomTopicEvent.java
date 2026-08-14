@@ -12,11 +12,6 @@ public record RoomTopicEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomTopic> {
-
-  @Override
-  public String type() {
-    return "m.room.topic";
-  }
-}
+    implements SingletonStateEvent<RoomTopic> {}

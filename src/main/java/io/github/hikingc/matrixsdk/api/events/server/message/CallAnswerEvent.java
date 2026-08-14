@@ -12,10 +12,7 @@ public record CallAnswerEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
     implements MessageEvent<CallAnswer> {
-  @Override
-  public String type() {
-    return "m.call.answer";
-  }
 }

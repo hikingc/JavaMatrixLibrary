@@ -11,8 +11,7 @@ import java.util.Objects;
 /// @param alg The algorithm. Must be `A256CTR`.
 /// @param k The symmetric key, encoded as URL-safe unpadded base64.
 /// @param ext Extractable indicator. Must be `true` (W3C extension).
-/// @see <a href="https://datatracker.ietf.org/doc/html/rfc7517">RFC7515 specification of JSON Web
-///   Key (JWK)</a>
+/// @see <a href="https://datatracker.ietf.org/doc/html/rfc7517">RFC7515 specification of JSON Web Key (JWK)</a>
 public record JWK(
     @JsonProperty(required = true) String kty,
     @JsonProperty(required = true) List<String> keyOps,

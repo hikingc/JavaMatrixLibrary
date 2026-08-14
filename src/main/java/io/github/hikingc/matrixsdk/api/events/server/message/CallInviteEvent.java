@@ -12,10 +12,6 @@ public record CallInviteEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements MessageEvent<CallInvite> {
-  @Override
-  public String type() {
-    return "m.call.invite";
-  }
-}
+    implements MessageEvent<CallInvite> {}

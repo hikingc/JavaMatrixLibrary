@@ -12,12 +12,6 @@ public record RoomServerACLEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<ServerACL> {
-
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.room.server_acl";
-  }
-}
+    implements SingletonStateEvent<ServerACL> {}

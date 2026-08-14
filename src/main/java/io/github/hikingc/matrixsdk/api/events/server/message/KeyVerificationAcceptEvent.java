@@ -3,15 +3,15 @@ package io.github.hikingc.matrixsdk.api.events.server.message;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.MessageEvent;
 import io.github.hikingc.matrixsdk.api.events.UnsignedData;
-import io.github.hikingc.matrixsdk.api.events.matrix.call.CallCandidates;
+import io.github.hikingc.matrixsdk.api.events.matrix.key.KeyVerificationAccept;
 
-@JsonTypeName("m.call.candidates")
-public record CallCandidatesEvent(
-    CallCandidates content,
+@JsonTypeName("m.key.verification.accept")
+public record KeyVerificationAcceptEvent(
+    KeyVerificationAccept content,
     String eventId,
     Long originServerTs,
     String roomId,
     String sender,
     String type,
     UnsignedData unsigned)
-    implements MessageEvent<CallCandidates> {}
+    implements MessageEvent<KeyVerificationAccept> {}

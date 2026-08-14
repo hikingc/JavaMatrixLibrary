@@ -13,11 +13,6 @@ public record RoomMemberEvent(
     String roomId,
     String sender,
     String stateKey,
+    String type,
     UnsignedData unsigned)
-    implements StateEvent<RoomMember> {
-
-  @Override
-  public String type() {
-    return "m.room.member";
-  }
-}
+    implements StateEvent<RoomMember> {}

@@ -12,10 +12,6 @@ public record RoomHistoryVisibilityEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomHistoryVisibility> {
-  @Override
-  public String type() {
-    return "m.room.history_visibility";
-  }
-}
+    implements SingletonStateEvent<RoomHistoryVisibility> {}

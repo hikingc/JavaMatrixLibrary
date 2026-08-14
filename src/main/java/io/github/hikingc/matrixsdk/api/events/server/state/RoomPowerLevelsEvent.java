@@ -12,11 +12,6 @@ public record RoomPowerLevelsEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomPowerLevels> {
-
-  @Override
-  public String type() {
-    return "m.room.power_levels";
-  }
-}
+    implements SingletonStateEvent<RoomPowerLevels> {}

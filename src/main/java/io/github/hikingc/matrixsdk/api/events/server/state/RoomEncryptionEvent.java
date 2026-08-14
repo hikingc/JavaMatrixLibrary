@@ -12,12 +12,6 @@ public record RoomEncryptionEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomEncryption> {
-
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.room.encryption";
-  }
-}
+    implements SingletonStateEvent<RoomEncryption> {}

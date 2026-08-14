@@ -12,11 +12,6 @@ public record RoomJoinRulesEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomJoinRules> {
-
-  @Override
-  public String type() {
-    return "m.room.join_rules";
-  }
-}
+    implements SingletonStateEvent<RoomJoinRules> {}

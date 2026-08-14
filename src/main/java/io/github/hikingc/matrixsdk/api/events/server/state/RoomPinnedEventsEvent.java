@@ -12,11 +12,6 @@ public record RoomPinnedEventsEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomPinnedEvents> {
-
-  @Override
-  public String type() {
-    return "m.room.pinned_events";
-  }
-}
+    implements SingletonStateEvent<RoomPinnedEvents> {}

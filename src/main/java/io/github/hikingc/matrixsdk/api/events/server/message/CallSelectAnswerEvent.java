@@ -12,11 +12,6 @@ public record CallSelectAnswerEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements MessageEvent<CallSelectAnswer> {
-
-  @Override
-  public String type() {
-    return "m.call.select_answer";
-  }
-}
+    implements MessageEvent<CallSelectAnswer> {}

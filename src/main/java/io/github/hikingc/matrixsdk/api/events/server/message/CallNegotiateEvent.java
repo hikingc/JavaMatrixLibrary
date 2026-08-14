@@ -12,10 +12,6 @@ public record CallNegotiateEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements MessageEvent<CallNegotiate> {
-  @Override
-  public String type() {
-    return "m.call.negotiate";
-  }
-}
+    implements MessageEvent<CallNegotiate> {}

@@ -13,10 +13,6 @@ public record SpaceParentEvent(
     String roomId,
     String sender,
     String stateKey,
+    String type,
     UnsignedData unsigned)
-    implements StateEvent<SpaceParent> {
-  @Override
-  public String type() {
-    return "m.space.parent";
-  }
-}
+    implements StateEvent<SpaceParent> {}

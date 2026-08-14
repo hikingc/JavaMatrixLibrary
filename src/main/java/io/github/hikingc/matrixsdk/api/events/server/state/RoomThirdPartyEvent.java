@@ -13,12 +13,6 @@ public record RoomThirdPartyEvent(
     String roomId,
     String sender,
     String stateKey,
+    String type,
     UnsignedData unsigned)
-    implements StateEvent<ThirdPartyInvite> {
-
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.room.third_party_invite";
-  }
-}
+    implements StateEvent<ThirdPartyInvite> {}

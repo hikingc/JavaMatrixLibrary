@@ -12,11 +12,8 @@ public record CallRejectEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
     implements MessageEvent<CallReject> {
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.call.reject";
-  }
+
 }

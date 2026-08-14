@@ -12,11 +12,6 @@ public record StickerEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements MessageEvent<Sticker> {
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.sticker";
-  }
-}
+    implements MessageEvent<Sticker> {}

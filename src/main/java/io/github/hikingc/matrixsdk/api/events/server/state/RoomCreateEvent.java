@@ -12,11 +12,6 @@ public record RoomCreateEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomCreate> {
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.room.create";
-  }
-}
+    implements SingletonStateEvent<RoomCreate> {}

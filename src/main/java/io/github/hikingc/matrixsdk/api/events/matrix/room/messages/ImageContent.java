@@ -2,7 +2,7 @@ package io.github.hikingc.matrixsdk.api.events.matrix.room.messages;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
-import io.github.hikingc.matrixsdk.api.events.crypto.EncryptedFile;
+
 import java.net.URI;
 
 /// This type of message represents an image

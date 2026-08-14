@@ -1,4 +1,7 @@
-package io.github.hikingc.matrixsdk.api.events.crypto;
+package io.github.hikingc.matrixsdk.api.events.matrix.room.messages;
+
+import io.github.hikingc.matrixsdk.api.events.crypto.JWK;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
 
 import java.util.Map;
 
@@ -10,7 +13,5 @@ import java.util.Map;
 /// @param iv a map from an algorithm name to a hash of the ciphertext, encoded as unpadded base64.
 ///   Clients MUST support the SHA-256 hash, which uses the key sha256.
 /// @param v version of the encrypted attachment’s protocol. Must be v2.
-/// @see <a
-///   href="https://spec.matrix.org/latest/client-server-api/#extensions-to-mroommessage-msgtypes">Specification
-///   details over this extension</a>
+/// @see <a href="https://spec.matrix.org/latest/client-server-api/#extensions-to-mroommessage-msgtypes">Specification details over this extension</a>
 public record EncryptedFile(String url, JWK key, String iv, Map<String, String> hashes, String v) {}

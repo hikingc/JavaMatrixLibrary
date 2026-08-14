@@ -12,12 +12,6 @@ public record RoomGuestAccessEvent(
     Long originServerTs,
     String roomId,
     String sender,
+    String type,
     UnsignedData unsigned)
-    implements SingletonStateEvent<RoomGuestAccess> {
-
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.room.guest_access";
-  }
-}
+    implements SingletonStateEvent<RoomGuestAccess> {}

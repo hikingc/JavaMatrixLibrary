@@ -13,11 +13,6 @@ public record ReactionEvent(
     String roomId,
     String sender,
     String stateKey,
+    String type,
     UnsignedData unsigned)
-    implements MessageEvent<Reaction> {
-
-  @Override
-  public String type() {
-    return "m.reaction";
-  }
-}
+    implements MessageEvent<Reaction> {}

@@ -7,7 +7,18 @@ import io.github.hikingc.matrixsdk.api.events.server.state.*;
 ///
 /// @param <C> a Record that represents the `content` of the event.
 public sealed interface SingletonStateEvent<C extends StateEventContent> extends StateEvent<C>
-        permits RoomAvatarEvent, RoomCanonicalAliasEvent, RoomCreateEvent, RoomEncryptionEvent, RoomGuestAccessEvent, RoomHistoryVisibilityEvent, RoomJoinRulesEvent, RoomNameEvent, RoomPinnedEventsEvent, RoomPowerLevelsEvent, RoomServerACLEvent, RoomTopicEvent {
+    permits RoomAvatarEvent,
+        RoomCanonicalAliasEvent,
+        RoomCreateEvent,
+        RoomEncryptionEvent,
+        RoomGuestAccessEvent,
+        RoomHistoryVisibilityEvent,
+        RoomJoinRulesEvent,
+        RoomNameEvent,
+        RoomPinnedEventsEvent,
+        RoomPowerLevelsEvent,
+        RoomServerACLEvent,
+        RoomTopicEvent {
 
   @Override
   default String stateKey() {

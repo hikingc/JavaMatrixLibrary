@@ -1,7 +1,5 @@
 package io.github.hikingc.matrixsdk.api.events.matrix.room.messages;
 
-import io.github.hikingc.matrixsdk.api.events.crypto.EncryptedFile;
-
 import java.net.URI;
 
 /// Marks event content that includes thumbnail metadata such as E2E metadata their width, size and

@@ -1,7 +1,5 @@
 package io.github.hikingc.matrixsdk.api.events.matrix.room.messages;
 
-import io.github.hikingc.matrixsdk.api.events.crypto.EncryptedFile;
-
 import java.net.URI;
 
 /// Additional file information referred about the image in the `url` field.

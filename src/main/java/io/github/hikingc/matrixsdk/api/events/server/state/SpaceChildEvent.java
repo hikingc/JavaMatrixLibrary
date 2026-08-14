@@ -13,11 +13,6 @@ public record SpaceChildEvent(
     String roomId,
     String sender,
     String stateKey,
+    String type,
     UnsignedData unsigned)
-    implements StateEvent<SpaceChild> {
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.space.child";
-  }
-}
+    implements StateEvent<SpaceChild> {}

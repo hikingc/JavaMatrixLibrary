@@ -4,6 +4,7 @@ import io.github.hikingc.matrixsdk.api.Event;
 import io.github.hikingc.matrixsdk.api.events.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.call.*;
+import io.github.hikingc.matrixsdk.api.events.matrix.key.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.ThirdPartyInvite;
 import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceChild;
@@ -303,12 +304,12 @@ public class EventService implements Event {
       case RoomAvatar _ -> "m.room.avatar";
       case RoomCanonicalAlias _ -> "m.room.canonical_alias";
       case RoomMember _ -> "m.room.member";
-      case ThirdPartyInvite thirdPartyInvite -> null;
-      case SpaceChild spaceChild -> null;
-      case SpaceParent spaceParent -> null;
-      case RoomEncryption roomEncryption -> null;
-      case ServerACL serverACL -> null;
-      case Tombstone tombstone -> null;
+      case ThirdPartyInvite _ -> "m.room.third_party_invite";
+      case SpaceChild _ -> "m.room.space_child";
+      case SpaceParent _ -> "m.room.space_parent";
+      case RoomEncryption _ -> "m.room.encryption";
+      case ServerACL _ -> "m.room.server_acl";
+      case Tombstone _ -> "m.room.tombstone";
     };
   }
 
@@ -319,15 +320,23 @@ public class EventService implements Event {
   private static String resolveMessageWireType(MessageEventContent content) {
     return switch (content) {
       case RoomMessage _ -> "m.room.message";
-      case CallAnswer callAnswer -> null;
-      case CallCandidates callCandidates -> null;
-      case CallInvite callInvite -> null;
-      case CallNegotiate callNegotiate -> null;
-      case CallSelectAnswer callSelectAnswer -> null;
-      case Reaction reaction -> null;
-      case RoomRedaction roomRedaction -> null;
-      case Sticker sticker -> null;
-      case CallReject callReject -> null;
+      case CallAnswer _ -> "m.call.answer";
+      case CallCandidates _ -> "m.call.candidates";
+      case CallInvite _ -> "m.call.invite";
+      case CallNegotiate _ -> "m.call.negotiate";
+      case CallSelectAnswer _ -> "m.call.select.answer";
+      case CallReject _ -> "m.call.reject";
+      case CallHangup _ -> "m.call.hangup";
+      case Reaction _ -> "m.reaction";
+      case RoomRedaction _ -> "m.room.redaction";
+      case Sticker _ -> "m.sticker";
+      case KeyVerificationAccept _ -> "m.key_verification_accept";
+      case KeyVerificationCancel _ -> "m.key_verification_cancel";
+      case KeyVerificationDone _ -> "m.key_verification_done";
+      case KeyVerificationKey _ -> "m.key_verification_key";
+      case KeyVerificationMac _ -> "m.key_verification_mac";
+      case KeyVerificationRequest _ -> "m.key_verification_request";
+      case KeyVerificationStart _ -> "m.key_verification_start";
     };
   }
 }
