@@ -1,5 +1,7 @@
 package io.github.hikingc.matrixsdk.services.utils;
 
+import io.github.hikingc.matrixsdk.services.utils.deserializers.CiphertextDeserializer;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.Ciphertext;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.*;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.ObjectNode;
 
 /// [Mapper] handles the global configuration of an [ObjectMapper] instance and also exposes
@@ -32,7 +35,13 @@ public class Mapper {
   }
 
   private static ObjectMapper buildMapper() {
-    return JsonMapper.builder().propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).build();
+    SimpleModule ciphertextModule = new SimpleModule();
+    ciphertextModule.addDeserializer(Ciphertext.class, new CiphertextDeserializer());
+
+    return JsonMapper.builder()
+            .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+            .addModule(ciphertextModule)
+            .build();
   }
 
   /// Attempts to serialize an [Object] into a JSON [String] using the configured mapper.

@@ -21,6 +21,7 @@ public sealed interface MessageEvent<C extends MessageEventContent> extends Clie
         KeyVerificationRequestEvent,
         KeyVerificationStartEvent,
         ReactionEvent,
+        RoomEncryptedEvent,
         RoomMessageEvent,
         RoomRedactionEvent,
         StickerEvent {}

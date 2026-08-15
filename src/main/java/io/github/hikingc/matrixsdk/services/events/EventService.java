@@ -318,6 +318,8 @@ public class EventService implements Event {
   private static String resolveMessageWireType(MessageEventContent content) {
     return switch (content) {
       case RoomMessage _ -> "m.room.message";
+      case RoomEncrypted _ -> "m.room.encrypted";
+      case RoomRedaction _ -> "m.room.redaction";
       case CallAnswer _ -> "m.call.answer";
       case CallCandidates _ -> "m.call.candidates";
       case CallInvite _ -> "m.call.invite";
@@ -326,7 +328,6 @@ public class EventService implements Event {
       case CallReject _ -> "m.call.reject";
       case CallHangup _ -> "m.call.hangup";
       case Reaction _ -> "m.reaction";
-      case RoomRedaction _ -> "m.room.redaction";
       case Sticker _ -> "m.sticker";
       case KeyVerificationAccept _ -> "m.key_verification_accept";
       case KeyVerificationCancel _ -> "m.key_verification_cancel";
