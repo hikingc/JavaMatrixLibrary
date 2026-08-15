@@ -759,7 +759,7 @@ class EventServiceTest {
     String invitedRoomId = "!696r7674:example.com";
     String knockedRoomId = "!223asd456:example.com";
     String leftRoomId = "!left12345:example.com";
-    String expectedChunkEventId = "$143273582443PhrSn:example.org";
+    EventID expectedChunkEventId = EventID.parse("$143273582443PhrSn:example.org");
     String expectedNextBatch = "s72595_4483_1934";
 
     stubFor(
