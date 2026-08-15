@@ -28,6 +28,7 @@ module io.github.hikingc.matrixsdk {
   exports io.github.hikingc.matrixsdk.api.events;
   exports io.github.hikingc.matrixsdk.api.events.server.message;
   exports io.github.hikingc.matrixsdk.api.events.server.state;
+  exports io.github.hikingc.matrixsdk.api.events.matrix.ephemeral;
   exports io.github.hikingc.matrixsdk.api.events.matrix;
   exports io.github.hikingc.matrixsdk.api.events.matrix.room.messages;
   exports io.github.hikingc.matrixsdk.api.events.matrix.room;
