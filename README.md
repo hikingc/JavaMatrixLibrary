@@ -38,6 +38,23 @@ MatrixClient client = MatrixClient.create(response, token.accessToken()); // Use
 | Filtering | Creating and retrieving filters                | Supported |
 | Auth      | OpenIDConnect handshake                        | Supported |
 
+## Current project status
+
+The baseline to reach v1.0 is to implement all endpoints that are required in the specification, this means:
+
+- Support for OAuth 2.0 _and_ Legacy API Auth.
+- Be able to send and receive events seamlessly without handling raw JSON.
+- Get room and server information without losing any data field while deserializing.
+
+## Current limitations
+
+1. This project does not handle multimedia resources, it _does_ expose the necessary Objects to handle serialization
+   (RoomMessage) but consumers are required to bring their own library to pass required metadata.
+2. This project does not allow for the creation or hookup of custom event types, for example: `org.custom.type`. It
+   _does_ recognize these events with `UnknownEvent.java` but consumers will be required to cast to a proper Object
+   type.
+3. Resource serialization/deserialization depends heavily on Jackson 3.0.
+
 ## Installation
 
 (None currently!)
@@ -56,8 +73,9 @@ To run the test suite:
 ```bash
 ./mvnw test
 ```
+
 > [!NOTE]
-> When using IntelliJ, JUnit might throw `IllegalAccessError`, 
+> When using IntelliJ, JUnit might throw `IllegalAccessError`,
 > fix this by either checking "Do not use --module-path option" or configuring Maven as the
 > test runner.
 
