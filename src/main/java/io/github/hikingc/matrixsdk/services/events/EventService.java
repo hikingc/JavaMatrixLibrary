@@ -24,7 +24,6 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 
 @NullMarked
 public class EventService implements Event {
@@ -32,7 +31,6 @@ public class EventService implements Event {
   /// Common endpoint for many Room events.
   private static final String ROOM_ENDPOINT = "/_matrix/client/v3/rooms/";
 
-  private final ObjectMapper objectMapper = Mapper.getInstance();
   private final HttpTransport httpTransport = new HttpTransport(10);
 
   private final ClientContext context;
@@ -173,7 +171,7 @@ public class EventService implements Event {
   public String sendStateEvent(RoomID roomId, String stateKey, StateEventContent content) {
     String jsonPayload;
     try {
-      jsonPayload = objectMapper.writeValueAsString(content);
+      jsonPayload = Mapper.writeValueAsString(content);
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }
@@ -194,7 +192,7 @@ public class EventService implements Event {
     String type = resolveMessageWireType(content);
     String jsonPayload;
     try {
-      jsonPayload = objectMapper.writeValueAsString(content);
+      jsonPayload = Mapper.writeValueAsString(content);
     } catch (JacksonException e) {
       throw new MatrixIOException("Failed to parse input data", e);
     }

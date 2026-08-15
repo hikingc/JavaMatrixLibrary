@@ -9,7 +9,6 @@ import io.github.hikingc.matrixsdk.services.utils.Mapper;
 import java.net.URI;
 import java.util.Objects;
 import org.jspecify.annotations.NullMarked;
-import tools.jackson.databind.ObjectMapper;
 
 /// Main service implementation class of the Filter interface, providing the ability to create and
 /// query filters.
@@ -17,7 +16,6 @@ import tools.jackson.databind.ObjectMapper;
 public class FilterService implements Filter {
   private static final String USER_FILTER_ENDPOINT = "/_matrix/client/v3/user/";
 
-  private final ObjectMapper objectMapper = Mapper.getInstance();
   private final HttpTransport httpTransport = new HttpTransport(10);
   private final ClientContext context;
 
@@ -30,7 +28,7 @@ public class FilterService implements Filter {
 
   @Override
   public String publishFilter(UserID userId, FilterDefinition filter) {
-    var serializedInputData = objectMapper.writeValueAsString(filter);
+    var serializedInputData = Mapper.writeValueAsString(filter);
     URI uri =
         httpTransport.generateEncodedURI(
             context.discoveryResponse().homeserver().baseUrl(),

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JacksonException;
 import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.*;
@@ -32,6 +33,19 @@ public class Mapper {
 
   private static ObjectMapper buildMapper() {
     return JsonMapper.builder().propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE).build();
+  }
+
+  /// Attempts to serialize an [Object] into a JSON [String] using the configured mapper.
+  ///
+  /// @param object to serialize.
+  /// @return a serialized [String]
+  /// @throws MatrixIOException when the serialization returned with an issue.
+  public static String writeValueAsString(Object object) {
+    try {
+      return INSTANCE.writeValueAsString(object); // when does it fail specifically?
+    } catch (JacksonException e) {
+      throw new MatrixIOException("Failed to parse input data", e);
+    }
   }
 
   /// Attempts to extract a key value from a deserialized JSON Object as a [String]. Useful for
