@@ -18,11 +18,4 @@ public record RoomMessageEvent(
     UserID sender,
     String type,
     UnsignedData unsigned)
-    implements MessageEvent<RoomMessage> {
-
-  /// @return the type of the event.
-  @Override
-  public String type() {
-    return "m.room.message";
-  }
-}
+    implements MessageEvent<RoomMessage> {}
