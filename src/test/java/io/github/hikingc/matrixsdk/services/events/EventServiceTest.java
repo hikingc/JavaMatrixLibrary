@@ -10,10 +10,12 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.events.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomJoinRules;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.FileContent;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.TextContent;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.ThumbnailInfo;
+import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceChild;
+import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceParent;
 import io.github.hikingc.matrixsdk.api.events.queries.ChronologicalDirection;
 import io.github.hikingc.matrixsdk.api.events.queries.Membership;
 import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersMessages;
@@ -32,10 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @WireMockTest
 class EventServiceTest {
@@ -168,12 +174,13 @@ class EventServiceTest {
     assertThat(response.getFirst().content().avatarUrl())
         .isEqualTo(URI.create("mxc://example.org/SEsfnsuifSDFSSEF"));
     assertThat(response.getFirst().content().displayname()).isEqualTo("Alice Margatroid");
-    assertThat(response.getFirst().content().membership()).isEqualTo("join");
+    assertThat(response.getFirst().content().membership()).isEqualTo(Membership.JOIN);
     assertThat(response.getFirst().content().reason()).isEqualTo("Looking for support");
     assertThat(response.getFirst().eventId())
         .isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
-    assertThat(response.getFirst().originServerTs()).isEqualTo(1234);
-    assertThat(response.getFirst().eventId()).isEqualTo("$143273582443PhrSn:example.org");
+    assertThat(response.getFirst().originServerTs()).isEqualTo(1432735824653L);
+    assertThat(response.getFirst().eventId())
+        .isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
   }
 
   @Test
@@ -548,13 +555,105 @@ class EventServiceTest {
     assertThat(response).isNotNull();
   }
 
-  @Test
-  void sendStateEvent_WithACorrectPayload_ThenReturnAString() {
-    StateEventContent content =
-        new RoomJoinRules(
-            new RoomJoinRules.AllowCondition(ROOM_ID, "TYPE"), "JOINRULE");
-    var response = client.events().sendStateEvent(ROOM_ID, "", content);
-    assertThat(response).isNotNull();
+  private static Stream<Arguments> provideEventsForsenStateEvent() {
+    return Stream.of(
+        Arguments.of(
+            new RoomAvatar(
+                new RoomAvatar.AvatarInfo(
+                    480,
+                    "image/png",
+                    102400,
+                    new ThumbnailInfo(150, 150, 8192, "image/png"),
+                    URI.create("mxc://example.org/thumbnailavataruri"),
+                    480),
+                URI.create("mxc://example.org/avataruri")),
+            ""),
+        Arguments.of(new RoomCanonicalAlias("#room:example.org", List.of("#alt:example.org")), ""),
+        Arguments.of(
+            new RoomCreate(
+                List.of("@alice:example.org"),
+                true,
+                new RoomCreate.PreviousRoom(
+                    EventID.parse("$oldevent:example.org"), RoomID.parse("!oldroom:example.org")),
+                "13",
+                "m.space"),
+            ""),
+        Arguments.of(new RoomEncryption("m.megolm.v1.aes-sha2", 10, 10), ""),
+        Arguments.of(new RoomGuestAccess(GuestAccessType.CAN_JOIN), ""),
+        Arguments.of(new RoomHistoryVisibility(HistoryVisibilityType.SHARED), ""),
+        Arguments.of(
+            new RoomJoinRules(
+                List.of(
+                    new RoomJoinRules.AllowCondition(
+                        RoomID.parse("!spaceroom:example.org"), "m.room_membership")),
+                "restricted"),
+            ""),
+        Arguments.of(
+            new RoomMember(
+                URI.create("mxc://example.org/avataruri"),
+                "Alice",
+                Boolean.TRUE,
+                null,
+                Membership.JOIN,
+                null,
+                null),
+            "@alice:example.org"),
+        Arguments.of(new RoomName("Test Room"), ""),
+        Arguments.of(new RoomPinnedEvents(List.of("$event1:example.org")), ""),
+        Arguments.of(
+            new RoomPowerLevels(
+                50,
+                Map.of("m.room.name", 50, "m.room.power_levels", 100),
+                0,
+                0,
+                50,
+                RoomPowerLevels.Notifications.of(Map.of("room", 50)),
+                50,
+                0,
+                Map.of("@alice:example.org", 100),
+                0),
+            ""),
+        Arguments.of(
+            new RoomTopic(
+                new RoomTopic.TopicContentBlock(
+                    new RoomTopic.TopicContentBlock.TextualRepresentation(
+                        "Test topic", "mimetype"))),
+            ""),
+        Arguments.of(new ServerACL(List.of("*"), true, List.of()), ""),
+        Arguments.of(
+            new RoomThirdPartyInvite(
+                "Alice",
+                URI.create("https://identity.example.org/_matrix/identity/v2/pubkey/isvalid"),
+                "publicKeyBase64Here",
+                List.of(
+                    new RoomThirdPartyInvite.PublicKeys(
+                        "https://identity.example.org/_matrix/identity/v2/pubkey/isvalid",
+                        "anotherPublicKeyBase64Here"))),
+            "token123"),
+        Arguments.of(new Tombstone("Upgraded", "!newroom:example.org"), ""),
+        Arguments.of(
+            new SpaceChild("lexicographically_compare_me", false, List.of("example.org")),
+            "!child:example.org"),
+        Arguments.of(new SpaceParent(true, List.of("example.org")), "!parent:example.org"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideEventsForsenStateEvent")
+  void sendStateEvent_WithACorrectPayload_ThenReturnAString(
+      StateEventContent stateEvent, String stateKey) {
+    String eventId = "$abc123def456:example.org";
+
+    stubFor(
+        put(urlPathMatching("/_matrix/client/v3/rooms/.*/state/.*"))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"event_id\":\"" + eventId + "\"}")));
+
+    var response = client.events().sendStateEvent(ROOM_ID, stateKey, stateEvent);
+
+    assertThat(response).isEqualTo(eventId);
   }
 
   @Test
