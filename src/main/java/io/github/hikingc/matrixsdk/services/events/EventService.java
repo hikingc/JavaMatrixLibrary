@@ -289,7 +289,7 @@ public class EventService implements Event {
   ///
   /// @param content a [StateEventContent] record.
   /// @return it's type as defined in the spec.
-  private static String resolveStateWireType(StateEventContent content) {
+  public static String resolveStateWireType(StateEventContent content) {
     return switch (content) {
       case RoomCreate _ -> "m.room.create";
       case RoomGuestAccess _ -> "m.room.guest_access";
@@ -315,7 +315,7 @@ public class EventService implements Event {
   ///
   /// @param content a [MessageEventContent] record.
   /// @return it's type as defined in the spec.
-  private static String resolveMessageWireType(MessageEventContent content) {
+  public static String resolveMessageWireType(MessageEventContent content) {
     return switch (content) {
       case RoomMessage _ -> "m.room.message";
       case RoomEncrypted _ -> "m.room.encrypted";
