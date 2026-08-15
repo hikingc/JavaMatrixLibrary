@@ -58,7 +58,7 @@ public class Mapper {
   public static String getStringValueOfAJsonKey(String json, String key) {
     JsonNode tree = INSTANCE.readTree(json);
     if (tree == null || tree.isMissingNode()) {
-      throw new MatrixIOException("Empty or malformed server response");
+      throw new MatrixIOException("Empty or malformed server response.");
     }
     JsonNode value = tree.get(key);
     if (value == null) {
@@ -136,9 +136,12 @@ public class Mapper {
       return INSTANCE.readValue(responseBody, type);
     } catch (DatabindException e) {
       throw new MatrixIOException(
-          "Server didn't return required fields specified by the protocol", e);
+          "Unable to deserialize server response into expected structure", e);
     } catch (StreamReadException e) {
-      throw new MatrixIOException("Server responded with invalid response", e);
+      throw new MatrixIOException("Unable to process invalid response.", e);
+    } catch (JacksonException e) {
+      throw new MatrixIOException(
+          "A failure has failed attempting to process a response object.", e);
     }
   }
 
@@ -158,9 +161,12 @@ public class Mapper {
       return INSTANCE.readValue(responseBody, type);
     } catch (DatabindException e) {
       throw new MatrixIOException(
-          "Server didn't return required fields specified by the protocol", e);
+          "Unable to deserialize server response into expected structure", e);
     } catch (StreamReadException e) {
-      throw new MatrixIOException("Server responded with invalid response", e);
+      throw new MatrixIOException("Unable to process invalid response.", e);
+    } catch (JacksonException e) {
+      throw new MatrixIOException(
+          "A failure has failed attempting to process a response object.", e);
     }
   }
 }
