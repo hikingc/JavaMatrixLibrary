@@ -324,7 +324,7 @@ public class HttpTransport {
   /// @param params query parameters; accepts wrapped primitives and Lists for repeated parameters.
   ///   Null values, null list items, or a null/empty map are all safely ignored.
   /// @return a safe, fully composed [URI].
-  public URI generateRawURI(String baseUrl, String path, Map<String, Object> params) {
+  public URI generateRawURI(String baseUrl, String path, @Nullable Map<String, Object> params) {
     String query = rawQueryParams(params);
     try {
       URI base = URI.create(baseUrl);
