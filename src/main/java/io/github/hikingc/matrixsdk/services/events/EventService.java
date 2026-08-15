@@ -178,7 +178,7 @@ public class EventService implements Event {
     String type = resolveStateWireType(content);
 
     URI uri =
-        httpTransport.generateEncodedURI(
+        httpTransport.generateRawURI(
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/state/" + type + "/" + stateKey,
             null);
