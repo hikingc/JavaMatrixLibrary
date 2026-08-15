@@ -6,7 +6,7 @@ import io.github.hikingc.matrixsdk.api.events.matrix.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.call.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.key.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.*;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.ThirdPartyInvite;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomThirdPartyInvite;
 import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceChild;
 import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceParent;
 import io.github.hikingc.matrixsdk.api.events.queries.*;
@@ -76,8 +76,8 @@ public class EventService implements Event {
       RoomID roomId, String at, Membership membership, Membership notMembership) {
     Map<String, Object> args = new HashMap<>();
     args.put("at", at);
-    args.put("membership", membership);
-    args.put("not_membership", notMembership);
+    args.put("membership", membership.getValue());
+    args.put("not_membership", notMembership.getValue());
     URI uri =
         httpTransport.generateEncodedURI(
             context.discoveryResponse().homeserver().baseUrl(),
@@ -304,7 +304,7 @@ public class EventService implements Event {
       case RoomAvatar _ -> "m.room.avatar";
       case RoomCanonicalAlias _ -> "m.room.canonical_alias";
       case RoomMember _ -> "m.room.member";
-      case ThirdPartyInvite _ -> "m.room.third_party_invite";
+      case RoomThirdPartyInvite _ -> "m.room.third_party_invite";
       case SpaceChild _ -> "m.room.space_child";
       case SpaceParent _ -> "m.room.space_parent";
       case RoomEncryption _ -> "m.room.encryption";
