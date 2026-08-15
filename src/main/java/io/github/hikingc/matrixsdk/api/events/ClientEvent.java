@@ -2,6 +2,7 @@ package io.github.hikingc.matrixsdk.api.events;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.github.hikingc.matrixsdk.api.events.server.UnknownEvent;
 import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
@@ -14,9 +15,13 @@ import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 /// @see <a href="https://spec.matrix.org/latest/client-server-api/#room-event-format">The room
 ///   event format as defined in the specification.</a>
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type",
+    defaultImpl = UnknownEvent.class)
 // This interface CANNOT permit anything other than these two.
-public sealed interface ClientEvent<T> permits StateEvent, MessageEvent {
+public sealed interface ClientEvent<T> permits StateEvent, MessageEvent, UnknownEvent {
 
   /// @return the body of this event, as created by the user which sent it.
   T content();
