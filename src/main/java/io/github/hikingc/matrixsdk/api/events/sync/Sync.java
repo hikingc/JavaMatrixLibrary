@@ -1,13 +1,12 @@
 package io.github.hikingc.matrixsdk.api.events.sync;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.hikingc.matrixsdk.api.events.ClientEvent;
+import io.github.hikingc.matrixsdk.api.events.EphemeralEvent;
+import io.github.hikingc.matrixsdk.api.events.matrix.ephemeral.EphemeralPresence;
 import java.util.List;
 import java.util.Map;
-
-// If we make an interface for all message content types we can get rid of these Objects and make
-// serialization more
-// performant with the addition of type safety
-// 7/July/2026
+import org.jspecify.annotations.NonNull;
 
 /// Represents the response body of a `/sync` request against a Matrix homeserver.
 ///
@@ -32,12 +31,12 @@ public record Sync(
   /// A batch of account-data events.
   ///
   /// @param events the account data events.
-  public record AccountData(List<Event> events) {}
+  public record AccountData(List<ClientEvent<?>> events) {}
 
   /// A batch of presence events.
   ///
   /// @param events the presence events.
-  public record Presence(List<Event> events) {}
+  public record Presence(List<EphemeralEvent<EphemeralPresence>> events) {}
 
   /// Devices whose identity or cross-signing keys changed, relevant for E2EE.
   ///
@@ -48,7 +47,7 @@ public record Sync(
   /// A batch of to-device events.
   ///
   /// @param events the to-device events.
-  public record ToDevice(List<Event> events) {}
+  public record ToDevice(List<Object> events) {}
 
   /// Room updates grouped by the client's membership state in each room.
   ///
@@ -97,7 +96,7 @@ public record Sync(
       /// A batch of ephemeral events for a joined room.
       ///
       /// @param events the ephemeral events.
-      public record Ephemeral(List<Event> events) {}
+      public record Ephemeral(List<EphemeralEvent<?>> events) {}
 
       /// Summary information about a room, used to render it without loading full state.
       ///
@@ -145,52 +144,6 @@ public record Sync(
         AccountData accountData, State state, State stateAfter, Timeline timeline) {}
   }
 
-  /// A minimal event with no room, sender, or metadata context — used for account data, presence,
-  /// and to-device events.
-  ///
-  /// @param content the event content, shape depends on `type`.
-  /// @param type the event type, e.g. `m.typing`.
-  public record Event(
-      @JsonProperty(required = true) Object content, @JsonProperty(required = true) String type) {}
-
-  /// A client-facing event as it appears in room timelines and state, excluding the room ID (since
-  /// it is already known from context).
-  ///
-  /// @param content the event content, shape depends on `type`.
-  /// @param eventId the globally unique event identifier.
-  /// @param originServerTs the timestamp, in milliseconds since the Unix epoch, when this event was
-  ///   sent.
-  /// @param sender the user ID of the event's sender.
-  /// @param stateKey the state key, present only if this is a state event.
-  /// @param type the event type, e.g. `m.room.message`.
-  /// @param unsigned additional metadata not covered by the event's signature.
-  public record ClientEventWithoutRoomID(
-      Object content,
-      String eventId,
-      Long originServerTs,
-      String sender,
-      String stateKey,
-      String type,
-    UnsignedData unsigned) {
-
-    /// Additional, unsigned metadata about an event.
-    ///
-    /// @param age the time in milliseconds since this event was sent.
-    /// @param membership the sender's membership at the time of this event, if applicable.
-    /// @param prevContent the previous content for this state key, if this is a state event
-    ///   replacing one.
-    /// @param redactedBecause the redaction event responsible for redacting this event, if it was
-    ///   redacted.
-    /// @param transactionId the transaction ID set by the sending client, if the current client was
-    ///   the sender.
-    public record UnsignedData(
-        Long age,
-        String membership,
-        Object prevContent,
-        ClientEventWithoutRoomID redactedBecause,
-        String transactionId) {}
-  }
-
   /// A reduced-detail state event included in invite or knock previews, omitting fields such as
   /// `event_id` and timestamps that are not part of the stripped-state contract.
   ///
@@ -199,22 +152,23 @@ public record Sync(
   /// @param stateKey the state key for this event.
   /// @param type the event type, e.g. `m.room.member`.
   public record StrippedStateEvent(
-      @JsonProperty(required = true) Object content,
-      @JsonProperty(required = true) String sender,
-      @JsonProperty(required = true) String stateKey,
-      @JsonProperty(required = true) String type) {}
+      @NonNull @JsonProperty(required = true) Object content,
+      @NonNull @JsonProperty(required = true) String sender,
+      @NonNull @JsonProperty(required = true) String stateKey,
+      @NonNull @JsonProperty(required = true) String type) {}
 
   /// A batch of room state events.
   ///
   /// @param events the state events.
-  public record State(List<ClientEventWithoutRoomID> events) {}
+  public record State(List<ClientEvent<?>> events) {}
 
   /// A paginated batch of timeline events for a room.
+  ///
+  /// @apiNote The event list contains a `null` Room ID field
   ///
   /// @param events the timeline events, in chronological order.
   /// @param limited whether the timeline was truncated, requiring further pagination to retrieve
   ///   earlier events.
   /// @param prevBatch a pagination token for retrieving events older than this batch.
-  public record Timeline(
-      List<ClientEventWithoutRoomID> events, Boolean limited, String prevBatch) {}
+  public record Timeline(List<ClientEvent<?>> events, Boolean limited, String prevBatch) {}
 }
