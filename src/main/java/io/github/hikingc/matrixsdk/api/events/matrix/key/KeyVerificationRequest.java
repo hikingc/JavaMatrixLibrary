@@ -11,5 +11,5 @@ import org.jspecify.annotations.NonNull;
 public record KeyVerificationRequest(
     @NonNull @JsonProperty(required = true) String fromDevice,
     @NonNull @JsonProperty(required = true) List<String> methods,
-    Integer timestamp,
+    Long timestamp,
     String transactionId) implements MessageEventContent {}
