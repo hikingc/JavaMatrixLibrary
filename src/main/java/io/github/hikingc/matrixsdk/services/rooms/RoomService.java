@@ -1,10 +1,7 @@
 package io.github.hikingc.matrixsdk.services.rooms;
 
 import io.github.hikingc.matrixsdk.api.Room;
-import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
-import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
-import io.github.hikingc.matrixsdk.api.identifiers.UserID;
-import io.github.hikingc.matrixsdk.api.identifiers.Validator;
+import io.github.hikingc.matrixsdk.api.identifiers.*;
 import io.github.hikingc.matrixsdk.api.rooms.*;
 import io.github.hikingc.matrixsdk.api.rooms.models.ResolvedAlias;
 import io.github.hikingc.matrixsdk.api.rooms.models.RoomSummary;
@@ -155,7 +152,7 @@ public class RoomService implements Room {
 
   @Override
   public String joinByRoomIdOrAliasIfAllowed(
-      Validator roomIdOrAlias, JoinRoomRequest request, List<String> via) {
+          Identifier roomIdOrAlias, JoinRoomRequest request, List<String> via) {
     if (Objects.requireNonNull(roomIdOrAlias) instanceof UserID) {
       throw new IllegalArgumentException("Wrong format type");
     }
@@ -187,7 +184,7 @@ public class RoomService implements Room {
   }
 
   @Override
-  public String knockOn(Validator roomIdOrAlias, String reason, List<String> via) {
+  public String knockOn(Identifier roomIdOrAlias, String reason, List<String> via) {
     if (Objects.requireNonNull(roomIdOrAlias) instanceof UserID) {
       throw new MatrixException("Wrong format type");
     }
@@ -318,7 +315,7 @@ public class RoomService implements Room {
   }
 
   @Override
-  public RoomSummary getRoomSummary(Validator roomIdOrAlias, List<String> via) {
+  public RoomSummary getRoomSummary(Identifier roomIdOrAlias, List<String> via) {
     if (Objects.requireNonNull(roomIdOrAlias) instanceof UserID) {
       throw new MatrixException("Wrong format type");
     }

@@ -29,7 +29,7 @@ class RoomAliasTest {
         "#general:127.0.0.1"
       })
   void withValidStrings_ReturnRoomAlias(String alias) {
-    assertDoesNotThrow(() -> RoomAlias.parse(alias), "Exception not expected for input: " + alias);
+    assertDoesNotThrow(() -> RoomAlias.create(alias), "Exception not expected for input: " + alias);
   }
 
   @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -52,24 +52,24 @@ class RoomAliasTest {
   void withInvalidStrings_ThrowsException(String alias) {
     assertThrows(
         IllegalArgumentException.class,
-        () -> RoomAlias.parse(alias),
+        () -> RoomAlias.create(alias),
         "Exception expected for input:" + alias);
   }
 
   @ParameterizedTest
   @NullSource
   void withNull_ThrowsException(String alias) {
-    assertThrows(NullPointerException.class, () -> RoomAlias.parse(alias));
+    assertThrows(NullPointerException.class, () -> RoomAlias.create(alias));
   }
 
   @ParameterizedTest
   @EmptySource
   void withEmpty_ThrowsException(String alias) {
-    assertThrows(IllegalArgumentException.class, () -> RoomAlias.parse(alias));
+    assertThrows(IllegalArgumentException.class, () -> RoomAlias.create(alias));
   }
 
   @Test
   void withNull_ThrowsNPE() {
-    assertThrows(NullPointerException.class, () -> RoomAlias.parse(null));
+    assertThrows(NullPointerException.class, () -> RoomAlias.create(null));
   }
 }

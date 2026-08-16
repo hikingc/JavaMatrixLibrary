@@ -14,7 +14,7 @@ import java.util.Objects;
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/appendices/#event-ids">Event Identifiers as defined
 ///   in the specification</a>
-public final class EventID implements Validator {
+public final class EventID implements Identifier {
   private final String opaqueId;
 
   private EventID(String opaqueId) {
@@ -28,11 +28,11 @@ public final class EventID implements Validator {
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
   @JsonCreator
-  public static EventID parse(String rawRoomId) {
+  public static EventID create(String rawRoomId) {
     Objects.requireNonNull(rawRoomId, "Room ID" + " must not be null");
 
-    if (rawRoomId.getBytes(StandardCharsets.UTF_8).length > MAX_BYTES) {
-      throw new IllegalArgumentException("Event ID exceeds " + MAX_BYTES + " bytes");
+    if (rawRoomId.getBytes(StandardCharsets.UTF_8).length > 255) {
+      throw new IllegalArgumentException("Event ID exceeds " + 255 + " bytes");
     }
 
     if (rawRoomId.isEmpty()) {

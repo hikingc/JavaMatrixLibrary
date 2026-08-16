@@ -26,7 +26,7 @@ class RoomIDTest {
         "!abc123:127.0.0.1"
       })
   void withValidStrings_ReturnRoomID(String roomId) {
-    assertDoesNotThrow(() -> RoomID.parse(roomId), "Exception not expected for input: " + roomId);
+    assertDoesNotThrow(() -> RoomID.create(roomId), "Exception not expected for input: " + roomId);
   }
 
   @ParameterizedTest
@@ -49,24 +49,24 @@ class RoomIDTest {
   void withInvalidStrings_ThrowsException(String roomId) {
     assertThrows(
         IllegalArgumentException.class,
-        () -> RoomID.parse(roomId),
+        () -> RoomID.create(roomId),
         "Exception expected for input:" + roomId);
   }
 
   @ParameterizedTest
   @NullSource
   void withNull_ThrowsException(String roomId) {
-    assertThrows(NullPointerException.class, () -> RoomID.parse(roomId));
+    assertThrows(NullPointerException.class, () -> RoomID.create(roomId));
   }
 
   @ParameterizedTest
   @EmptySource
   void withEmpty_ThrowsException(String roomId) {
-    assertThrows(IllegalArgumentException.class, () -> RoomID.parse(roomId));
+    assertThrows(IllegalArgumentException.class, () -> RoomID.create(roomId));
   }
 
   @Test
   void withNull_ThrowsNPE() {
-    assertThrows(NullPointerException.class, () -> RoomID.parse(null));
+    assertThrows(NullPointerException.class, () -> RoomID.create(null));
   }
 }

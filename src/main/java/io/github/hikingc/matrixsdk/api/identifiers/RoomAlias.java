@@ -19,7 +19,7 @@ import java.util.Objects;
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/appendices/#room-aliases">Room Aliases as defined in
 ///   the specification</a>
-public final class RoomAlias implements Validator {
+public final class RoomAlias implements Identifier {
   private final String opaqueId;
   private final String domain;
 
@@ -35,7 +35,7 @@ public final class RoomAlias implements Validator {
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
   @JsonCreator
-  public static RoomAlias parse(String rawAliasId) {
+  public static RoomAlias create(String rawAliasId) {
     Objects.requireNonNull(rawAliasId, "Alias ID" + " must not be null");
 
     Validator.validateSigilId(rawAliasId, '#', "Room Alias", false);

@@ -33,7 +33,7 @@ class EventIDTest {
         "$ " // single space after sigil is still non-empty content
       })
   void withValidStrings_ReturnEventID(String id) {
-    assertDoesNotThrow(() -> EventID.parse(id), "Exception not expected for input: " + id);
+    assertDoesNotThrow(() -> EventID.create(id), "Exception not expected for input: " + id);
   }
 
   @ParameterizedTest(name = "[{index}] \"{0}\"")
@@ -49,19 +49,19 @@ class EventIDTest {
   void withInvalidStrings_ThrowsException(String id) {
     assertThrows(
         IllegalArgumentException.class,
-        () -> EventID.parse(id),
+        () -> EventID.create(id),
         "Exception expected for input: " + id);
   }
 
   @ParameterizedTest
   @NullSource
   void withNull_ThrowsException(String id) {
-    assertThrows(NullPointerException.class, () -> EventID.parse(id));
+    assertThrows(NullPointerException.class, () -> EventID.create(id));
   }
 
   @ParameterizedTest
   @EmptySource
   void withEmpty_ThrowsException(String id) {
-    assertThrows(IllegalArgumentException.class, () -> EventID.parse(id));
+    assertThrows(IllegalArgumentException.class, () -> EventID.create(id));
   }
 }

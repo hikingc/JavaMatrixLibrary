@@ -17,7 +17,7 @@ import java.util.Objects;
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/appendices/#user-identifiers">User Identifiers as
 ///   defined in the specification</a>
-public final class UserID implements Validator {
+public final class UserID implements Identifier {
   private final String localpart;
   private final String domain;
 
@@ -32,9 +32,7 @@ public final class UserID implements Validator {
   /// @return a [UserID].
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
-  @JsonCreator
-  public static UserID parse(String rawUserId) {
-    Objects.requireNonNull(rawUserId, "User ID" + " must not be null");
+  public static UserID create(String rawUserId) {
 
     Validator.validateSigilId(rawUserId, '@', "User ID", false);
 
@@ -47,6 +45,20 @@ public final class UserID implements Validator {
       throw new IllegalArgumentException("User ID missing domain: " + rawUserId);
     }
     return new UserID(rawUserId.substring(1, colonIdx), rawUserId.substring(colonIdx + 1));
+  }
+
+  @JsonCreator
+  private static UserID receive(String value) {
+    return of(value, false);
+  }
+
+  private static UserID of(String value, boolean strict) {
+    Validator.validateSigilId(value, '@', "UserId", strict);
+    int colonIdx = value.indexOf(':');
+    if (colonIdx == -1) {
+      throw new IllegalArgumentException("User ID missing domain: " + value);
+    }
+    return new UserID(value.substring(1, colonIdx), value.substring(colonIdx + 1));
   }
 
   @Override

@@ -19,7 +19,7 @@ import java.util.Objects;
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/appendices/#room-ids">Room Identifiers as defined in
 ///   the specification</a>
-public final class RoomID implements Validator {
+public final class RoomID implements Identifier {
   private final String opaqueId;
   private final String domain;
 
@@ -35,7 +35,7 @@ public final class RoomID implements Validator {
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
   @JsonCreator
-  public static RoomID parse(String rawRoomId) {
+  public static RoomID create(String rawRoomId) {
     Objects.requireNonNull(rawRoomId, "Room ID" + " must not be null");
 
     Validator.validateSigilId(rawRoomId, '!', "Room ID", false);

@@ -24,7 +24,7 @@ class FilterServiceTest {
 
   private static final ObjectMapper mapper = Mapper.getInstance();
   private static final String AUTH_TOKEN = "1234";
-  private static final UserID USER_ID = UserID.parse("@matrix:example.org");
+  private static final UserID USER_ID = UserID.create("@matrix:example.org");
   private static MatrixClient client;
   private static DiscoveryResponse DISCOVERY_RESPONSE;
   @Given private FilterDefinition filterDefinition;

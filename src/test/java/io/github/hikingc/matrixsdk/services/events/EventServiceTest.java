@@ -9,11 +9,11 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.events.*;
-import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
+import io.github.hikingc.matrixsdk.api.events.matrix.*;
+import io.github.hikingc.matrixsdk.api.events.matrix.call.*;
+import io.github.hikingc.matrixsdk.api.events.matrix.key.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.*;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.FileContent;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.TextContent;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.ThumbnailInfo;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceChild;
 import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceParent;
 import io.github.hikingc.matrixsdk.api.events.queries.ChronologicalDirection;
@@ -26,6 +26,7 @@ import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
+import io.github.hikingc.matrixsdk.services.utils.Mapper;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -46,7 +47,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @WireMockTest
 class EventServiceTest {
 
-  public static final RoomID ROOM_ID = RoomID.parse("!room:example.org");
+  public static final RoomID ROOM_ID = RoomID.create("!room:example.org");
   private static final String AUTH_TOKEN = "1234";
   private static DiscoveryResponse DISCOVERY_RESPONSE;
   private static MatrixClient client;
@@ -106,7 +107,7 @@ class EventServiceTest {
 
     var response = client.events().getEvent(ROOM_ID, eventId);
     assertThat(response).isNotNull();
-    assertThat(response.eventId()).isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
+    assertThat(response.eventId()).isEqualTo(EventID.create("$143273582443PhrSn:example.org"));
   }
 
   @Test
@@ -177,10 +178,10 @@ class EventServiceTest {
     assertThat(response.getFirst().content().membership()).isEqualTo(Membership.JOIN);
     assertThat(response.getFirst().content().reason()).isEqualTo("Looking for support");
     assertThat(response.getFirst().eventId())
-        .isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
+        .isEqualTo(EventID.create("$143273582443PhrSn:example.org"));
     assertThat(response.getFirst().originServerTs()).isEqualTo(1432735824653L);
     assertThat(response.getFirst().eventId())
-        .isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
+        .isEqualTo(EventID.create("$143273582443PhrSn:example.org"));
   }
 
   @Test
@@ -315,14 +316,14 @@ class EventServiceTest {
                         """)));
     var response = client.events().getStateEvent(ROOM_ID, EVENT_TYPE, STATE_KEY);
     assertThat(response).isNotNull();
-    assertThat(response.eventId()).isEqualTo(EventID.parse("$143273582443PhrSn:example.org"));
-    assertThat(response.sender()).isEqualTo(UserID.parse("@alice:example.org"));
+    assertThat(response.eventId()).isEqualTo(EventID.create("$143273582443PhrSn:example.org"));
+    assertThat(response.sender()).isEqualTo(UserID.create("@alice:example.org"));
     assertThat(response.unsigned().age()).isEqualTo(1234);
   }
 
   @Test
   void getMessages_WithValidQueryParameters_thenReturnMessagesResponse() {
-    EventID expectedChunkEventId = EventID.parse("$abcdefg12345:matrix.org");
+    EventID expectedChunkEventId = EventID.create("$abcdefg12345:matrix.org");
 
     QueryParametersMessages mockParams =
         new QueryParametersMessages("some_start_token", 20, "some_end_token");
@@ -555,7 +556,7 @@ class EventServiceTest {
     assertThat(response).isNotNull();
   }
 
-  private static Stream<Arguments> provideEventsForsenStateEvent() {
+  private static Stream<Arguments> provideEventsForSendStateEvent() {
     return Stream.of(
         Arguments.of(
             new RoomAvatar(
@@ -574,7 +575,7 @@ class EventServiceTest {
                 List.of("@alice:example.org"),
                 true,
                 new RoomCreate.PreviousRoom(
-                    EventID.parse("$oldevent:example.org"), RoomID.parse("!oldroom:example.org")),
+                    EventID.create("$oldevent:example.org"), RoomID.create("!oldroom:example.org")),
                 "13",
                 "m.space"),
             ""),
@@ -585,7 +586,7 @@ class EventServiceTest {
             new RoomJoinRules(
                 List.of(
                     new RoomJoinRules.AllowCondition(
-                        RoomID.parse("!spaceroom:example.org"), "m.room_membership")),
+                        RoomID.create("!spaceroom:example.org"), "m.room_membership")),
                 "restricted"),
             ""),
         Arguments.of(
@@ -616,8 +617,9 @@ class EventServiceTest {
         Arguments.of(
             new RoomTopic(
                 new RoomTopic.TopicContentBlock(
-                    new RoomTopic.TopicContentBlock.TextualRepresentation(
-                        "Test topic", "mimetype"))),
+                    List.of(
+                        new RoomTopic.TopicContentBlock.TextualRepresentation(
+                            "Test topic", "mimetype")))),
             ""),
         Arguments.of(new ServerACL(List.of("*"), true, List.of()), ""),
         Arguments.of(
@@ -637,14 +639,21 @@ class EventServiceTest {
         Arguments.of(new SpaceParent(true, List.of("example.org")), "!parent:example.org"));
   }
 
-  @ParameterizedTest
-  @MethodSource("provideEventsForsenStateEvent")
+  @ParameterizedTest(name = "[{index}]: {0}")
+  @MethodSource("provideEventsForSendStateEvent")
   void sendStateEvent_WithACorrectPayload_ThenReturnAString(
       StateEventContent stateEvent, String stateKey) {
     String eventId = "$abc123def456:example.org";
+    String eventType = EventService.resolveStateWireType(stateEvent);
+
+    String expectedPath =
+        "/_matrix/client/v3/rooms/" + ROOM_ID + "/state/" + eventType + "/" + stateKey;
+
+    String expectedBody = Mapper.writeValueAsString(stateEvent);
 
     stubFor(
-        put(urlPathMatching("/_matrix/client/v3/rooms/.*/state/.*"))
+        put(urlEqualTo(expectedPath))
+            .withRequestBody(equalToJson(expectedBody, true, true))
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -656,8 +665,157 @@ class EventServiceTest {
     assertThat(response).isEqualTo(eventId);
   }
 
-  @Test
-  void sendMessageEvent_WithACorrectPayload_thenReturnAString() {
+  private static Stream<Arguments> provideEventsForSendMessageEvent() {
+    String callId = "c9a281f6-52e3-4a3b-9e21-8f2b3c4d5e6f";
+    UserID userId = UserID.create("@alice:matrix.org");
+    String partyId = "WEBRTC-7f3a9c";
+    String otherPartyId = "WEBRTC-1b2c3d";
+    int lifetime = 30000;
+    String version = "1";
+
+    // Required by spec to carry \r\n
+    String sdpOffer =
+        """
+                        v=0\r
+                        o=- 6398247103928471 2 IN IP4 127.0.0.1\r
+                        s=-\r
+                        t=0 0\r
+                        a=group:BUNDLE 0 1\r
+                        m=audio 9 UDP/TLS/RTP/SAVPF 111\r
+                        c=IN IP4 0.0.0.0\r
+                        a=mid:0\r
+                        a=sendrecv\r
+                        """;
+
+    String sdpAnswer =
+        """
+                        v=0\r
+                        o=- 9182736450192837 2 IN IP4 127.0.0.1\r
+                        s=-\r
+                        t=0 0\r
+                        a=group:BUNDLE 0 1\r
+                        m=audio 9 UDP/TLS/RTP/SAVPF 111\r
+                        c=IN IP4 0.0.0.0\r
+                        a=mid:0\r
+                        a=recvonly\r
+                        """;
+
+    Map<String, StreamMetadata> streamMetadata =
+        Map.of("stream_1", new StreamMetadata(false, false));
+
+    return Stream.of(
+        Arguments.of(
+            new TextContent(
+                "Hey, are we still on for the standup at 10?",
+                "org.matrix.custom.html",
+                "<p>Hey, are we still on for the standup at 10?</p>")),
+        Arguments.of(
+            new Sticker(
+                "Waving hello",
+                new ImageInfo(
+                    480,
+                    320,
+                    45_000,
+                    "image/png",
+                    false,
+                    null,
+                    null,
+                    URI.create("mxc://matrix.org/qWeRtYuIoP123")),
+                URI.create("mxc://matrix.org/qWeRtYuIoP123"))),
+        Arguments.of(
+            new Reaction(
+                new Reaction.ReactionRelatesTo(
+                    EventID.create("$oNGL5s3dNAdCLjkiHZLR4YOhV1kbLbAWlbYFVLnu6dc"),
+                    "\uD83D\uDE00"))), // 😀
+        Arguments.of(
+            new RoomRedaction(
+                "Contained a leaked API key",
+                EventID.create("$RcJj6bYqOhFq3Kx9v7pQdW2mLzT8hNsXeYjA1bVfCwI"))),
+        Arguments.of(
+            new RoomEncrypted(
+                "m.megolm.v1.aes-sha2",
+                new Ciphertext.Megolm(
+                    "AwgAEnACgAYMGii7ScejxUbFozjWvOJEDeMDVQp2loxjJUwn5aVwB5fVh40W9jyGKw"),
+                "X3lUlvLELLYxeTx4yOVu6UDpasGEVO2QYm4qN8UtKA0")),
+        Arguments.of(
+            new CallInvite(
+                callId,
+                userId,
+                lifetime,
+                new CallInvite.Offer("offer", sdpOffer),
+                partyId,
+                streamMetadata,
+                version),
+            30000L),
+        Arguments.of(
+            new CallCandidates(
+                callId,
+                List.of(
+                    new CallCandidates.Candidate(
+                        "candidate:842163049 1 udp 1677729535 203.0.113.5 54609 typ srflx raddr 192.168.1.10 rport 54609",
+                        0,
+                        "0")),
+                partyId,
+                version)),
+        Arguments.of(
+            new CallAnswer(
+                new Answer(sdpAnswer, "answer"), callId, partyId, streamMetadata, version)),
+        Arguments.of(new CallSelectAnswer(callId, partyId, otherPartyId, version)),
+        Arguments.of(
+            new CallNegotiate(
+                callId,
+                new CallNegotiate.Description(sdpOffer, DescriptionType.OFFER),
+                lifetime,
+                partyId,
+                streamMetadata,
+                version)),
+        Arguments.of(new CallReject(callId, partyId, version)),
+        Arguments.of(new CallHangup(callId, partyId, version)),
+        Arguments.of(
+            new KeyVerificationRequest(
+                "DEVICEID789JKL", List.of("m.sas.v1"), 1_755_000_000_000L, "transaction-8f3a9c")),
+        Arguments.of(
+            new KeyVerificationStart(
+                "DEVICEID789JKL",
+                new VerificationRelatesTo(
+                    EventID.create("$mYcVerificationRequestEventID12345"), "m.reference"),
+                "m.sas.v1",
+                null,
+                "transaction-8f3a9c")),
+        Arguments.of(
+            new KeyVerificationAccept(
+                "Yw2fjfz9pQ8dR1kLmN0vB3xC6eF7gH4iJ5kL9mN2oP1q",
+                "sha256",
+                "curve25519-hkdf-sha256",
+                new VerificationRelatesTo(
+                    EventID.create("$mYcVerificationStartEventID67890"), "m.reference"),
+                "hkdf-hmac-sha256",
+                List.of("decimal", "emoji"),
+                "transaction-8f3a9c")),
+        Arguments.of(
+            new KeyVerificationMac(
+                "ed25519:DEVICEID789JKL",
+                new VerificationRelatesTo(
+                    EventID.create("$mYcVerificationAcceptEventID54321"), "m.reference"),
+                Map.of("ed25519:DEVICEID789JKL", "3s5f7Vn8xQpLzT2mWjR6oKcE9dY1bAuF4hJgN0iX7wI"),
+                "transaction-8f3a9c")),
+        Arguments.of(
+            new KeyVerificationDone(
+                new VerificationRelatesTo(
+                    EventID.create("$mYcVerificationMacEventID11223"), "m.reference"),
+                "transaction-8f3a9c")),
+        Arguments.of(
+            new KeyVerificationCancel(
+                "m.user",
+                new VerificationRelatesTo(
+                    EventID.create("$mYcVerificationStartEventID67890"), "m.reference"),
+                "User cancelled the verification.",
+                "transaction-8f3a9c")));
+  }
+
+  @ParameterizedTest(name = "[{index}]: {0}")
+  @MethodSource("provideEventsForSendMessageEvent")
+  void sendMessageEvent_WithACorrectPayload_thenReturnAString(MessageEventContent messageEvent) {
     String roomMessageType = "m.room.message";
     String expectedEventId = "$h29asdf8q348hju9a:matrix.org";
 
@@ -759,7 +917,7 @@ class EventServiceTest {
     String invitedRoomId = "!696r7674:example.com";
     String knockedRoomId = "!223asd456:example.com";
     String leftRoomId = "!left12345:example.com";
-    EventID expectedChunkEventId = EventID.parse("$143273582443PhrSn:example.org");
+    EventID expectedChunkEventId = EventID.create("$143273582443PhrSn:example.org");
     String expectedNextBatch = "s72595_4483_1934";
 
     stubFor(

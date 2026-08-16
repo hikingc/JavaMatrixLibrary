@@ -5,14 +5,15 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-/// Common interface for all identifiers in the Matrix specification, it provides static methods for
-/// validation
+/// Shared static validation helpers for Matrix identifiers.
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/appendices/#identifier-grammar">Matrix definitions
 ///   and Grammar of Identifiers</a>
-public interface Validator {
+public final class Validator {
   /// The maximum value of bytes as defined in the specification.
-  int MAX_BYTES = 255;
+  static final int MAX_BYTES = 255;
+
+  private Validator() {}
 
   /// Shared validation for Matrix identifiers of the form `<sigil><opaqueId>:<server_name>` (room
   /// ids, user ids, room aliases).
@@ -30,17 +31,15 @@ public interface Validator {
       String value, char sigil, String name, boolean restrictLocalpartToAlphanumeric) {
     Objects.requireNonNull(value, name + " must not be null");
 
-    if (value.getBytes(StandardCharsets.UTF_8).length > MAX_BYTES) {
-      throw new IllegalArgumentException(name + " exceeds " + MAX_BYTES + " bytes");
-    }
-
     if (value.isEmpty()) {
       throw new IllegalArgumentException(name + " must not be empty");
     }
 
-    if (value.charAt(0) != sigil) {
-      throw new IllegalArgumentException(name + " must start with '" + sigil + "'");
+    if (value.getBytes(StandardCharsets.UTF_8).length > MAX_BYTES) {
+      throw new IllegalArgumentException(name + " exceeds " + MAX_BYTES + " bytes");
     }
+
+    validateSigil(value, sigil, name);
 
     int firstColon = value.indexOf(':');
     if (firstColon < 0) {
@@ -49,14 +48,20 @@ public interface Validator {
     }
 
     // Check if we have strings with nothing between the sigil and the :
-    if (value.indexOf(sigil) + 1 == firstColon) {
+    if (firstColon == 1) {
       throw new IllegalArgumentException(name + " must not have an empty opaqueId");
     }
 
-    Validator.validateCodePoints(value, name);
-
     String localPart = value.substring(1, firstColon);
     String serverName = value.substring(firstColon + 1);
+
+    // NUL is banned everywhere in the identifier; ':' is banned within the
+    // opaqueId specifically (the separator colon is exactly firstColon, so it's
+    // excluded from localPart already — serverName may legitimately contain ':'
+    // for IPv6 literals or an explicit port).
+    validateCodePoints(localPart, name, true);
+    validateCodePoints(serverName, name, false);
+
     if (!validateDomain(serverName)) {
       throw new IllegalArgumentException(name + " must contain a valid server name after ':'");
     }
@@ -66,13 +71,21 @@ public interface Validator {
     }
   }
 
+  static void validateSigil(String value, char sigil, String name) {
+    if (value.charAt(0) != sigil) {
+      throw new IllegalArgumentException(name + " must start with '" + sigil + "'");
+    }
+  }
+
   /// The matrix specification defines as compliant any codepoint that contains valid non-surrogate
-  /// Unicode code points, including control characters, except `:` and `NUL (U+0000)`
+  /// Unicode code points, except `NUL (U+0000)`, and, within the opaqueId segment, `:`.
   ///
-  /// @param value the raw [String] that is being validated.
-  /// @param name the type of the ID being evaluated.
-  static void validateCodePoints(String value, String name) {
-    value
+  /// @param segment the substring being validated (either the opaqueId or the server name).
+  /// @param name the type of the ID being evaluated, used only for error messages.
+  /// @param banColon whether ':' is disallowed in this segment (true for opaqueId, false for server
+  ///   name, which may legitimately contain ':' for IPv6 literals or a port).
+  static void validateCodePoints(String segment, String name, boolean banColon) {
+    segment
         .codePoints()
         .forEach(
             cp -> {
@@ -83,6 +96,12 @@ public interface Validator {
               if (cp >= 0xD800 && cp <= 0xDFFF) {
                 throw new IllegalArgumentException(
                     "%s contains a lone surrogate code point: U+%04X".formatted(name, cp));
+              }
+              if (cp == 0x0000) {
+                throw new IllegalArgumentException(name + " must not contain NUL");
+              }
+              if (banColon && cp == ':') {
+                throw new IllegalArgumentException(name + " opaqueId must not contain ':'");
               }
               if (Character.isWhitespace(cp)) {
                 throw new IllegalArgumentException("%s contains whitespace.".formatted(name));
@@ -109,14 +128,11 @@ public interface Validator {
         return false;
       }
 
-      // No extra paths, queries or fragments
       if (uri.getPath() != null && !uri.getPath().isEmpty()) return false;
       if (uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null)
         return false;
 
-      // Ensure port it's in valid range 1-65535
       if (serverName.contains(":") && !host.startsWith("[")) {
-        // Handle non-IPv6 port check
         return port == -1 || (port >= 1 && port <= 65535);
       }
 

@@ -7,10 +7,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomPowerLevels;
-import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
-import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
-import io.github.hikingc.matrixsdk.api.identifiers.UserID;
-import io.github.hikingc.matrixsdk.api.identifiers.Validator;
+import io.github.hikingc.matrixsdk.api.identifiers.*;
 import io.github.hikingc.matrixsdk.api.rooms.*;
 import io.github.hikingc.matrixsdk.api.rooms.queries.CreationRoomType;
 import io.github.hikingc.matrixsdk.api.rooms.queries.JoinRoomRequest;
@@ -25,8 +22,8 @@ import org.junit.jupiter.api.Test;
 @WireMockTest
 class RoomServiceTest {
 
-  private static final RoomID ROOM_ID = RoomID.parse("!ekkTuJPNWnbuCJHvYB:kde.org");
-  private static final UserID USER_ID = UserID.parse("@example:example.com");
+  private static final RoomID ROOM_ID = RoomID.create("!ekkTuJPNWnbuCJHvYB:kde.org");
+  private static final UserID USER_ID = UserID.create("@example:example.com");
   private static final String AUTH_TOKEN = "1234";
   private static MatrixClient client;
   private static DiscoveryResponse DISCOVERY_RESPONSE;
@@ -160,7 +157,7 @@ class RoomServiceTest {
 
   @Test
   void sendSetAliasRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
-    RoomAlias alias = RoomAlias.parse("#general:example.com");
+    RoomAlias alias = RoomAlias.create("#general:example.com");
 
     stubFor(
         put("/_matrix/client/v3/directory/room/%23general:example.com")
@@ -181,7 +178,7 @@ class RoomServiceTest {
 
   @Test
   void sendResolveAliasRequest_WithCorrectPayload_thenReturnResolvedAlias() {
-    RoomAlias alias = RoomAlias.parse("#general:example.com");
+    RoomAlias alias = RoomAlias.create("#general:example.com");
     String expectedPath = "%23general:example.com";
 
     stubFor(
@@ -205,7 +202,7 @@ class RoomServiceTest {
 
   @Test
   void sendDeleteAliasRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
-    RoomAlias alias = RoomAlias.parse("#general:example.com");
+    RoomAlias alias = RoomAlias.create("#general:example.com");
 
     stubFor(
         delete("/_matrix/client/v3/directory/room/%23general:example.com")
@@ -277,7 +274,7 @@ class RoomServiceTest {
             .willReturn(okJson("{}")));
 
     client.room().inviteUser(
-            ROOM_ID, new RoomMembershipRequest("Welcome!", UserID.parse("@alice:example.com")));
+            ROOM_ID, new RoomMembershipRequest("Welcome!", UserID.create("@alice:example.com")));
 
     verify(postRequestedFor(urlEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/invite")));
   }
@@ -479,7 +476,7 @@ class RoomServiceTest {
 
     assertNotNull(response);
     assertNotNull(response.chunk());
-    assertEquals(RoomID.parse("!abc123:example.com"), response.chunk().getFirst().roomId());
+    assertEquals(RoomID.create("!abc123:example.com"), response.chunk().getFirst().roomId());
     assertEquals("General", response.chunk().getFirst().name());
     assertEquals(1, response.totalRoomCountEstimate());
   }
@@ -511,12 +508,12 @@ class RoomServiceTest {
 
     assertNotNull(response);
     assertFalse(response.chunk().isEmpty());
-    assertEquals(RoomID.parse("!abc123:example.com"), response.chunk().getFirst().roomId());
+    assertEquals(RoomID.create("!abc123:example.com"), response.chunk().getFirst().roomId());
   }
 
   @Test
   void sendGetRoomSummaryRequest_WithViaParam_thenReturnSummary() {
-    Validator roomIdOrAlias = RoomID.parse("!abc123:example.com");
+    Identifier roomIdOrAlias = RoomID.create("!abc123:example.com");
     stubFor(
         get(urlPathEqualTo("/_matrix/client/v1/room_summary/" + roomIdOrAlias))
             .withQueryParam("via", equalTo("example.com"))

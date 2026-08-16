@@ -33,7 +33,7 @@ class UserIDTest {
         "@example:127.0.0.1:8448"
       })
   void withValidStrings_ReturnUserID(String userId) {
-    assertDoesNotThrow(() -> UserID.parse(userId), "Exception not expected for input: " + userId);
+    assertDoesNotThrow(() -> UserID.create(userId), "Exception not expected for input: " + userId);
   }
 
   @ParameterizedTest
@@ -59,24 +59,24 @@ class UserIDTest {
   void withInvalidStrings_ThrowsException(String userId) {
     assertThrows(
         IllegalArgumentException.class,
-        () -> UserID.parse(userId),
+        () -> UserID.create(userId),
         "Exception expected for input:" + userId);
   }
 
   @ParameterizedTest
   @NullSource
   void withNull_ThrowsException(String userId) {
-    assertThrows(NullPointerException.class, () -> UserID.parse(userId));
+    assertThrows(NullPointerException.class, () -> UserID.create(userId));
   }
 
   @ParameterizedTest
   @EmptySource
   void withEmpty_ThrowsException(String userId) {
-    assertThrows(IllegalArgumentException.class, () -> UserID.parse(userId));
+    assertThrows(IllegalArgumentException.class, () -> UserID.create(userId));
   }
 
   @Test
   void withNull_ThrowsNPE() {
-    assertThrows(NullPointerException.class, () -> UserID.parse(null));
+    assertThrows(NullPointerException.class, () -> UserID.create(null));
   }
 }

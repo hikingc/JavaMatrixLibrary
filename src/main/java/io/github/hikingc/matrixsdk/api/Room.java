@@ -2,6 +2,7 @@ package io.github.hikingc.matrixsdk.api;
 
 import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
+import io.github.hikingc.matrixsdk.api.identifiers.Identifier;
 import io.github.hikingc.matrixsdk.api.identifiers.Validator;
 import io.github.hikingc.matrixsdk.api.rooms.*;
 import io.github.hikingc.matrixsdk.api.rooms.models.ResolvedAlias;
@@ -99,7 +100,7 @@ public interface Room {
   /// @throws MatrixNetworkException when the response status is not successful.
   /// @throws IllegalArgumentException when using an incorrect [Validator].
   String joinByRoomIdOrAliasIfAllowed(
-      Validator roomIdOrAlias, JoinRoomRequest request, List<String> via);
+          Identifier roomIdOrAlias, JoinRoomRequest request, List<String> via);
 
   /// If allowed, it starts participation in a room.
   ///
@@ -121,7 +122,7 @@ public interface Room {
   /// @return the room ID of the knocked room.
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws MatrixNetworkException when the response status is not successful.
-  String knockOn(Validator roomIdOrAlias, String reason, List<String> via);
+  String knockOn(Identifier roomIdOrAlias, String reason, List<String> via);
 
   /// Sends a request to leave the room, upon success, you will forget all messages from this room.
   /// If all users on a room forget it, the room is eligible for deletion. You must
@@ -218,5 +219,5 @@ public interface Room {
   /// @throws NullPointerException when the roomId is null.
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws MatrixNetworkException when the response status is not successful.
-  RoomSummary getRoomSummary(Validator roomIdOrAlias, List<String> via);
+  RoomSummary getRoomSummary(Identifier roomIdOrAlias, List<String> via);
 }
