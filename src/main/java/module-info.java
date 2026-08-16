@@ -12,7 +12,7 @@ module io.github.hikingc.matrixsdk {
   requires tools.jackson.core;
   requires tools.jackson.databind;
   exports io.github.hikingc.matrixsdk.services.utils.deserializers to tools.jackson.databind;
-
+  opens io.github.hikingc.matrixsdk.api.identifiers to tools.jackson.databind;
 
   // Logging
   requires org.slf4j;
