@@ -1,9 +1,10 @@
 package io.github.hikingc.matrixsdk.api.events.matrix;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jspecify.annotations.NonNull;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
-public record StreamMetadata(
-    Boolean audioMuted,
-    @NonNull @JsonProperty(required = true) String purpose,
-    Boolean videoMuted) {}
+public record StreamMetadata(Boolean audioMuted, Boolean videoMuted) {
+  @JsonGetter("type")
+  public String getType() {
+    return "answer";
+  }
+}
