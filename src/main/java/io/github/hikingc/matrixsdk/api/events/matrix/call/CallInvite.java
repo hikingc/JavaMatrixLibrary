@@ -2,7 +2,6 @@ package io.github.hikingc.matrixsdk.api.events.matrix.call;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.hikingc.matrixsdk.api.events.matrix.MessageEventContent;
-import io.github.hikingc.matrixsdk.api.events.matrix.StreamMetadata;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import java.util.Map;
 import org.jspecify.annotations.NonNull;

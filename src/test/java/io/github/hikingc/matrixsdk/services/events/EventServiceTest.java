@@ -701,7 +701,7 @@ class EventServiceTest {
                         """;
 
     Map<String, StreamMetadata> streamMetadata =
-        Map.of("stream_1", new StreamMetadata(false, false));
+        Map.of("stream_1", new StreamMetadata(false, PurposeType.SCREEN_SHARE, false));
 
     return Stream.of(
         Arguments.of(

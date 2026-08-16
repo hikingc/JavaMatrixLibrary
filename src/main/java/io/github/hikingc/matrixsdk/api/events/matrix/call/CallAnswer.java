@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
 import io.github.hikingc.matrixsdk.api.events.matrix.MessageEventContent;
-import io.github.hikingc.matrixsdk.api.events.matrix.StreamMetadata;
 import org.jspecify.annotations.NonNull;
 
 public record CallAnswer(
