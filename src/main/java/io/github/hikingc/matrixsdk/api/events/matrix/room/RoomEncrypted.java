@@ -9,6 +9,6 @@ import tools.jackson.databind.annotation.JsonDeserialize;
 public record RoomEncrypted(
     @NonNull @JsonProperty(required = true) String algorithm,
     @NonNull @JsonDeserialize(using = CiphertextDeserializer.class) @JsonProperty(required = true)
-    Ciphertext cipherText,
+    Ciphertext ciphertext,
     String sessionId)
     implements MessageEventContent {}
