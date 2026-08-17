@@ -13,9 +13,11 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ValueDeserializer;
 
 /// Utility class meant to handle and notify about bad JSON payloads.
-public final class TolerantEventListDeserializer extends ValueDeserializer<List<ClientEvent<?>>> {
+///
+/// @apiNote WIP class.
+public final class HandlerEventDeserializer extends ValueDeserializer<List<ClientEvent<?>>> {
 
-  private static final Logger log = LoggerFactory.getLogger(TolerantEventListDeserializer.class);
+  private static final Logger log = LoggerFactory.getLogger(HandlerEventDeserializer.class);
 
   @Override
   public List<ClientEvent<?>> deserialize(JsonParser p, DeserializationContext ctx) {
@@ -30,7 +32,7 @@ public final class TolerantEventListDeserializer extends ValueDeserializer<List<
         result.add(event);
       } catch (JacksonException e) {
         log.warn(
-            "Skipping malformed event — event_id={} type={} state_key={} sender={}: {}",
+            "Skipping malformed event -> event_id={} type={} state_key={} sender={}: {}",
             node.path("event_id").asString("?"),
             node.path("type").asString("?"),
             node.path("state_key").asString("-"),

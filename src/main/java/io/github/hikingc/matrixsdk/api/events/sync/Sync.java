@@ -7,7 +7,7 @@ import io.github.hikingc.matrixsdk.api.events.matrix.ephemeral.EphemeralPresence
 import java.util.List;
 import java.util.Map;
 
-import io.github.hikingc.matrixsdk.services.utils.handlers.TolerantEventListDeserializer;
+import io.github.hikingc.matrixsdk.services.utils.handlers.HandlerEventDeserializer;
 import org.jspecify.annotations.NonNull;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
@@ -164,7 +164,7 @@ public record Sync(
   ///
   /// @param events the state events.
   public record State(
-          @JsonDeserialize(using = TolerantEventListDeserializer.class)
+          @JsonDeserialize(using = HandlerEventDeserializer.class)
           List<ClientEvent<?>> events) {}
 
   /// A paginated batch of timeline events for a room.
