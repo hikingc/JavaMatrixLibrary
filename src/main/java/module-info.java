@@ -11,7 +11,7 @@ module io.github.hikingc.matrixsdk {
   // Required for JSON manipulation
   requires tools.jackson.core;
   requires tools.jackson.databind;
-  exports io.github.hikingc.matrixsdk.services.utils.deserializers to tools.jackson.databind;
+  opens io.github.hikingc.matrixsdk.services.utils.handlers to tools.jackson.databind;
   opens io.github.hikingc.matrixsdk.api.identifiers to tools.jackson.databind;
 
   // Logging

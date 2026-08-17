@@ -1,4 +1,4 @@
-package io.github.hikingc.matrixsdk.services.utils.deserializers;
+package io.github.hikingc.matrixsdk.services.utils.handlers;
 
 import io.github.hikingc.matrixsdk.api.events.matrix.room.Ciphertext;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.CiphertextInfo;

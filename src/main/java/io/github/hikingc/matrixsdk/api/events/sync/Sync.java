@@ -6,7 +6,10 @@ import io.github.hikingc.matrixsdk.api.events.EphemeralEvent;
 import io.github.hikingc.matrixsdk.api.events.matrix.ephemeral.EphemeralPresence;
 import java.util.List;
 import java.util.Map;
+
+import io.github.hikingc.matrixsdk.services.utils.handlers.TolerantEventListDeserializer;
 import org.jspecify.annotations.NonNull;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 /// Represents the response body of a `/sync` request against a Matrix homeserver.
 ///
@@ -160,7 +163,9 @@ public record Sync(
   /// A batch of room state events.
   ///
   /// @param events the state events.
-  public record State(List<ClientEvent<?>> events) {}
+  public record State(
+          @JsonDeserialize(using = TolerantEventListDeserializer.class)
+          List<ClientEvent<?>> events) {}
 
   /// A paginated batch of timeline events for a room.
   ///
