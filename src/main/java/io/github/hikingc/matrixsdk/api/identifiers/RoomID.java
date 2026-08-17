@@ -36,12 +36,7 @@ public final class RoomID implements Identifier {
   /// @throws NullPointerException if the [String] is null.
   public static RoomID create(String rawRoomId) {
     Objects.requireNonNull(rawRoomId, "Room ID must not be null");
-    Validator.validateSigilId(rawRoomId, '!', "Room ID", false, true);
-    int colonIdx = rawRoomId.indexOf(':');
-    if (colonIdx == -1) {
-      return new RoomID(rawRoomId.substring(1), null);
-    }
-    return new RoomID(rawRoomId.substring(1, colonIdx), rawRoomId.substring(colonIdx + 1));
+    return of(rawRoomId, false);
   }
 
   @JsonCreator
@@ -51,7 +46,7 @@ public final class RoomID implements Identifier {
 
   private static RoomID of(String value, boolean strict) {
     Objects.requireNonNull(value, "Room ID must not be null");
-    Validator.validateSigilId(value, '!', "Room ID", strict, false);
+    Validator.validateSigilId(value, '!', "Room ID", strict, true);
     int colonIdx = value.indexOf(':');
     if (colonIdx == -1) {
       return new RoomID(value.substring(1), null);
@@ -75,6 +70,6 @@ public final class RoomID implements Identifier {
   @Override
   @JsonValue
   public String toString() {
-    return "!" + opaqueId + ":" + domain;
+    return domain == null ? "!" + opaqueId : "!" + opaqueId + ":" + domain;
   }
 }
