@@ -58,7 +58,7 @@ public class HttpTransport {
   /// @throws MatrixIOException if an I/O error has occurred while parsing the response.
   /// @throws MatrixNetworkException when the server responds with an unsuccessful HTTP Code.
   private void validateResponse(int code, String body) {
-    logger.info("Validate response code: {}, for body: {}", code, body);
+    logger.debug("Validate response code: {}, for body: {}", code, body);
     if (code >= 200 && code < 300) {
       return;
     }
