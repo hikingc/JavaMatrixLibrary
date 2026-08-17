@@ -3,7 +3,7 @@ package io.github.hikingc.matrixsdk.api.events.matrix.room;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.hikingc.matrixsdk.api.events.matrix.MessageEventContent;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.*;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.message.*;
 
 /// Interface that enforces fields required by all `m.room.message` content events.
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "msgtype")

@@ -1,7 +1,7 @@
 package io.github.hikingc.matrixsdk.api.events.matrix;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.ImageInfo;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.message.ImageInfo;
 import java.net.URI;
 
 import org.jspecify.annotations.NonNull;

@@ -1,8 +1,8 @@
 package io.github.hikingc.matrixsdk.api.events.matrix.room;
 
 import io.github.hikingc.matrixsdk.api.events.matrix.StateEventContent;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.HasInfo;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.messages.ThumbnailInfo;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.message.HasInfo;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.message.ThumbnailInfo;
 import java.net.URI;
 
 public record RoomAvatar(AvatarInfo info, URI url) implements StateEventContent {

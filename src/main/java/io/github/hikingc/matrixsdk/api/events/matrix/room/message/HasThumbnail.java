@@ -1,4 +1,4 @@
-package io.github.hikingc.matrixsdk.api.events.matrix.room.messages;
+package io.github.hikingc.matrixsdk.api.events.matrix.room.message;
 
 import java.net.URI;
 
