@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.jackson.core.exc.StreamReadException;
 
 /// [HttpTransport] handles all network-related tasks shared across the library, including issuing
@@ -40,6 +42,8 @@ public class HttpTransport {
   private static final String BEARER = "Bearer ";
   private final HttpClient client;
 
+  Logger logger = LoggerFactory.getLogger(HttpTransport.class);
+
   /// Constructor to initialize and build the HTTP Client.
   ///
   /// @param timeOut of the client
@@ -54,6 +58,7 @@ public class HttpTransport {
   /// @throws MatrixIOException if an I/O error has occurred while parsing the response.
   /// @throws MatrixNetworkException when the server responds with an unsuccessful HTTP Code.
   private void validateResponse(int code, String body) {
+    logger.info("Validate response code: {}, for body: {}", code, body);
     if (code >= 200 && code < 300) {
       return;
     }
