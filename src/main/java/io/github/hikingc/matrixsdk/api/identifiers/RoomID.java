@@ -35,13 +35,11 @@ public final class RoomID implements Identifier {
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
   public static RoomID create(String rawRoomId) {
-    Objects.requireNonNull(rawRoomId, "Room ID" + " must not be null");
-
-    Validator.validateSigilId(rawRoomId, '!', "Room ID", false);
-
+    Objects.requireNonNull(rawRoomId, "Room ID must not be null");
+    Validator.validateSigilId(rawRoomId, '!', "Room ID", false, true);
     int colonIdx = rawRoomId.indexOf(':');
     if (colonIdx == -1) {
-      throw new IllegalArgumentException("Room ID missing domain: " + rawRoomId);
+      return new RoomID(rawRoomId.substring(1), null);
     }
     return new RoomID(rawRoomId.substring(1, colonIdx), rawRoomId.substring(colonIdx + 1));
   }
@@ -52,10 +50,11 @@ public final class RoomID implements Identifier {
   }
 
   private static RoomID of(String value, boolean strict) {
-    Validator.validateSigilId(value, '!', "Room ID", strict);
+    Objects.requireNonNull(value, "Room ID must not be null");
+    Validator.validateSigilId(value, '!', "Room ID", strict, false);
     int colonIdx = value.indexOf(':');
     if (colonIdx == -1) {
-      throw new IllegalArgumentException("Room ID missing domain: " + value);
+      return new RoomID(value.substring(1), null);
     }
     return new RoomID(value.substring(1, colonIdx), value.substring(colonIdx + 1));
   }

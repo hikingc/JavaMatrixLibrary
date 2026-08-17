@@ -23,7 +23,11 @@ class RoomIDTest {
         "!abc123:example.org:8448",
         "!abc123:[2001:db8::1]",
         "!abc123:[2001:db8::1]:8448",
-        "!abc123:127.0.0.1"
+        "!abc123:127.0.0.1",
+        "!AaBbCc123_-XyZ", // v12
+        "!abc123", // v12
+        "!a", // v12
+        "!opaque.with-chars_and~more", // v12
       })
   void withValidStrings_ReturnRoomID(String roomId) {
     assertDoesNotThrow(() -> RoomID.create(roomId), "Exception not expected for input: " + roomId);
@@ -35,7 +39,6 @@ class RoomIDTest {
         "abc123:example.org", // missing leading sigil
         "#abc123:example.org", // wrong sigil (alias, not id)
         "!:example.org", // empty opaque id
-        "!abc123", // missing colon/domain
         "!abc123:", // empty domain
         "!abc 123:example.org", // whitespace in opaque id
         "!abc123:exa mple.org", // whitespace in domain
@@ -44,7 +47,9 @@ class RoomIDTest {
         "!abc123:example.org:99999", // port out of range
         "!abc123:[2001:db8::1", // unterminated IPv6 literal
         "",
-        "!"
+        "!",
+        "!abc123:", // trailing colon w/ empty domain
+        "!abc 123", // whitespace still invalid
       })
   void withInvalidStrings_ThrowsException(String roomId) {
     assertThrows(

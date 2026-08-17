@@ -22,13 +22,18 @@ public final class Validator {
   /// well-formedness, and that a server name actually follows the colon. Optionally restricts the
   /// opaqueId to alphanumeric characters.
   ///
-  /// @param value the raw [String] to be evaluated.
-  /// @param sigil the prefix of the ID.
-  /// @param name it's name
+  /// @param value                           the raw [String] to be evaluated.
+  /// @param sigil                           the prefix of the ID.
+  /// @param name                            it's name
   /// @param restrictLocalpartToAlphanumeric whether it should be evaluated against only
   ///   alphanumeric characters
+  /// @param domainOptional
   static void validateSigilId(
-      String value, char sigil, String name, boolean restrictLocalpartToAlphanumeric) {
+          String value,
+          char sigil,
+          String name,
+          boolean restrictLocalpartToAlphanumeric,
+          boolean domainOptional) {
     Objects.requireNonNull(value, name + " must not be null");
 
     if (value.isEmpty()) {
@@ -42,32 +47,34 @@ public final class Validator {
     validateSigil(value, sigil, name);
 
     int firstColon = value.indexOf(':');
-    if (firstColon < 0) {
+
+    if (firstColon < 0 && !domainOptional) {
       throw new IllegalArgumentException(
-          name + " must contain ':' separating opaqueId from server name");
+              name + " must contain ':' separating opaqueId from server name");
     }
 
-    // Check if we have strings with nothing between the sigil and the :
-    if (firstColon == 1) {
+    int opaqueIdEnd = firstColon < 0 ? value.length() : firstColon;
+    if (opaqueIdEnd == 1) {
       throw new IllegalArgumentException(name + " must not have an empty opaqueId");
     }
 
-    String localPart = value.substring(1, firstColon);
-    String serverName = value.substring(firstColon + 1);
-
-    // NUL is banned everywhere in the identifier; ':' is banned within the
-    // opaqueId specifically (the separator colon is exactly firstColon, so it's
-    // excluded from localPart already — serverName may legitimately contain ':'
-    // for IPv6 literals or an explicit port).
+    String localPart = value.substring(1, opaqueIdEnd);
     validateCodePoints(localPart, name, true);
+
+    if (restrictLocalpartToAlphanumeric && !localPart.matches("[a-zA-Z0-9]+")) {
+      throw new IllegalArgumentException(
+              name + " opaqueId should only contain alphanumeric characters");
+    }
+
+    if (firstColon < 0) {
+      return; // no domain present, and that's allowed for this identifier type
+    }
+
+    String serverName = value.substring(firstColon + 1);
     validateCodePoints(serverName, name, false);
 
     if (!validateDomain(serverName)) {
       throw new IllegalArgumentException(name + " must contain a valid server name after ':'");
-    }
-    if (restrictLocalpartToAlphanumeric && !localPart.matches("[a-zA-Z0-9]+")) {
-      throw new IllegalArgumentException(
-          name + " opaqueId should only contain alphanumeric characters");
     }
   }
 

@@ -38,7 +38,7 @@ public final class RoomAlias implements Identifier {
   public static RoomAlias create(String rawAliasId) {
     Objects.requireNonNull(rawAliasId, "Alias ID" + " must not be null");
 
-    Validator.validateSigilId(rawAliasId, '#', "Room Alias", false);
+    Validator.validateSigilId(rawAliasId, '#', "Room Alias", false,true );
 
     int colonIdx = rawAliasId.indexOf(':');
     if (colonIdx == -1) {
