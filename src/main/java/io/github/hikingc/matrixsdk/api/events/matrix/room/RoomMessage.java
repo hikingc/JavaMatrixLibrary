@@ -8,7 +8,14 @@ import io.github.hikingc.matrixsdk.api.events.matrix.room.message.*;
 /// Interface that enforces fields required by all `m.room.message` content events.
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "msgtype")
 public sealed interface RoomMessage extends MessageEventContent
-        permits AudioContent, FileContent, LocationContent, ImageContent, TextContent, VideoContent {
+    permits AudioContent,
+        EmoteContent,
+        FileContent,
+        ImageContent,
+        LocationContent,
+        NoticeContent,
+        TextContent,
+        VideoContent {
 
   /// Message type constant field required by all types of messages.
   ///
