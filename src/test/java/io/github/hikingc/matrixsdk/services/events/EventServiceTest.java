@@ -619,8 +619,8 @@ class EventServiceTest {
                 new RoomTopic.TopicContentBlock(
                     List.of(
                         new RoomTopic.TopicContentBlock.TextualRepresentation(
-                            "Test topic", "mimetype")))),
-            ""),
+                            "Test topic", "text/plain"))),
+                "text/plain"),""),
         Arguments.of(new ServerACL(List.of("*"), true, List.of()), ""),
         Arguments.of(
             new RoomThirdPartyInvite(
