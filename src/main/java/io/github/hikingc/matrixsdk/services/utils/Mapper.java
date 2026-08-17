@@ -1,6 +1,6 @@
 package io.github.hikingc.matrixsdk.services.utils;
 
-import io.github.hikingc.matrixsdk.services.utils.deserializers.CiphertextDeserializer;
+import io.github.hikingc.matrixsdk.services.utils.handlers.CiphertextDeserializer;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.Ciphertext;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import java.util.List;
@@ -15,16 +15,16 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.ObjectNode;
 
-/// [Mapper] handles the global configuration of an [ObjectMapper] instance and also exposes
+/// [Mapper] handles the global configuration of a [JsonMapper] instance and also exposes
 /// additional methods to parse JSON [String] responses safely.
 @NullMarked
 public class Mapper {
 
-  private static final ObjectMapper INSTANCE = buildMapper();
+  private static final JsonMapper INSTANCE = buildMapper();
 
   private Mapper() {}
 
-  /// Returns the shared [ObjectMapper] instance used for all usages in the library.
+  /// Returns the shared [JsonMapper] instance used for all usages in the library.
   ///
   /// The instance only modified configuration is [PropertyNamingStrategies#SNAKE_CASE] to match the
   /// Matrix spec's conventions.
@@ -34,7 +34,7 @@ public class Mapper {
     return INSTANCE;
   }
 
-  private static ObjectMapper buildMapper() {
+  private static JsonMapper buildMapper() {
     SimpleModule ciphertextModule = new SimpleModule();
     ciphertextModule.addDeserializer(Ciphertext.class, new CiphertextDeserializer());
 
