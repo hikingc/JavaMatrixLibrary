@@ -34,7 +34,6 @@ public final class RoomID implements Identifier {
   /// @return a [RoomID].
   /// @throws IllegalArgumentException if the [String] has broken a rule from the spec.
   /// @throws NullPointerException if the [String] is null.
-  @JsonCreator
   public static RoomID create(String rawRoomId) {
     Objects.requireNonNull(rawRoomId, "Room ID" + " must not be null");
 
@@ -45,6 +44,20 @@ public final class RoomID implements Identifier {
       throw new IllegalArgumentException("Room ID missing domain: " + rawRoomId);
     }
     return new RoomID(rawRoomId.substring(1, colonIdx), rawRoomId.substring(colonIdx + 1));
+  }
+
+  @JsonCreator
+  private static RoomID receive(String value) {
+    return of(value, false);
+  }
+
+  private static RoomID of(String value, boolean strict) {
+    Validator.validateSigilId(value, '!', "Room ID", strict);
+    int colonIdx = value.indexOf(':');
+    if (colonIdx == -1) {
+      throw new IllegalArgumentException("Room ID missing domain: " + value);
+    }
+    return new RoomID(value.substring(1, colonIdx), value.substring(colonIdx + 1));
   }
 
   @Override
