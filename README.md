@@ -1,5 +1,5 @@
 > [!CAUTION]
-> This project is in early development. APIs may change without notice — use at your own risk.
+> 17/08/2026 - While the library is in development. Grave changes to the API should not be a concern any longe.
 
 # A Matrix Client SDK for Java
 
@@ -46,7 +46,7 @@ The baseline to reach v1.0 is to implement all endpoints that are required in th
 - Be able to send and receive events seamlessly without handling raw JSON.
 - Get room and server information without losing any data field while deserializing.
 
-## Current limitations
+## Current limitations & project scope
 
 1. This project does not handle multimedia resources, it _does_ expose the necessary Objects to handle serialization
    (RoomMessage) but consumers are required to bring their own library to pass required metadata.
@@ -54,14 +54,16 @@ The baseline to reach v1.0 is to implement all endpoints that are required in th
    _does_ recognize these events with `UnknownEvent.java` but consumers will be required to cast to a proper Object
    type.
 3. Resource serialization/deserialization depends heavily on Jackson 3.0.
+4. There is a limit of tolerance to wrongly created events, but in general the library will not attempt to serialize
+   badly created objects.
 
-## Installation
+## Usage
 
-(None currently!)
+Currently, the only way to use this library is to compile it on your own using ```mvn compile```.
 
 ### Requirements
 
-- Java 23+
+- Java 25+
 
 ## Testing
 
@@ -83,6 +85,8 @@ To run the test suite:
 
 - [Jackson](https://github.com/FasterXML/jackson) required for JSON handling.
 - [java-http](https://github.com/FusionAuth/java-http) required for creating a small server for callbacks.
+- [Jspecify](https://jspecify.dev/) allows handling null values with ease.
+- [SLF4J](https://www.slf4j.org/) required for logging.
 
 ## License
 
