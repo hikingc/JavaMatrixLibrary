@@ -16,13 +16,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 @ExtendWith(InstancioExtension.class)
 @WireMockTest
 class FilterServiceTest {
 
-  private static final ObjectMapper mapper = Mapper.getInstance();
+  private static final JsonMapper mapper = Mapper.getInstance();
   private static final String AUTH_TOKEN = "1234";
   private static final UserID USER_ID = UserID.create("@matrix:example.org");
   private static MatrixClient client;
