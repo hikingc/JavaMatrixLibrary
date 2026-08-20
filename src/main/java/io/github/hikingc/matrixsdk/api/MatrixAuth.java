@@ -154,8 +154,9 @@ public class MatrixAuth implements Auth {
     String codeVerifier = generateCodeVerifier();
     String codeChallenge = generateCodeChallenge(codeVerifier);
     String state = generateRandomUrlSafeString(24);
+    //https://element-hq.github.io/matrix-authentication-service/reference/scopes.html#urnmatrixclientapi
     String scope =
-        "urn:matrix:org.matrix.msc2967.client:api:* urn:matrix:org.matrix.msc2967.client:device:"
+        "urn:matrix:client:api:* urn:matrix:client:device:"
             + deviceId;
 
     Map<String, Object> mapAuth = new HashMap<>();
