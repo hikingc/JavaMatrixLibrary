@@ -61,8 +61,8 @@ public class Mapper {
     return JsonMapper.builder()
         .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
         .addModule(ciphertextModule)
-        .addModule(new BlackbirdModule())
         .addModule(handlerEventModule)
+        .addModule(new BlackbirdModule())
         .build();
   }
 
