@@ -23,7 +23,6 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.jackson.core.exc.StreamReadException;
 
 /// [HttpTransport] handles all network-related tasks shared across the library, including issuing
 /// requests, processing responses, and URI encoding.
@@ -55,7 +54,6 @@ public class HttpTransport {
   ///
   /// @param code an HTTP Code.
   /// @param body the response body from the server.
-  /// @throws MatrixIOException if an I/O error has occurred while parsing the response.
   /// @throws MatrixNetworkException when the server responds with an unsuccessful HTTP Code.
   private void validateResponse(int code, String body) {
     logger.debug("Validate response code: {}, for body: {}", code, body);
@@ -64,14 +62,14 @@ public class HttpTransport {
     }
 
     if (body.isBlank()) {
-      throw new MatrixNetworkException("Server returned with unknown error");
+      throw new MatrixNetworkException("Server returned with HTTP Code:" + code);
     }
 
     ErrorResponse errorResponse;
     try {
       errorResponse = Mapper.getObjectFromString(body, ErrorResponse.class);
-    } catch (StreamReadException e) {
-      throw new MatrixIOException("Server returned with malformed response", e);
+    } catch (MatrixIOException e) {
+      throw new MatrixNetworkException("Server returned with unknown error, HTTP Code:" + code, e);
     }
 
     throw new MatrixNetworkException(
@@ -160,7 +158,7 @@ public class HttpTransport {
   /// @param body a JSON [String].
   /// @return a JSON [String].
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
-  /// @throws MatrixNetworkException if the operation has been interrupted.
+  /// @throws MatrixNetworkException if the operation has been interrupted or a server returned with unsuccessful HTTP Code.
   /// @throws IllegalArgumentException if the path was not supplied.
   public String postAuth(URI path, @Nullable String body) {
     var builderRequest = HttpRequest.newBuilder().uri(path);
@@ -195,7 +193,7 @@ public class HttpTransport {
   /// @param authToken if supplied, the `Bearer` token.
   /// @return a JSON [String] when the operation is successful.
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
-  /// @throws MatrixNetworkException if the operation has been interrupted.
+  /// @throws MatrixNetworkException if the operation has been interrupted or a server returned with unsuccessful HTTP Code.
   /// @throws IllegalArgumentException if the path was not supplied.
   public String putRequest(URI path, @Nullable String body, String authToken) {
 
@@ -233,7 +231,7 @@ public class HttpTransport {
   /// @param authToken if supplied, the `Bearer` token.
   /// @return a JSON [String].
   /// @throws MatrixIOException if an I/O error has occurred while sending the request
-  /// @throws MatrixNetworkException if the operation has been interrupted
+  /// @throws MatrixNetworkException if the operation has been interrupted or a server returned with unsuccessful HTTP Code.
   /// @throws IllegalArgumentException if the path was not supplied
   public String putResource(URI path, Path resource, String authToken) {
     HttpRequest uploadRequest;
@@ -270,7 +268,7 @@ public class HttpTransport {
   /// @param authToken if supplied, the `Bearer` token.
   /// @return a JSON [String].
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
-  /// @throws MatrixNetworkException if the operation has been interrupted.
+  /// @throws MatrixNetworkException if the operation has been interrupted or a server returned with unsuccessful HTTP Code.
   /// @throws IllegalArgumentException if the path was not supplied.
   public String deleteRequest(URI path, String authToken) {
     HttpRequest deleteRequest =
