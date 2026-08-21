@@ -7,6 +7,8 @@ import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import java.util.Map;
 
+///
+ /// @param receipts
 public record EphemeralReceipt(@JsonValue Map<EventID, EventReceipts> receipts) implements EphemeralContent {
   public record EventReceipts(
       @JsonProperty("m.read") Map<UserID, Receipt> mRead,
