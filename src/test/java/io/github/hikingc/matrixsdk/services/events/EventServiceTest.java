@@ -620,7 +620,8 @@ class EventServiceTest {
                     List.of(
                         new RoomTopic.TopicContentBlock.TextualRepresentation(
                             "Test topic", "text/plain"))),
-                "text/plain"),""),
+                "text/plain"),
+            ""),
         Arguments.of(new ServerACL(List.of("*"), true, List.of()), ""),
         Arguments.of(
             new RoomThirdPartyInvite(
@@ -740,37 +741,37 @@ class EventServiceTest {
         Arguments.of(
             new CallInvite(
                 callId,
+                partyId,
+                version,
                 userId,
                 lifetime,
-                new CallInvite.Offer("offer", sdpOffer),
-                partyId,
-                streamMetadata,
-                version),
+                new CallInvite.Offer(sdpOffer),
+                streamMetadata),
             30000L),
         Arguments.of(
             new CallCandidates(
                 callId,
+                partyId,
+                version,
                 List.of(
                     new CallCandidates.Candidate(
                         "candidate:842163049 1 udp 1677729535 203.0.113.5 54609 typ srflx raddr 192.168.1.10 rport 54609",
                         0,
-                        "0")),
-                partyId,
-                version)),
+                        "0")))),
         Arguments.of(
             new CallAnswer(
-                new Answer(sdpAnswer, "answer"), callId, partyId, streamMetadata, version)),
-        Arguments.of(new CallSelectAnswer(callId, partyId, otherPartyId, version)),
+                callId, partyId, version, new CallAnswer.Answer(sdpAnswer), streamMetadata)),
+        Arguments.of(new CallSelectAnswer(partyId, callId, version, otherPartyId)),
         Arguments.of(
             new CallNegotiate(
                 callId,
-                new CallNegotiate.Description(sdpOffer, DescriptionType.OFFER),
-                lifetime,
                 partyId,
-                streamMetadata,
-                version)),
+                version,
+                new CallNegotiate.Description(sdpOffer, CallSessionDescriptorType.OFFER),
+                lifetime,
+                streamMetadata)),
         Arguments.of(new CallReject(callId, partyId, version)),
-        Arguments.of(new CallHangup(callId, partyId, version)),
+        Arguments.of(new CallHangup(callId, partyId, version, ReasonType.USER_HANGUP)),
         Arguments.of(
             new KeyVerificationRequest(
                 "DEVICEID789JKL", List.of("m.sas.v1"), 1_755_000_000_000L, "transaction-8f3a9c")),
