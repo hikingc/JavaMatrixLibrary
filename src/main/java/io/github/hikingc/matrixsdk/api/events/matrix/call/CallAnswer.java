@@ -24,18 +24,18 @@ public record CallAnswer(
     @JsonProperty(required = true) Answer answer,
     @Nullable Map<String, StreamMetadata> sdp_stream_metadata)
     implements MessageEventContent, CallEvent {
-    /// A session descriptor for [CallAnswer#answer()]
-    ///
-    /// @param sdp the SDP text of the session description.
-    @NullMarked
-    public static record Answer(@JsonProperty(required = true) String sdp) {
+  /// A session descriptor for [CallAnswer#answer()]
+  ///
+  /// @param sdp the SDP text of the session description.
+  @NullMarked
+  public record Answer(@JsonProperty(required = true) String sdp) {
 
-      /// The type of session descriptor
-      ///
-      /// @return always [CallSessionDescriptorType#ANSWER]
-      @JsonProperty("type")
-      public CallSessionDescriptorType type() {
-        return CallSessionDescriptorType.ANSWER;
-      }
+    /// The type of session descriptor
+    ///
+    /// @return always [CallSessionDescriptorType#ANSWER]
+    @JsonProperty("type")
+    public CallSessionDescriptorType type() {
+      return CallSessionDescriptorType.ANSWER;
     }
+  }
 }
