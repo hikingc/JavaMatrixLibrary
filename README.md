@@ -22,7 +22,7 @@ import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
 MatrixAuth auth = new MatrixAuth(URI.create("https://example.org")); // Set the URI of your Matrix server.
 DiscoveryResponse response = auth.fetchWellKnown(); // Fetch well known for future operations
 
-TokenMetadata token = auth.login(CLIENT_NAME, PORT, DEVICE_ID); // Set configuration parameters
+TokenMetadata token = auth.performOAuthLogin(CLIENT_NAME, PORT, DEVICE_ID); // Set configuration parameters
 // After doing the login with the server in your browser, you will be returned the tokens...
 MatrixClient client = MatrixClient.create(response, token.accessToken()); // Use any service you want!
 
@@ -55,7 +55,7 @@ The baseline to reach v1.0 is to implement all endpoints that are required in th
    type.
 3. Resource serialization/deserialization depends heavily on Jackson 3.0.
 4. There is a limit of tolerance to wrongly created events, but in general the library will not attempt to serialize
-   badly created objects.
+   badly created objects. See: https://github.com/matrix-org/matrix-spec-proposals/pull/2801 on why this is the case.
 
 ## Usage
 
