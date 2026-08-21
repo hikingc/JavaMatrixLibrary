@@ -10,14 +10,20 @@ import tools.jackson.core.JsonParser;
 import tools.jackson.core.JsonToken;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.databind.type.TypeFactory;
 
 /// Utility class meant to handle and notify about bad JSON payloads.
 ///
 /// @apiNote WIP class.
-public final class HandlerEventDeserializer extends ValueDeserializer<List<ClientEvent<?>>> {
+public final class HandlerEventDeserializer extends StdDeserializer<List<ClientEvent<?>>> {
 
   private static final Logger log = LoggerFactory.getLogger(HandlerEventDeserializer.class);
+
+  public HandlerEventDeserializer() {
+    super(
+        TypeFactory.createDefaultInstance().constructCollectionType(List.class, ClientEvent.class));
+  }
 
   @Override
   public List<ClientEvent<?>> deserialize(JsonParser p, DeserializationContext ctx) {

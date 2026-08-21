@@ -3,13 +3,22 @@ package io.github.hikingc.matrixsdk.services.utils.handlers;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.Ciphertext;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.CiphertextInfo;
 import java.util.Map;
+
+import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomEncrypted;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.databind.type.TypeFactory;
 
-public final class CiphertextDeserializer extends ValueDeserializer<Ciphertext> {
+/// Utility class with the intention of handling the Union type of [Ciphertext] field in
+/// [RoomEncrypted] content payloads.
+public final class CiphertextDeserializer extends StdDeserializer<Ciphertext> {
+  public CiphertextDeserializer() {
+    super(TypeFactory.createDefaultInstance().constructType(Ciphertext.class));
+  }
+
   @Override
   public Ciphertext deserialize(JsonParser p, DeserializationContext ctx) {
     JsonNode node = ctx.readTree(p);
