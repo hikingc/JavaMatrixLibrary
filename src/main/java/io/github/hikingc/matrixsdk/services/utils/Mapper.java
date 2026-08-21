@@ -1,8 +1,10 @@
 package io.github.hikingc.matrixsdk.services.utils;
 
+import io.github.hikingc.matrixsdk.api.events.ClientEvent;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.Ciphertext;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.services.utils.handlers.CiphertextDeserializer;
+import io.github.hikingc.matrixsdk.services.utils.handlers.HandlerEventDeserializer;
 import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.NullMarked;
@@ -11,9 +13,12 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.*;
+import tools.jackson.databind.deser.ValueDeserializerModifier;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.type.CollectionType;
+import tools.jackson.module.blackbird.BlackbirdModule;
 
 /// [Mapper] handles the global configuration of a [JsonMapper] instance and also exposes additional
 /// methods to parse JSON [String] responses safely.
@@ -37,10 +42,27 @@ public class Mapper {
   private static JsonMapper buildMapper() {
     SimpleModule ciphertextModule = new SimpleModule();
     ciphertextModule.addDeserializer(Ciphertext.class, new CiphertextDeserializer());
+    SimpleModule handlerEventModule = new SimpleModule();
+    handlerEventModule.setDeserializerModifier(
+        new ValueDeserializerModifier() {
+          @Override
+          public ValueDeserializer<?> modifyCollectionDeserializer(
+              DeserializationConfig config,
+              CollectionType type,
+              BeanDescription.Supplier beanDescRef,
+              ValueDeserializer<?> deserializer) {
+            if (type.getContentType().getRawClass() == ClientEvent.class) {
+              return new HandlerEventDeserializer();
+            }
+            return deserializer;
+          }
+        });
 
     return JsonMapper.builder()
         .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
         .addModule(ciphertextModule)
+        .addModule(new BlackbirdModule())
+        .addModule(handlerEventModule)
         .build();
   }
 
