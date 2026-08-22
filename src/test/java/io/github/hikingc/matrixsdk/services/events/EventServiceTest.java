@@ -779,7 +779,7 @@ class EventServiceTest {
             new KeyVerificationStart(
                 "DEVICEID789JKL",
                 new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationRequestEventID12345"), "m.reference"),
+                    EventID.create("$mYcVerificationRequestEventID12345")),
                 "m.sas.v1",
                 null,
                 "transaction-8f3a9c")),
@@ -789,7 +789,7 @@ class EventServiceTest {
                 "sha256",
                 "curve25519-hkdf-sha256",
                 new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationStartEventID67890"), "m.reference"),
+                    EventID.create("$mYcVerificationStartEventID67890")),
                 "hkdf-hmac-sha256",
                 List.of("decimal", "emoji"),
                 "transaction-8f3a9c")),
@@ -797,19 +797,19 @@ class EventServiceTest {
             new KeyVerificationMac(
                 "ed25519:DEVICEID789JKL",
                 new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationAcceptEventID54321"), "m.reference"),
+                    EventID.create("$mYcVerificationAcceptEventID54321")),
                 Map.of("ed25519:DEVICEID789JKL", "3s5f7Vn8xQpLzT2mWjR6oKcE9dY1bAuF4hJgN0iX7wI"),
                 "transaction-8f3a9c")),
         Arguments.of(
             new KeyVerificationDone(
                 new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationMacEventID11223"), "m.reference"),
+                    EventID.create("$mYcVerificationMacEventID11223")),
                 "transaction-8f3a9c")),
         Arguments.of(
             new KeyVerificationCancel(
-                "m.user",
+                CancelCode.Known.USER,
                 new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationStartEventID67890"), "m.reference"),
+                    EventID.create("$mYcVerificationStartEventID67890")),
                 "User cancelled the verification.",
                 "transaction-8f3a9c")));
   }
