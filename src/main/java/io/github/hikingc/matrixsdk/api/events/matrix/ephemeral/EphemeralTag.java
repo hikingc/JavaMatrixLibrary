@@ -7,7 +7,9 @@ import java.util.Map;
 ///
 /// @param tags the tags on the room and their contents.
 public record EphemeralTag(Map<String, Tag> tags) implements EphemeralContent {
-
-  /// @param order a number in a range `[0,1]` describing a relative position of the room under the given tag.
+  /// Information about the tag
+  ///
+  /// @param order a number in a range `[0,1]` describing a relative position of the room under the
+  ///   given tag.
   public record Tag(Float order) {}
 }
