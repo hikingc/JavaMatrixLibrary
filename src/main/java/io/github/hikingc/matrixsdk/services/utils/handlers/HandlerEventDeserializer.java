@@ -14,8 +14,7 @@ import tools.jackson.databind.deser.std.StdDeserializer;
 import tools.jackson.databind.type.TypeFactory;
 
 /// Utility class meant to handle and notify about bad JSON payloads.
-///
-/// @apiNote WIP class.
+/// @apiNote   https://github.com/matrix-org/matrix-spec-proposals/pull/2801
 public final class HandlerEventDeserializer extends StdDeserializer<List<ClientEvent<?>>> {
 
   private static final Logger log = LoggerFactory.getLogger(HandlerEventDeserializer.class);
