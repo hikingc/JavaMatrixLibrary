@@ -584,9 +584,7 @@ class EventServiceTest {
         Arguments.of(new RoomHistoryVisibility(HistoryVisibilityType.SHARED), ""),
         Arguments.of(
             new RoomJoinRules(
-                List.of(
-                    new RoomJoinRules.AllowCondition(
-                        RoomID.create("!spaceroom:example.org"), "m.room_membership")),
+                List.of(new RoomJoinRules.AllowCondition(RoomID.create("!spaceroom:example.org"))),
                 "restricted"),
             ""),
         Arguments.of(
@@ -611,7 +609,7 @@ class EventServiceTest {
                 RoomPowerLevels.Notifications.of(Map.of("room", 50)),
                 50,
                 0,
-                Map.of("@alice:example.org", 100),
+                Map.of(UserID.create("@alice:example.org"), 100),
                 0),
             ""),
         Arguments.of(
@@ -778,8 +776,7 @@ class EventServiceTest {
         Arguments.of(
             new KeyVerificationStart(
                 "DEVICEID789JKL",
-                new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationRequestEventID12345")),
+                new VerificationRelatesTo(EventID.create("$mYcVerificationRequestEventID12345")),
                 "m.sas.v1",
                 null,
                 "transaction-8f3a9c")),
@@ -788,28 +785,24 @@ class EventServiceTest {
                 "Yw2fjfz9pQ8dR1kLmN0vB3xC6eF7gH4iJ5kL9mN2oP1q",
                 "sha256",
                 "curve25519-hkdf-sha256",
-                new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationStartEventID67890")),
+                new VerificationRelatesTo(EventID.create("$mYcVerificationStartEventID67890")),
                 "hkdf-hmac-sha256",
                 List.of("decimal", "emoji"),
                 "transaction-8f3a9c")),
         Arguments.of(
             new KeyVerificationMac(
                 "ed25519:DEVICEID789JKL",
-                new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationAcceptEventID54321")),
+                new VerificationRelatesTo(EventID.create("$mYcVerificationAcceptEventID54321")),
                 Map.of("ed25519:DEVICEID789JKL", "3s5f7Vn8xQpLzT2mWjR6oKcE9dY1bAuF4hJgN0iX7wI"),
                 "transaction-8f3a9c")),
         Arguments.of(
             new KeyVerificationDone(
-                new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationMacEventID11223")),
+                new VerificationRelatesTo(EventID.create("$mYcVerificationMacEventID11223")),
                 "transaction-8f3a9c")),
         Arguments.of(
             new KeyVerificationCancel(
                 CancelCode.Known.USER,
-                new VerificationRelatesTo(
-                    EventID.create("$mYcVerificationStartEventID67890")),
+                new VerificationRelatesTo(EventID.create("$mYcVerificationStartEventID67890")),
                 "User cancelled the verification.",
                 "transaction-8f3a9c")));
   }

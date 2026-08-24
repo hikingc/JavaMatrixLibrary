@@ -11,7 +11,7 @@ import io.github.hikingc.matrixsdk.api.events.server.state.*;
 public sealed interface StateEvent<C extends StateEventContent> extends ClientEvent<C>
     permits SingletonStateEvent,
         RoomMemberEvent,
-        RoomThirdPartyEvent,
+        RoomThirdPartyInviteEvent,
         RoomTombstoneEvent,
         SpaceChildEvent,
         SpaceParentEvent { // Stripped state events are missing from this tree...

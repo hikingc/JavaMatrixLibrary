@@ -139,7 +139,7 @@ class RoomServiceTest {
                 null, // notifications — not present in source JSON
                 50, // redact
                 50, // stateDefault
-                Map.of("@alice:example.com", 100), // users
+                Map.of(UserID.create("@alice:example.com"), 100), // users
                 0 // users_default
                 ),
             CreationRoomType.PRIVATE_CHAT,

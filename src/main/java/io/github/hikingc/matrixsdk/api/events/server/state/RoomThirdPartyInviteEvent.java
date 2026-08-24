@@ -9,7 +9,7 @@ import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 
 @JsonTypeName("m.room.third_party_invite")
-public record RoomThirdPartyEvent(
+public record RoomThirdPartyInviteEvent(
     RoomThirdPartyInvite content,
     EventID eventId,
     Long originServerTs,
