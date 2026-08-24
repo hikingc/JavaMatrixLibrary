@@ -11,10 +11,8 @@ module io.github.hikingc.matrixsdk {
   // Required for JSON manipulation
   requires tools.jackson.core;
   requires tools.jackson.databind;
-  requires tools.jackson.module.blackbird;
   opens io.github.hikingc.matrixsdk.services.utils.handlers to tools.jackson.databind;
   opens io.github.hikingc.matrixsdk.api.identifiers to tools.jackson.databind;
-
   // Logging
   requires org.slf4j;
 

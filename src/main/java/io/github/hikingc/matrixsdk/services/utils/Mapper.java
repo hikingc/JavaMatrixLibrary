@@ -18,7 +18,6 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.type.CollectionType;
-import tools.jackson.module.blackbird.BlackbirdModule;
 
 /// [Mapper] handles the global configuration of a [JsonMapper] instance and also exposes additional
 /// methods to parse JSON [String] responses safely.
@@ -62,7 +61,6 @@ public class Mapper {
         .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
         .addModule(ciphertextModule)
         .addModule(handlerEventModule)
-        .addModule(new BlackbirdModule())
         .build();
   }
 
