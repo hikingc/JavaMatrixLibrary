@@ -10,7 +10,7 @@ import java.net.URI;
 import java.util.Objects;
 import org.jspecify.annotations.NullMarked;
 
-/// Main service implementation class of the Filter interface, providing the ability to create and
+/// Main service implementation class of the [Filter] interface, providing the ability to create and
 /// query filters.
 @NullMarked
 public class FilterService implements Filter {

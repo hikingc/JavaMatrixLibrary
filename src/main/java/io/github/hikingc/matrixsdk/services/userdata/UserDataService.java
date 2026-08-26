@@ -13,7 +13,7 @@ import java.util.Objects;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/// Main service implementation class of the UserData interface, providing all the required
+/// Main service implementation class of the [UserData] interface, providing all the required
 /// endpoints and records to perform activities such as the creation, modification, deletion and
 /// retrieval of profile data, and also for the query and search of users.
 @NullMarked
