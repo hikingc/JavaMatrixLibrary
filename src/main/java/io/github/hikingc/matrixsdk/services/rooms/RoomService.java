@@ -19,7 +19,7 @@ import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 
-/// Main service implementation class of the Room interface, providing all the required endpoints
+/// Main service implementation class of the [Room] interface, providing all the required endpoints
 /// and records to perform activities such as kicking, banning, listing of, and creation of rooms.
 @NullMarked
 public class RoomService implements Room {

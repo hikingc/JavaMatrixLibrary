@@ -25,6 +25,9 @@ import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 
+/// Main service implementation class of the [Event] interface, providing all the required endpoints
+/// and records to perform activities such as sending events, querying events, and delegating
+/// serialization tasks.
 @NullMarked
 public class EventService implements Event {
 
@@ -35,6 +38,9 @@ public class EventService implements Event {
 
   private final ClientContext context;
 
+  /// Service constructor to operate
+  ///
+  /// @param context the [ClientContext] of the facade
   public EventService(ClientContext context) {
     this.context = context;
   }
