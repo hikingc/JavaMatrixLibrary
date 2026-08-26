@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /// The configuration data that a server will follow to configure the room.
 ///
@@ -61,15 +63,29 @@ public record InitialRoomConfiguration(
   /// @param content The content of the event.
   /// @param stateKey The state\_key of the state event. Defaults to an empty string.
   /// @param type The type of event to send.
-  public record StateEvent(Object content, String stateKey, String type) {}
+  @NullMarked
+  public record StateEvent(
+      @JsonProperty(required = true) Object content,
+      @Nullable String stateKey,
+      @JsonProperty(required = true) String type) {}
 
   /// Represents third-party IDs to invite to the room.
   ///
-  /// @param address
-  /// @param idAccessToken
-  /// @param idServer
-  /// @param medium
-  public record Invite3pid(String address, String idAccessToken, String idServer, String medium) {}
+  /// @param address the invitee’s third-party identifier.
+  /// @param idAccessToken an access token previously registered with the identity server. Servers
+  ///   can treat this as optional to distinguish between r0.5-compatible clients and this
+  ///   specification version.
+  /// @param idServer the hostname+port of the identity server which should be used for third-party
+  ///   identifier lookups.
+  /// @param medium the kind of address being passed in the address field, for example email.
+  /// @see <a href="https://spec.matrix.org/v1.19/appendices/#3pid-types">List of 3pid-types
+  ///   (medium) on spec.</a>
+  @NullMarked
+  public record Invite3pid(
+      @JsonProperty(required = true) String address,
+      @JsonProperty(required = true) String idAccessToken,
+      @JsonProperty(required = true) String idServer,
+      @JsonProperty(required = true) String medium) {}
 
   /// Creates a federated, empty and private room with the name and topic desired.
   ///

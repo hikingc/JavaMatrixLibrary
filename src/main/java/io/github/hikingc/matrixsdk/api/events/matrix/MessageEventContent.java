@@ -6,7 +6,7 @@ import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomEncrypted;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomRedaction;
 
-/// Marker interface for input message events.
+/// Marker interface for input message content type events.
 public sealed interface MessageEventContent
     permits Reaction,
         Sticker,

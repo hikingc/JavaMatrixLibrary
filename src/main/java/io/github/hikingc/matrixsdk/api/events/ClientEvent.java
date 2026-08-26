@@ -22,26 +22,39 @@ import io.github.hikingc.matrixsdk.api.identifiers.UserID;
     defaultImpl = UnknownEvent.class)
 // This interface CANNOT permit anything other than these two.
 public sealed interface ClientEvent<T> permits StateEvent, MessageEvent, UnknownEvent {
-
+  /// a
+  ///
   /// @return the body of this event, as created by the user which sent it.
   T content();
 
+  /// a
+  ///
   /// @return the globally unique identifier for this event.
   EventID eventId();
 
+  /// a
+  ///
   /// @return timestamp (in milliseconds since the Unix epoch) on originating homeserver when this
   ///   event was sent.
   Long originServerTs();
 
+  /// a
+  ///
   /// @return the ID of the room associated with this event.
   RoomID roomId();
 
+  /// a
+  ///
   /// @return contains the fully-qualified ID of the user who sent this event.
   UserID sender();
 
+  /// a
+  ///
   /// @return the type of the event.
   String type();
 
+  /// a
+  ///
   /// @return optional extra information about the event.
   UnsignedData unsigned();
 }
