@@ -17,7 +17,7 @@ public sealed interface SingletonStateEvent<C extends StateEventContent> extends
         RoomNameEvent,
         RoomPinnedEventsEvent,
         RoomPowerLevelsEvent,
-        RoomServerACLEvent,
+        RoomServerAclEvent,
         RoomTopicEvent {
 
   @Override

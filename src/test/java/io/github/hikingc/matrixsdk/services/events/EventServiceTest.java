@@ -620,7 +620,7 @@ class EventServiceTest {
                             "Test topic", "text/plain"))),
                 "text/plain"),
             ""),
-        Arguments.of(new ServerACL(List.of("*"), true, List.of()), ""),
+        Arguments.of(new RoomServerAcl(List.of("*"), true, List.of()), ""),
         Arguments.of(
             new RoomThirdPartyInvite(
                 "Alice",
@@ -631,7 +631,7 @@ class EventServiceTest {
                         "https://identity.example.org/_matrix/identity/v2/pubkey/isvalid",
                         "anotherPublicKeyBase64Here"))),
             "token123"),
-        Arguments.of(new Tombstone("Upgraded", "!newroom:example.org"), ""),
+        Arguments.of(new RoomTombstone("Upgraded", "!newroom:example.org"), ""),
         Arguments.of(
             new SpaceChild("lexicographically_compare_me", false, List.of("example.org")),
             "!child:example.org"),

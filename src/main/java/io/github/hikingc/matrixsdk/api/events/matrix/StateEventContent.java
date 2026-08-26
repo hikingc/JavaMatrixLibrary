@@ -18,8 +18,8 @@ public sealed interface StateEventContent
         RoomPinnedEvents,
         RoomPowerLevels,
         RoomTopic,
-        ServerACL,
+        RoomServerAcl,
         RoomThirdPartyInvite,
-        Tombstone,
+        RoomTombstone,
         SpaceChild,
         SpaceParent {}

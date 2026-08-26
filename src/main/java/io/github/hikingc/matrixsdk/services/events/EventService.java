@@ -306,8 +306,8 @@ public class EventService implements Event {
       case SpaceChild _ -> "m.room.space_child";
       case SpaceParent _ -> "m.room.space_parent";
       case RoomEncryption _ -> "m.room.encryption";
-      case ServerACL _ -> "m.room.server_acl";
-      case Tombstone _ -> "m.room.tombstone";
+      case RoomServerAcl _ -> "m.room.server_acl";
+      case RoomTombstone _ -> "m.room.tombstone";
     };
   }
 

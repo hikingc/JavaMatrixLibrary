@@ -3,14 +3,14 @@ package io.github.hikingc.matrixsdk.api.events.server.state;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.StateEvent;
 import io.github.hikingc.matrixsdk.api.events.UnsignedData;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.Tombstone;
+import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomTombstone;
 import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 
 @JsonTypeName("m.room.tombstone")
 public record RoomTombstoneEvent(
-    Tombstone content,
+    RoomTombstone content,
     EventID eventId,
     Long originServerTs,
     RoomID roomId,
@@ -18,4 +18,4 @@ public record RoomTombstoneEvent(
     String stateKey,
     String type,
     UnsignedData unsigned)
-    implements StateEvent<Tombstone> {}
+    implements StateEvent<RoomTombstone> {}
