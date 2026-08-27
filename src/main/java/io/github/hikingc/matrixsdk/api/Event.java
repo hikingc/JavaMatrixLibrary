@@ -99,10 +99,10 @@ public interface Event {
   /// @param roomId the room ID to fetch data from.
   /// @param dir the [ChronologicalDirection] in which to search
   /// @param timestamp the timestamp to search from, as given in milliseconds since the Unix epoch.
-  /// @return [EventMetadata] if an event was found.
+  /// @return [EventTimestamp] if an event was found.
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws MatrixNetworkException when the response status is not successful.
-  EventMetadata getEventClosestToTimestamp(
+  EventTimestamp getEventClosestToTimestamp(
       RoomID roomId, ChronologicalDirection dir, int timestamp);
 
   /// Get a copy of the current state and the most recent messages in a room. Exclusively used for

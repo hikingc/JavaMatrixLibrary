@@ -379,7 +379,7 @@ class EventServiceTest {
     int randomUnixDate = Math.abs(new Random().nextInt());
     long originServerTs = 1432735824653L;
     stubFor(
-        get(urlPathEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID))
+        get(urlPathEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/timestamp_to_event"))
             .withQueryParam("dir", equalTo(chronologicalDirection.getValue()))
             .withQueryParam("ts", equalTo(String.valueOf(randomUnixDate)))
             .willReturn(

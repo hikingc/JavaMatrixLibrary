@@ -143,7 +143,7 @@ public class EventService implements Event {
   }
 
   @Override
-  public EventMetadata getEventClosestToTimestamp(
+  public EventTimestamp getEventClosestToTimestamp(
       RoomID roomId, ChronologicalDirection dir, int unixEpochMiliseconds) {
 
     if (unixEpochMiliseconds < 0) {
@@ -154,9 +154,11 @@ public class EventService implements Event {
     args.put("ts", unixEpochMiliseconds);
     var uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(), ROOM_ENDPOINT + roomId, args);
+            context.discoveryResponse().homeserver().baseUrl(),
+            ROOM_ENDPOINT + roomId + "/timestamp_to_event",
+            args);
     String response = httpTransport.getRequest(uri, context.token());
-    return Mapper.getObjectFromString(response, EventMetadata.class);
+    return Mapper.getObjectFromString(response, EventTimestamp.class);
   }
 
   @Override

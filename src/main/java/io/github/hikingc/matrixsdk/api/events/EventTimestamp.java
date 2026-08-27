@@ -11,6 +11,6 @@ import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 ///   This makes it easy to do a quick comparison to see if the `event_id` fetched is too far out of
 ///   range to be useful for your use case.
 
-public record EventMetadata(
+public record EventTimestamp(
     @JsonProperty(required = true) EventID eventId,
     @JsonProperty(required = true) long originServerTs) {}
