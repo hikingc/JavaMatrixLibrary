@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
+import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
 import io.github.hikingc.matrixsdk.api.events.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.call.*;
@@ -75,7 +76,11 @@ class EventServiceTest {
 
   @BeforeEach
   void createClient() {
-    client = MatrixClient.create(DISCOVERY_RESPONSE, AUTH_TOKEN);
+    client =
+        new MatrixClientBuilder()
+            .setDiscoveryResponse(DISCOVERY_RESPONSE)
+            .setAuthToken(AUTH_TOKEN)
+            .createMatrixClient();
   }
 
   @Test

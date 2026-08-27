@@ -6,7 +6,11 @@ import io.github.hikingc.matrixsdk.services.events.EventService;
 import io.github.hikingc.matrixsdk.services.filtering.FilterService;
 import io.github.hikingc.matrixsdk.services.rooms.RoomService;
 import io.github.hikingc.matrixsdk.services.userdata.UserDataService;
+import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
+import java.net.http.HttpClient;
+import java.time.Duration;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /// A [MatrixClient] provides all the functionality required to interact with a Matrix compliant
 /// server.
@@ -17,21 +21,18 @@ public class MatrixClient {
   private final UserData userDataService;
   private final Filter filter;
 
-  private MatrixClient(DiscoveryResponse discoveryResponse, String authToken) {
+  MatrixClient(
+      DiscoveryResponse discoveryResponse, String authToken, @Nullable HttpClient httpClient) {
+    HttpClient client =
+        httpClient == null
+            ? HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build()
+            : httpClient;
     var context = new ClientContext(authToken, discoveryResponse);
-    this.event = new EventService(context);
-    this.roomService = new RoomService(context);
-    this.userDataService = new UserDataService(context);
-    this.filter = new FilterService(context);
-  }
-
-  /// Default factory, which will initialize all services and set context data for further requests.
-  ///
-  /// @param discoveryResponse [DiscoveryResponse] of a server.
-  /// @param authToken a valid non-expired auth token.
-  /// @return an authenticated client.
-  public static MatrixClient create(DiscoveryResponse discoveryResponse, String authToken) {
-    return new MatrixClient(discoveryResponse, authToken);
+    HttpTransport httpTransport = new HttpTransport(client);
+    this.event = new EventService(context, httpTransport);
+    this.roomService = new RoomService(context, httpTransport);
+    this.userDataService = new UserDataService(context, httpTransport);
+    this.filter = new FilterService(context, httpTransport);
   }
 
   /// Exposes the underlying [Event] service for operations.

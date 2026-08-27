@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
+import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
 import io.github.hikingc.matrixsdk.api.filters.FilterDefinition;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
@@ -38,7 +39,11 @@ class FilterServiceTest {
 
   @BeforeEach
   void createClient() {
-    client = MatrixClient.create(DISCOVERY_RESPONSE, AUTH_TOKEN);
+    client =
+        new MatrixClientBuilder()
+            .setDiscoveryResponse(DISCOVERY_RESPONSE)
+            .setAuthToken(AUTH_TOKEN)
+            .createMatrixClient();
   }
 
   @Test

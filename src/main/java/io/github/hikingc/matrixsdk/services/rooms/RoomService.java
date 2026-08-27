@@ -36,14 +36,16 @@ public class RoomService implements Room {
   /// Common endpoint for other Directory events.
   private static final String DIRECTORY_ENDPOINT_ROOM = "/_matrix/client/v3/directory/room/";
 
-  private final HttpTransport httpTransport = new HttpTransport(10);
+  private final HttpTransport httpTransport;
   private final ClientContext context;
 
   /// Service constructor to operate
   ///
-  /// @param context the [ClientContext] of the facade
-  public RoomService(ClientContext context) {
+  /// @param context the [ClientContext] of the facade.
+  /// @param httpTransport a [HttpTransport] object.
+  public RoomService(ClientContext context, HttpTransport httpTransport) {
     this.context = context;
+    this.httpTransport = httpTransport;
   }
 
   @Override
@@ -152,7 +154,7 @@ public class RoomService implements Room {
 
   @Override
   public String joinByRoomIdOrAliasIfAllowed(
-          Identifier roomIdOrAlias, JoinRoomRequest request, List<String> via) {
+      Identifier roomIdOrAlias, JoinRoomRequest request, List<String> via) {
     if (Objects.requireNonNull(roomIdOrAlias) instanceof UserID) {
       throw new IllegalArgumentException("Wrong format type");
     }

@@ -35,7 +35,11 @@ class MatrixAPIClientTest {
   @Test
   void getWellKnown_WithAllRequiredProperties_thenReturnCorrectSerialization(
       WireMockRuntimeInfo wireMockRuntimeInfo) {
-    var client = MatrixClient.create(discoveryResponse, AUTH_TOKEN);
+    MatrixClient client =
+        new MatrixClientBuilder()
+            .setDiscoveryResponse(discoveryResponse)
+            .setAuthToken(AUTH_TOKEN)
+            .createMatrixClient();
     assertDoesNotThrow(() -> client, "The client should not throw given a good url.");
   }
 }

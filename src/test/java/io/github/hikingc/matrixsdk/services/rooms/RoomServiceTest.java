@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
+import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomPowerLevels;
 import io.github.hikingc.matrixsdk.api.identifiers.*;
 import io.github.hikingc.matrixsdk.api.rooms.*;
@@ -37,7 +38,11 @@ class RoomServiceTest {
 
   @BeforeEach
   void createClient() {
-    client = MatrixClient.create(DISCOVERY_RESPONSE, AUTH_TOKEN);
+    client =
+        new MatrixClientBuilder()
+            .setDiscoveryResponse(DISCOVERY_RESPONSE)
+            .setAuthToken(AUTH_TOKEN)
+            .createMatrixClient();
   }
 
   // -------------------------------------------------------------------------
@@ -273,7 +278,9 @@ class RoomServiceTest {
                     true))
             .willReturn(okJson("{}")));
 
-    client.room().inviteUser(
+    client
+        .room()
+        .inviteUser(
             ROOM_ID, new RoomMembershipRequest("Welcome!", UserID.create("@alice:example.com")));
 
     verify(postRequestedFor(urlEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/invite")));

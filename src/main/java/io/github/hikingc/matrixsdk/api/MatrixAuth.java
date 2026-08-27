@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -45,15 +46,17 @@ import tools.jackson.core.JacksonException;
 public class MatrixAuth implements Auth {
 
   private final Logger logger = LoggerFactory.getLogger(MatrixAuth.class);
-  private final HttpTransport httpTransport = new HttpTransport(10);
+  private final HttpTransport httpTransport;
   private final Random random = new SecureRandom();
   private final URI baseUrl;
 
   /// Constructor that instantiates the class.
   ///
   /// @param baseUrl the base [URI]
-  public MatrixAuth(URI baseUrl) {
+  /// @param httpClient an [HttpClient].
+  public MatrixAuth(URI baseUrl, HttpClient httpClient) {
     this.baseUrl = baseUrl;
+    this.httpTransport = new HttpTransport(httpClient);
   }
 
   private static String generateCodeChallenge(String codeVerifier) {

@@ -16,14 +16,16 @@ import org.jspecify.annotations.NullMarked;
 public class FilterService implements Filter {
   private static final String USER_FILTER_ENDPOINT = "/_matrix/client/v3/user/";
 
-  private final HttpTransport httpTransport = new HttpTransport(10);
+  private final HttpTransport httpTransport;
   private final ClientContext context;
 
   /// Service constructor to operate.
   ///
-  /// @param context the [ClientContext] of the facade
-  public FilterService(ClientContext context) {
+  /// @param context the [ClientContext] of the facade.
+  /// @param httpTransport a [HttpTransport] object.
+  public FilterService(ClientContext context, HttpTransport httpTransport) {
     this.context = context;
+    this.httpTransport = httpTransport;
   }
 
   @Override

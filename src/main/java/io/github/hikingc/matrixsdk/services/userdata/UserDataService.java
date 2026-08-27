@@ -23,14 +23,16 @@ public class UserDataService implements UserData {
   public static final String USER_DIR = "/_matrix/client/v3/user_directory/search";
 
   private static final String PROFILE_DIR = "/_matrix/client/v3/profile/";
-  private final HttpTransport httpTransport = new HttpTransport(10);
+  private final HttpTransport httpTransport;
   private final ClientContext context;
 
   /// Service constructor to operate
   ///
-  /// @param context the [ClientContext] of the facade
-  public UserDataService(ClientContext context) {
+  /// @param context the [ClientContext] of the facade.
+  /// @param httpTransport a [HttpTransport] object.
+  public UserDataService(ClientContext context, HttpTransport httpTransport) {
     this.context = context;
+    this.httpTransport = httpTransport;
   }
 
   @Override

@@ -34,15 +34,17 @@ public class EventService implements Event {
   /// Common endpoint for many Room events.
   private static final String ROOM_ENDPOINT = "/_matrix/client/v3/rooms/";
 
-  private final HttpTransport httpTransport = new HttpTransport(10);
+  private final HttpTransport httpTransport;
 
   private final ClientContext context;
 
   /// Service constructor to operate
   ///
-  /// @param context the [ClientContext] of the facade
-  public EventService(ClientContext context) {
+  /// @param context the [ClientContext] of the facade.
+  /// @param httpTransport a [HttpTransport] object.
+  public EventService(ClientContext context, HttpTransport httpTransport) {
     this.context = context;
+    this.httpTransport = httpTransport;
   }
 
   @Override

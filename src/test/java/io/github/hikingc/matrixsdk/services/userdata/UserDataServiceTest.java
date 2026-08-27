@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
+import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.api.userdata.UserProfile;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
@@ -30,7 +31,11 @@ class UserDataServiceTest {
 
   @BeforeEach
   void createClient() {
-    client = MatrixClient.create(DISCOVERY_RESPONSE, AUTH_TOKEN);
+    client =
+        new MatrixClientBuilder()
+            .setDiscoveryResponse(DISCOVERY_RESPONSE)
+            .setAuthToken(AUTH_TOKEN)
+            .createMatrixClient();
   }
 
   @Test
