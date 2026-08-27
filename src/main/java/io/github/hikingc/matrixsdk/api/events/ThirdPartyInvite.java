@@ -3,15 +3,16 @@ package io.github.hikingc.matrixsdk.api.events;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import java.util.Map;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
 /// @param displayName a name which can be displayed to represent the user instead of their
 ///   third-party identifier
 /// @param signed a block of content which has been signed by the identity server, which homeservers
 ///   can use to verify the event. Clients should ignore this.
+@NullMarked
 public record ThirdPartyInvite(
-    @NonNull @JsonProperty(required = true) String displayName,
-    @NonNull @JsonProperty(required = true) SignedThirdPartyInvite signed) {
+    @JsonProperty(required = true) String displayName,
+    @JsonProperty(required = true) SignedThirdPartyInvite signed) {
 
   /// @param mxid the user ID that has been bound to the third-party identifier.
   /// @param signatures the identity server signatures for this block. This is a map of identity
@@ -25,7 +26,7 @@ public record ThirdPartyInvite(
   ///   href="https://spec.matrix.org/v1.19/identity-service-api/#post_matrixidentityv2store-invite">Identity
   ///   Service API</a>
   public record SignedThirdPartyInvite(
-      @NonNull @JsonProperty(required = true) UserID mxid,
-      @NonNull @JsonProperty(required = true) Map<String, Map<String, String>> signatures,
-      @NonNull @JsonProperty(required = true) String token) {}
+      @JsonProperty(required = true) UserID mxid,
+      @JsonProperty(required = true) Map<String, Map<String, String>> signatures,
+      @JsonProperty(required = true) String token) {}
 }
