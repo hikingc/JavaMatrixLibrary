@@ -10,33 +10,16 @@ A client-side Java library for the [Matrix](https://matrix.org) protocol.
 This library aims to allow authors to build any kind of Matrix program such as a bot or a desktop client, the library
 handles all matters of serialization, validation and authentication.
 
-## Quick start
-
-```java
-
-import io.github.hikingc.matrixsdk.api.MatrixAuth;
-import io.github.hikingc.matrixsdk.api.MatrixClient;
-import io.github.hikingc.matrixsdk.api.auth.TokenMetadata;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
-
-MatrixAuth auth = new MatrixAuth(URI.create("https://example.org")); // Set the URI of your Matrix server.
-DiscoveryResponse response = auth.fetchWellKnown(); // Fetch well known for future operations
-
-TokenMetadata token = auth.performOAuthLogin(CLIENT_NAME, PORT, DEVICE_ID); // Set configuration parameters
-// After doing the login with the server in your browser, you will be returned the tokens...
-MatrixClient client = MatrixClient.create(response, token.accessToken()); // Use any service you want!
-
-```
-
 ## Feature support
 
-| Service   | Capabilities                                   | Status    |
-|-----------|------------------------------------------------|-----------|
-| Rooms     | Banning, kicking, room summary, room search    | Supported |
-| Events    | Sending messages, reading room events, `/sync` | Partial   |
-| User Data | Profile search, profile modification           | Supported |
-| Filtering | Creating and retrieving filters                | Supported |
-| Auth      | OpenIDConnect handshake                        | Supported |
+| Service              | Capabilities                                | Status              |
+|----------------------|---------------------------------------------|---------------------|
+| Rooms                | Banning, kicking, room summary, room search | Supported           |
+| Events               | Sending and reading events, `/sync`         | Partial             |
+| User Data            | Profile search, profile modification        | Supported           |
+| Filtering            | Creating and retrieving filters             | Supported           |
+| Auth                 | OpenIDConnect handshake                     | Partial             |
+| Capability Awareness | Notify consumers about user capabilities    | Not yet implemented |
 
 ## Current project status
 
@@ -50,9 +33,9 @@ The baseline to reach v1.0 is to implement all endpoints that are required in th
 
 1. This project does not handle multimedia resources, it _does_ expose the necessary Objects to handle serialization
    (RoomMessage) but consumers are required to bring their own library to pass required metadata.
-2. This project does not allow for the creation or hookup of custom event types, for example: `org.custom.type`. It
-   _does_ recognize these events with `UnknownEvent.java` but consumers will be required to cast to a proper Object
-   type.
+2. This project does not allow for the creation or hookup of custom event types, for setUpClientPrints:
+   `org.custom.type`. It _does_ recognize these events with `UnknownEvent.java` but consumers will be required to cast
+   to a proper Object type.
 3. Resource serialization/deserialization depends heavily on Jackson 3.0.
 4. There is a limit of tolerance to wrongly created events, but in general the library will not attempt to serialize
    badly created objects. See: https://github.com/matrix-org/matrix-spec-proposals/pull/2801 on why this is the case.
@@ -60,6 +43,8 @@ The baseline to reach v1.0 is to implement all endpoints that are required in th
 ## Usage
 
 Currently, the only way to use this library is to compile it on your own using ```mvn compile```.
+
+Set-up and usage is described in the [examples directory](examples).
 
 ### Requirements
 
