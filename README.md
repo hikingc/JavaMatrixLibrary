@@ -1,5 +1,5 @@
 > [!CAUTION]
-> 17/08/2026 - While the library is in development. Grave changes to the API should not be a concern any longe.
+> 17/08/2026 - While the library is still in development. Grave changes to the API should not be a concern any longer.
 
 # A Matrix Client SDK for Java
 
