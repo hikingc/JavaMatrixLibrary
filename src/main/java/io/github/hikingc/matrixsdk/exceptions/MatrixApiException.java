@@ -5,10 +5,10 @@ public class MatrixApiException extends MatrixException {
   private final String errcode;
   private final String errorMessage;
 
-  public MatrixApiException(int httpStatus, String errcode, String errorMessage) {
-    super("HTTP " + httpStatus + " - " + errcode + ": " + errorMessage);
+  public MatrixApiException(int httpStatus, String errorCode, String errorMessage) {
+    super("HTTP " + httpStatus + " - " + errorCode + ": " + errorMessage);
     this.httpStatus = httpStatus;
-    this.errcode = errcode;
+    this.errcode = errorCode;
     this.errorMessage = errorMessage;
   }
 
@@ -30,5 +30,15 @@ public class MatrixApiException extends MatrixException {
     };
   }
 
-  // getters for httpStatus, errcode, errorMessage
+  public String errcode() {
+    return errcode;
+  }
+
+  public String errorMessage() {
+    return errorMessage;
+  }
+
+  public int httpStatus() {
+    return httpStatus;
+  }
 }
