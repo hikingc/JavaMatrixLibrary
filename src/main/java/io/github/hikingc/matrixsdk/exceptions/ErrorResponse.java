@@ -4,6 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /// The record used by all endpoints when the operation is not successful.
 ///
-/// @param errCode A specification defined error code.
-/// @param error A human-readable error message.
-public record ErrorResponse(@JsonProperty("errcode") String errCode, String error) {}
+/// @apiNote The field `retry_after_ms` is deprecated in the response body `JSON` in favor of the
+///   `Retry-After` header. If the server returns both, the header will be set, otherwise it will be
+///   `null`.
+///
+/// @param errCode a specification defined error code.
+/// @param error a human-readable error message.
+/// @param retryAfterMs a property that MAY be included to tell the client how long they have to
+///   wait in milliseconds before they can try again.
+public record ErrorResponse(
+    @JsonProperty("errcode") String errCode, String error, Integer retryAfterMs) {}

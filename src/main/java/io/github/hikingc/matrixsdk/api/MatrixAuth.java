@@ -209,11 +209,13 @@ public class MatrixAuth implements Auth {
             String error = extractQueryParam(query, "error");
             String errorDescription = extractQueryParam(query, "error_description");
             String errorUri = extractQueryParam(query, "error_uri");
-            ErrorResponse response = new ErrorResponse(error, errorDescription);
+            ErrorResponse response = new ErrorResponse(error, errorDescription, null);
             if (errorUri != null) {
               response =
                   new ErrorResponse(
-                      error, errorDescription + ", see:" + errorUri + " for more information.");
+                      error,
+                      errorDescription + ", see:" + errorUri + " for more information.",
+                      null);
             }
             authorizationCode.completeExceptionally(
                 new MatrixException("Authorization failed: " + response));

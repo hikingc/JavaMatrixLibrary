@@ -49,11 +49,13 @@ public class HttpTransport {
 
   /// Handles return code validation from Matrix servers.
   ///
-  /// @param code an HTTP Code.
-  /// @param body the response body from the server.
+  /// @param response the client response.
   /// @throws MatrixApiException when the server responds with an unsuccessful HTTP Code.
-  private void validateResponse(int code, String body) {
-    logger.debug("Validate response code: {}, for body: {}", code, body);
+  private void validateResponse(HttpResponse<String> response) {
+    var code = response.statusCode();
+    var body = response.body();
+    var headers = response.headers();
+    logger.debug("Validate response code: {}, for body: {} and headers: {}", code, body, headers);
     if (code >= 200 && code < 300) {
       return;
     }
@@ -64,10 +66,25 @@ public class HttpTransport {
     ErrorResponse errorResponse;
     try {
       errorResponse = Mapper.getObjectFromString(body, ErrorResponse.class);
-    } catch (MatrixIOException e) {
+    } catch (MatrixSerializationException e) {
       throw new MatrixApiException(
           "Server returned unparseable error body, HTTP code: " + code, code, e);
     }
+
+    var retryAfter = headers.firstValue("Retry-After");
+    if (retryAfter.isPresent()) {
+      // Retry-After header is the current standard; retry_after_ms in the
+      // error body is deprecated but some homeservers may still only send that.
+      try {
+        int retryAfterSeconds = Integer.parseInt(retryAfter.get().trim());
+        errorResponse =
+            new ErrorResponse(errorResponse.errCode(), errorResponse.error(), retryAfterSeconds);
+      } catch (NumberFormatException _) {
+        logger.debug("Retry-After header was not a valid integer: {}", retryAfter.get());
+        // fall through, keep original errorResponse without retryAfter override
+      }
+    }
+
     throw MatrixApiException.fromErrorResponse(code, errorResponse);
   }
 
@@ -98,7 +115,7 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response.statusCode(), response.body());
+    this.validateResponse(response);
     return response.body();
   }
 
@@ -138,7 +155,7 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response.statusCode(), response.body());
+    this.validateResponse(response);
     return response.body();
   }
 
@@ -175,7 +192,7 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response.statusCode(), response.body());
+    this.validateResponse(response);
     return response.body();
   }
 
@@ -212,7 +229,7 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response.statusCode(), response.body());
+    this.validateResponse(response);
     return response.body();
   }
 
@@ -253,7 +270,7 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response.statusCode(), response.body());
+    this.validateResponse(response);
     return response.body();
   }
 
@@ -284,7 +301,7 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response.statusCode(), response.body());
+    this.validateResponse(response);
     return response.body();
   }
 
