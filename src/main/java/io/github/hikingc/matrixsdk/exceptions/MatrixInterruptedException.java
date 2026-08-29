@@ -1,22 +1,22 @@
 package io.github.hikingc.matrixsdk.exceptions;
 
-/// Thrown to indicate that the code has not received a successful HTTP status code.
-public class MatrixNetworkException extends MatrixException {
-  /// Constructs a [MatrixNetworkException] with a message.
+/// Thrown when the HTTP Client has been interrupted.
+public class MatrixInterruptedException extends MatrixException {
+  /// Constructs a [MatrixInterruptedException] with a message.
   ///
   /// @param message The detail message. The detail message is saved for later retrieval by the
   ///   getMessage() method.
-  public MatrixNetworkException(String message) {
+  public MatrixInterruptedException(String message) {
     super(message);
   }
 
-  /// Constructs a [MatrixNetworkException] with a message.
+  /// Constructs a [MatrixInterruptedException] with a message.
   ///
   /// @param message The detail message. The detail message is saved for later retrieval by the
   ///   getMessage() method.
   /// @param cause the cause (which is saved for later retrieval by the getCause() method). (A null
   ///   value is permitted, and indicates that the cause is nonexistent or unknown.)
-  public MatrixNetworkException(String message, Throwable cause) {
+  public MatrixInterruptedException(String message, Throwable cause) {
     super(message, cause);
   }
 }

@@ -2,7 +2,7 @@ package io.github.hikingc.matrixsdk.services.utils;
 
 import io.github.hikingc.matrixsdk.api.events.ClientEvent;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.Ciphertext;
-import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
+import io.github.hikingc.matrixsdk.exceptions.MatrixSerializationException;
 import io.github.hikingc.matrixsdk.services.utils.handlers.CiphertextDeserializer;
 import io.github.hikingc.matrixsdk.services.utils.handlers.HandlerEventDeserializer;
 import java.util.List;
@@ -68,12 +68,12 @@ public class Mapper {
   ///
   /// @param object to serialize.
   /// @return a serialized [String]
-  /// @throws MatrixIOException when the serialization returned with an issue.
+  /// @throws MatrixSerializationException when the serialization returned with an issue.
   public static String writeValueAsString(Object object) {
     try {
       return INSTANCE.writeValueAsString(object); // when does it fail specifically?
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse input data", e);
+      throw new MatrixSerializationException("Failed to parse input data", e);
     }
   }
 
@@ -83,15 +83,15 @@ public class Mapper {
   /// @param json a JSON [String].
   /// @param key the key of the JSON Object.
   /// @return the corresponding value.
-  /// @throws MatrixIOException when the key was not in the response
+  /// @throws MatrixSerializationException when the key was not in the response
   public static String getStringValueOfAJsonKey(String json, String key) {
     JsonNode tree = INSTANCE.readTree(json);
     if (tree == null || tree.isMissingNode()) {
-      throw new MatrixIOException("Empty or malformed server response.");
+      throw new MatrixSerializationException("Empty or malformed server response.");
     }
     JsonNode value = tree.get(key);
     if (value == null) {
-      throw new MatrixIOException("Missing '%s' in server response".formatted(key));
+      throw new MatrixSerializationException("Missing '%s' in server response".formatted(key));
     }
     return value.asString();
   }
@@ -104,16 +104,16 @@ public class Mapper {
   /// @param elementType the [Class] to deserialize each element into.
   /// @param <T> the type to deserialize each element into
   /// @return the deserialized [List] of values for the given key
-  /// @throws MatrixIOException when the key was not in the response or the key value was not an
-  ///   Array
+  /// @throws MatrixSerializationException when the key was not in the response or the key value was
+  ///   not an Array
   public static <T> List<T> getListFromAJsonKey(String json, String key, Class<T> elementType) {
     JsonNode tree = INSTANCE.readTree(json);
     JsonNode value = tree.get(key);
     if (value == null || value.isMissingNode()) {
-      throw new MatrixIOException("Missing '%s' in server response".formatted(key));
+      throw new MatrixSerializationException("Missing '%s' in server response".formatted(key));
     }
     if (!value.isArray()) {
-      throw new MatrixIOException(
+      throw new MatrixSerializationException(
           "Expected '%s' to be an Array, was %s".formatted(key, value.getNodeType()));
     }
     JavaType listType = INSTANCE.getTypeFactory().constructCollectionType(List.class, elementType);
@@ -125,11 +125,8 @@ public class Mapper {
   ///
   /// @param map the key-values for the JSON Object
   /// @return a serialized [String].
-  @Nullable
-  public static String createObjectFromMap(@Nullable Map<String, @Nullable Object> map) {
-    if (map == null) {
-      return null;
-    }
+  public static String createObjectFromMap(Map<String, @Nullable Object> map) {
+
     ObjectNode node = INSTANCE.createObjectNode();
     map.forEach(
         (key, value) -> {
@@ -156,21 +153,18 @@ public class Mapper {
   /// @param type the target class to deserialize into
   /// @param <T> the [Class] type to deserialize into
   /// @return the deserialized [Object]
-  /// @throws MatrixIOException if the response cannot be parsed into the target type.
-  public static <T> T getObjectFromString(@Nullable String responseBody, @Nullable Class<T> type) {
-    if (responseBody == null || type == null) {
-      throw new IllegalArgumentException("responseBody and type must not be null");
-    }
+  /// @throws MatrixSerializationException if the response cannot be parsed into the target type.
+  public static <T> T getObjectFromString(String responseBody, Class<T> type) {
     try {
       return INSTANCE.readValue(responseBody, type);
     } catch (DatabindException e) {
-      throw new MatrixIOException(
+      throw new MatrixSerializationException(
           "Unable to deserialize server response into expected structure", e);
     } catch (StreamReadException e) {
-      throw new MatrixIOException("Unable to process invalid response.", e);
+      throw new MatrixSerializationException("Unable to process invalid response.", e);
     } catch (JacksonException e) {
-      throw new MatrixIOException(
-          "A failure has failed attempting to process a response object.", e);
+      throw new MatrixSerializationException(
+          "A failure has occurred while attempting to process a response object.", e);
     }
   }
 
@@ -180,22 +174,19 @@ public class Mapper {
   /// @param type a [TypeReference]
   /// @param <T> the [Class] type to deserialize into
   /// @return the deserialized [Object]
-  /// @throws MatrixIOException if the response cannot be parsed into the target type
-  public static <T> T getObjectFromString(
-      @Nullable String responseBody, @Nullable TypeReference<T> type) {
-    if (responseBody == null || type == null) {
-      throw new IllegalArgumentException("responseBody and type must not be null");
-    }
+  /// @throws MatrixSerializationException if the response cannot be parsed into the target type
+  public static <T> T getObjectFromString(String responseBody, TypeReference<T> type) {
+
     try {
       return INSTANCE.readValue(responseBody, type);
     } catch (DatabindException e) {
-      throw new MatrixIOException(
+      throw new MatrixSerializationException(
           "Unable to deserialize server response into expected structure", e);
     } catch (StreamReadException e) {
-      throw new MatrixIOException("Unable to process invalid response.", e);
+      throw new MatrixSerializationException("Unable to process invalid response.", e);
     } catch (JacksonException e) {
-      throw new MatrixIOException(
-          "A failure has failed attempting to process a response object.", e);
+      throw new MatrixSerializationException(
+          "A failure has occurred while attempting to process a response object.", e);
     }
   }
 }

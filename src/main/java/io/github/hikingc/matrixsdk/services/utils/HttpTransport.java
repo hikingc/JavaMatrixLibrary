@@ -1,8 +1,6 @@
 package io.github.hikingc.matrixsdk.services.utils;
 
-import io.github.hikingc.matrixsdk.exceptions.ErrorResponse;
-import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
-import io.github.hikingc.matrixsdk.exceptions.MatrixNetworkException;
+import io.github.hikingc.matrixsdk.exceptions.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /// Unless otherwise documented, requests expect JSON bodies as [String]s and return unprocessed
 /// response bodies as [String]s, callers are responsible for their own (de)serialization.
 ///
-/// Failed requests are validated against the server's response and throw [MatrixNetworkException],
+/// Failed requests are validated against the server's response and throw [MatrixApiException],
 /// populated with the HTTP status code and any error message returned by the server, and
 /// [MatrixIOException] if the server JSON response wasn't even sent.
 @NullMarked
@@ -53,7 +51,7 @@ public class HttpTransport {
   ///
   /// @param code an HTTP Code.
   /// @param body the response body from the server.
-  /// @throws MatrixNetworkException when the server responds with an unsuccessful HTTP Code.
+  /// @throws MatrixApiException when the server responds with an unsuccessful HTTP Code.
   private void validateResponse(int code, String body) {
     logger.debug("Validate response code: {}, for body: {}", code, body);
     if (code >= 200 && code < 300) {
@@ -61,21 +59,16 @@ public class HttpTransport {
     }
 
     if (body.isBlank()) {
-      throw new MatrixNetworkException("Server returned with HTTP Code:" + code);
+      throw new MatrixException("Server returned with HTTP Code:" + code);
     }
-
     ErrorResponse errorResponse;
     try {
       errorResponse = Mapper.getObjectFromString(body, ErrorResponse.class);
     } catch (MatrixIOException e) {
-      throw new MatrixNetworkException("Server returned with unknown error, HTTP Code:" + code, e);
+      throw new MatrixApiException(
+          "Server returned unparseable error body, HTTP code: " + code, code, e);
     }
-
-    throw new MatrixNetworkException(
-        "Server returned with error: "
-            + errorResponse.error()
-            + ", and code: "
-            + errorResponse.errCode());
+    throw MatrixApiException.fromErrorResponse(code, errorResponse);
   }
 
   /// Sends a `GET` request to the given endpoint.
@@ -84,8 +77,8 @@ public class HttpTransport {
   /// @param authToken if supplied, the `Bearer` token.
   /// @return a JSON [String].
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
-  /// @throws MatrixNetworkException if the operation has been interrupted.
-  /// @throws IllegalArgumentException if the path was not supplied.
+  /// @throws MatrixInterruptedException if the operation has been interrupted.
+  /// @throws MatrixApiException when the response from the server is not successful.
   public String getRequest(URI path, @Nullable String authToken) {
     var builderRequest =
         HttpRequest.newBuilder().uri(path).header(CONTENT_TYPE, APPLICATION_JSON).GET();
@@ -103,7 +96,7 @@ public class HttpTransport {
           "There has been an I/O error attempting to process this request", e);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new MatrixNetworkException("This request has been interrupted", e);
+      throw new MatrixInterruptedException("This request has been interrupted", e);
     }
     this.validateResponse(response.statusCode(), response.body());
     return response.body();
@@ -116,8 +109,8 @@ public class HttpTransport {
   /// @param authToken if supplied, the `Bearer` token.
   /// @return a JSON [String].
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
-  /// @throws MatrixNetworkException if the operation has been interrupted.
-  /// @throws IllegalArgumentException if the path was not supplied.
+  /// @throws MatrixInterruptedException if the operation has been interrupted.
+  /// @throws MatrixApiException when the response from the server is not successful.
   public String postRequest(URI path, @Nullable String body, @Nullable String authToken) {
     var builderRequest = HttpRequest.newBuilder().uri(path);
 
@@ -143,7 +136,7 @@ public class HttpTransport {
           "There has been an I/O error attempting to process this request", e);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new MatrixNetworkException("This request has been interrupted", e);
+      throw new MatrixInterruptedException("This request has been interrupted", e);
     }
     this.validateResponse(response.statusCode(), response.body());
     return response.body();
@@ -157,9 +150,9 @@ public class HttpTransport {
   /// @param body a JSON [String].
   /// @return a JSON [String].
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
-  /// @throws MatrixNetworkException if the operation has been interrupted or a server returned with
-  ///   unsuccessful HTTP Code.
-  /// @throws IllegalArgumentException if the path was not supplied.
+  /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
+  ///   with unsuccessful HTTP Code.
+  /// @throws MatrixApiException when the response from the server is not successful.
   public String postAuth(URI path, @Nullable String body) {
     var builderRequest = HttpRequest.newBuilder().uri(path);
 
@@ -180,7 +173,7 @@ public class HttpTransport {
           "There has been an I/O error attempting to process this request", e);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new MatrixNetworkException("This request has been interrupted", e);
+      throw new MatrixInterruptedException("This request has been interrupted", e);
     }
     this.validateResponse(response.statusCode(), response.body());
     return response.body();
@@ -193,9 +186,9 @@ public class HttpTransport {
   /// @param authToken if supplied, the `Bearer` token.
   /// @return a JSON [String] when the operation is successful.
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
-  /// @throws MatrixNetworkException if the operation has been interrupted or a server returned with
-  ///   unsuccessful HTTP Code.
-  /// @throws IllegalArgumentException if the path was not supplied.
+  /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
+  ///   with unsuccessful HTTP Code.
+  /// @throws MatrixApiException when the response from the server is not successful.
   public String putRequest(URI path, @Nullable String body, String authToken) {
 
     var builderRequest =
@@ -217,7 +210,7 @@ public class HttpTransport {
           "There has been an I/O error attempting to process this request", e);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new MatrixNetworkException("This request has been interrupted", e);
+      throw new MatrixInterruptedException("This request has been interrupted", e);
     }
     this.validateResponse(response.statusCode(), response.body());
     return response.body();
@@ -232,9 +225,9 @@ public class HttpTransport {
   /// @param authToken if supplied, the `Bearer` token.
   /// @return a JSON [String].
   /// @throws MatrixIOException if an I/O error has occurred while sending the request
-  /// @throws MatrixNetworkException if the operation has been interrupted or a server returned with
-  ///   unsuccessful HTTP Code.
-  /// @throws IllegalArgumentException if the path was not supplied
+  /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
+  ///   with unsuccessful HTTP Code.
+  /// @throws MatrixApiException when the response from the server is not successful.
   public String putResource(URI path, Path resource, String authToken) {
     HttpRequest uploadRequest;
     try {
@@ -258,7 +251,7 @@ public class HttpTransport {
           "There has been an I/O error attempting to process this request", e);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new MatrixNetworkException("This request has been interrupted", e);
+      throw new MatrixInterruptedException("This request has been interrupted", e);
     }
     this.validateResponse(response.statusCode(), response.body());
     return response.body();
@@ -270,9 +263,9 @@ public class HttpTransport {
   /// @param authToken if supplied, the `Bearer` token.
   /// @return a JSON [String].
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
-  /// @throws MatrixNetworkException if the operation has been interrupted or a server returned with
-  ///   unsuccessful HTTP Code.
-  /// @throws IllegalArgumentException if the path was not supplied.
+  /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
+  ///   with unsuccessful HTTP Code.
+  /// @throws MatrixApiException when the response from the server is not successful.
   public String deleteRequest(URI path, String authToken) {
     HttpRequest deleteRequest =
         HttpRequest.newBuilder()
@@ -289,7 +282,7 @@ public class HttpTransport {
           "There has been an I/O error attempting to process this request", e);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      throw new MatrixNetworkException("This request has been interrupted", e);
+      throw new MatrixInterruptedException("This request has been interrupted", e);
     }
     this.validateResponse(response.statusCode(), response.body());
     return response.body();

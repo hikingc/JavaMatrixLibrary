@@ -3,7 +3,7 @@ package io.github.hikingc.matrixsdk.api;
 import io.github.hikingc.matrixsdk.api.filters.FilterDefinition;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
-import io.github.hikingc.matrixsdk.exceptions.MatrixNetworkException;
+import io.github.hikingc.matrixsdk.exceptions.MatrixInterruptedException;
 
 /// Core interface for executing protocol operations for filtering.
 ///
@@ -11,7 +11,7 @@ import io.github.hikingc.matrixsdk.exceptions.MatrixNetworkException;
 /// avoid synchronization blocks that cause carrier thread pinning during network I/O.
 ///
 /// Unless otherwise noted, every method in this interface throws [MatrixIOException] if the request
-/// or response payload cannot be processed, and [MatrixNetworkException] if the server's response
+/// or response payload cannot be processed, and [MatrixInterruptedException] if the server's response
 /// status is not successful.
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#filtering>Matrix Client-Server
@@ -25,7 +25,7 @@ public interface Filter {
   /// @param filter the definition of the filter.
   /// @return an ID of the filter definition, usable in supported endpoints.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   String publishFilter(UserID userId, FilterDefinition filter);
 
   /// Retrieve a [FilterDefinition] from the homeserver.
@@ -34,6 +34,6 @@ public interface Filter {
   /// @param filterId the filter ID to download.
   /// @return a [FilterDefinition] with all uploaded data.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   FilterDefinition getFilter(UserID userId, String filterId);
 }

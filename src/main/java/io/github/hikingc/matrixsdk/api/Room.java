@@ -10,7 +10,7 @@ import io.github.hikingc.matrixsdk.api.rooms.models.RoomSummary;
 import io.github.hikingc.matrixsdk.api.rooms.queries.JoinRoomRequest;
 import io.github.hikingc.matrixsdk.api.rooms.queries.VisibilityRoomType;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
-import io.github.hikingc.matrixsdk.exceptions.MatrixNetworkException;
+import io.github.hikingc.matrixsdk.exceptions.MatrixInterruptedException;
 import java.util.List;
 
 /// Core interface for executing protocol operations against Rooms.
@@ -19,7 +19,7 @@ import java.util.List;
 /// avoid synchronization blocks that cause carrier thread pinning during network I/O.
 ///
 /// Unless otherwise noted, every method in this interface throws [MatrixIOException] if the request
-/// or response payload cannot be processed, and [MatrixNetworkException] if the server's response
+/// or response payload cannot be processed, and [MatrixInterruptedException] if the server's response
 /// status is not successful.
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#rooms">Matrix Client-Server API
@@ -30,7 +30,7 @@ public interface Room {
   /// @param configuration of the room.
   /// @return the created room’s ID.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   String create(InitialRoomConfiguration configuration);
 
   /// Requests the server to resolve a room alias if not possible, the server will use the
@@ -40,7 +40,7 @@ public interface Room {
   /// @return a [ResolvedAlias] containing the room ids for the requested alias and which servers
   ///   are aware of it.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   ResolvedAlias resolveAlias(RoomAlias roomAlias);
 
   /// Sets a room alias to a room.
@@ -48,7 +48,7 @@ public interface Room {
   /// @param roomAlias a [RoomAlias].
   /// @param roomId the [RoomID] to receive the alias.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   void setAlias(RoomAlias roomAlias, RoomID roomId);
 
   /// Requests the server to remove a mapping of a room alias to a room id. On success, servers
@@ -56,7 +56,7 @@ public interface Room {
   ///
   /// @param roomAlias the [RoomAlias] to remove.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   void deleteAlias(RoomAlias roomAlias);
 
   /// Requests a list of aliases maintained by the local server for the given room, requires to be
@@ -68,7 +68,7 @@ public interface Room {
   /// @param roomId the [RoomID] to find local aliases of.
   /// @return a [List] of Room aliases.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   List<String> getAliasesOfARoom(RoomID roomId);
 
   /// Requests the server to retrieve a list of the user's current rooms (in simple terms whoever
@@ -76,7 +76,7 @@ public interface Room {
   ///
   /// @return a [List] of the rooms.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   List<String> getJoinedRooms();
 
   /// Send an invitation to a user to participate in a room, this endpoint requires the caller to be
@@ -97,7 +97,7 @@ public interface Room {
   ///   participating in the room.
   /// @return the room ID.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   /// @throws IllegalArgumentException when using an incorrect [Validator].
   String joinByRoomIdOrAliasIfAllowed(
           Identifier roomIdOrAlias, JoinRoomRequest request, List<String> via);
@@ -110,7 +110,7 @@ public interface Room {
   ///   participating in the room.
   /// @return the room ID.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   String joinByRoomIdIfAllowed(RoomID roomId, JoinRoomRequest request, List<String> via);
 
   /// Knock on a room to ask for permission to join. Acceptance of this request happens out of band.
@@ -121,7 +121,7 @@ public interface Room {
   ///   participating in the room.
   /// @return the room ID of the knocked room.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   String knockOn(Identifier roomIdOrAlias, String reason, List<String> via);
 
   /// Sends a request to leave the room, upon success, you will forget all messages from this room.
@@ -130,7 +130,7 @@ public interface Room {
   ///
   /// @param roomId the target [RoomID].
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   void forget(RoomID roomId);
 
   /// Sends a request to leave the room, upon success, you will no longer receive new messages from
@@ -139,7 +139,7 @@ public interface Room {
   ///
   /// @param roomId the target [RoomID].
   /// @throws MatrixIOException when the payload cannot be processed
-  /// @throws MatrixNetworkException when the response status is not successful
+  /// @throws MatrixInterruptedException when the response status is not successful
   void leave(RoomID roomId);
 
   /// Sends a request to kick someone from a room. Caller must have a configured power level to
@@ -205,7 +205,7 @@ public interface Room {
   /// @param request a [PublicRoomRequest] with additional filters for the request.
   /// @return a [PublicRoomDirectory] containing records of the published rooms on the server.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   PublicRoomDirectory getPublishedRoomDirectory(PublicRoomRequest request);
 
   /// Retrieves a summary for a room. The response data might yield outdated, partial or even with
@@ -218,6 +218,6 @@ public interface Room {
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws NullPointerException when the roomId is null.
   /// @throws MatrixIOException when the payload cannot be processed.
-  /// @throws MatrixNetworkException when the response status is not successful.
+  /// @throws MatrixInterruptedException when the client was interrupted.
   RoomSummary getRoomSummary(Identifier roomIdOrAlias, List<String> via);
 }
