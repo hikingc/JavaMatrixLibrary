@@ -84,7 +84,7 @@ public class Mapper {
   /// @param key the key of the JSON Object.
   /// @return the corresponding value.
   /// @throws MatrixSerializationException when the key was not in the response
-  public static String getStringValueOfAJsonKey(String json, String key) {
+  public static String getStringValueOfAJsonKey(byte[] json, String key) {
     JsonNode tree = INSTANCE.readTree(json);
     if (tree == null || tree.isMissingNode()) {
       throw new MatrixSerializationException("Empty or malformed server response.");
@@ -106,7 +106,7 @@ public class Mapper {
   /// @return the deserialized [List] of values for the given key
   /// @throws MatrixSerializationException when the key was not in the response or the key value was
   ///   not an Array
-  public static <T> List<T> getListFromAJsonKey(String json, String key, Class<T> elementType) {
+  public static <T> List<T> getListFromAJsonKey(byte[] json, String key, Class<T> elementType) {
     JsonNode tree = INSTANCE.readTree(json);
     JsonNode value = tree.get(key);
     if (value == null || value.isMissingNode()) {
@@ -154,7 +154,7 @@ public class Mapper {
   /// @param <T> the [Class] type to deserialize into
   /// @return the deserialized [Object]
   /// @throws MatrixSerializationException if the response cannot be parsed into the target type.
-  public static <T> T getObjectFromString(String responseBody, Class<T> type) {
+  public static <T> T getObjectFromString(byte[] responseBody, Class<T> type) {
     try {
       return INSTANCE.readValue(responseBody, type);
     } catch (DatabindException e) {
@@ -175,7 +175,7 @@ public class Mapper {
   /// @param <T> the [Class] type to deserialize into
   /// @return the deserialized [Object]
   /// @throws MatrixSerializationException if the response cannot be parsed into the target type
-  public static <T> T getObjectFromString(String responseBody, TypeReference<T> type) {
+  public static <T> T getObjectFromString(byte[] responseBody, TypeReference<T> type) {
 
     try {
       return INSTANCE.readValue(responseBody, type);

@@ -53,8 +53,7 @@ public class RoomService implements Room {
 
     String jsonPayload = Mapper.writeValueAsString(configuration);
 
-    String responseBody;
-    responseBody =
+    var responseBody =
         httpTransport.postRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
@@ -104,7 +103,7 @@ public class RoomService implements Room {
   @Override
   public List<String> getAliasesOfARoom(RoomID roomId) {
 
-    String response =
+    var response =
         httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
@@ -128,7 +127,7 @@ public class RoomService implements Room {
 
   @Override
   public List<String> getJoinedRooms() {
-    String response =
+    var response =
         httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
@@ -199,7 +198,7 @@ public class RoomService implements Room {
     Map<String, Object> map = new HashMap<>();
     map.put("reason", reason);
 
-    String responseBody =
+    var responseBody =
         httpTransport.postRequest(uri, Mapper.createObjectFromMap(map), context.token());
     try {
       return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);

@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +52,7 @@ public class HttpTransport {
   ///
   /// @param response the client response.
   /// @throws MatrixApiException when the server responds with an unsuccessful HTTP Code.
-  private void validateResponse(HttpResponse<String> response) {
+  private void validateResponse(HttpResponse<byte[]> response) {
     var code = response.statusCode();
     var body = response.body();
     var headers = response.headers();
@@ -60,7 +61,7 @@ public class HttpTransport {
       return;
     }
 
-    if (body.isBlank()) {
+    if (Arrays.toString(body).isBlank()) {
       throw new MatrixException("Server returned with HTTP Code:" + code);
     }
     ErrorResponse errorResponse;
@@ -96,7 +97,7 @@ public class HttpTransport {
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixInterruptedException if the operation has been interrupted.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public String getRequest(URI path, @Nullable String authToken) {
+  public byte[] getRequest(URI path, @Nullable String authToken) {
     var builderRequest =
         HttpRequest.newBuilder().uri(path).header(CONTENT_TYPE, APPLICATION_JSON).GET();
 
@@ -105,9 +106,9 @@ public class HttpTransport {
     }
     var request = builderRequest.build();
 
-    HttpResponse<String> response;
+    HttpResponse<byte[]> response;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -128,7 +129,7 @@ public class HttpTransport {
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixInterruptedException if the operation has been interrupted.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public String postRequest(URI path, @Nullable String body, @Nullable String authToken) {
+  public byte[] postRequest(URI path, @Nullable String body, @Nullable String authToken) {
     var builderRequest = HttpRequest.newBuilder().uri(path);
 
     if (body != null) {
@@ -145,9 +146,9 @@ public class HttpTransport {
     }
     var request = builderRequest.build();
 
-    HttpResponse<String> response;
+    HttpResponse<byte[]> response;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -170,7 +171,7 @@ public class HttpTransport {
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public String postAuth(URI path, @Nullable String body) {
+  public byte[] postAuth(URI path, @Nullable String body) {
     var builderRequest = HttpRequest.newBuilder().uri(path);
 
     builderRequest.header(CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -182,9 +183,9 @@ public class HttpTransport {
 
     var request = builderRequest.build();
 
-    HttpResponse<String> response;
+    HttpResponse<byte[]> response;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -206,7 +207,7 @@ public class HttpTransport {
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public String putRequest(URI path, @Nullable String body, String authToken) {
+  public byte[] putRequest(URI path, @Nullable String body, String authToken) {
 
     var builderRequest =
         HttpRequest.newBuilder()
@@ -219,9 +220,9 @@ public class HttpTransport {
             : HttpRequest.BodyPublishers.noBody());
     var request = builderRequest.build();
 
-    HttpResponse<String> response;
+    HttpResponse<byte[]> response;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -245,7 +246,7 @@ public class HttpTransport {
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public String putResource(URI path, Path resource, String authToken) {
+  public byte[] putResource(URI path, Path resource, String authToken) {
     HttpRequest uploadRequest;
     try {
       uploadRequest =
@@ -260,9 +261,9 @@ public class HttpTransport {
           "There has been an I/O error attempting to process this request", e);
     }
 
-    HttpResponse<String> response;
+    HttpResponse<byte[]> response;
     try {
-      response = client.send(uploadRequest, HttpResponse.BodyHandlers.ofString());
+      response = client.send(uploadRequest, HttpResponse.BodyHandlers.ofByteArray());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -283,7 +284,7 @@ public class HttpTransport {
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public String deleteRequest(URI path, String authToken) {
+  public byte[] deleteRequest(URI path, String authToken) {
     HttpRequest deleteRequest =
         HttpRequest.newBuilder()
             .uri(path)
@@ -291,9 +292,9 @@ public class HttpTransport {
             .DELETE()
             .build();
 
-    HttpResponse<String> response;
+    HttpResponse<byte[]> response;
     try {
-      response = client.send(deleteRequest, HttpResponse.BodyHandlers.ofString());
+      response = client.send(deleteRequest, HttpResponse.BodyHandlers.ofByteArray());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -328,7 +329,7 @@ public class HttpTransport {
       return new URI(
           base.getScheme(), base.getAuthority(), path, query.isEmpty() ? null : query, null);
     } catch (URISyntaxException e) {
-      throw new MatrixIOException("Failure parsing URI", e);
+      throw new MatrixException("Failure parsing URI", e);
     }
   }
 
@@ -347,7 +348,7 @@ public class HttpTransport {
       return new URI(
           base.getScheme(), base.getAuthority(), path, query.isEmpty() ? null : query, null);
     } catch (URISyntaxException e) {
-      throw new MatrixIOException("Failure parsing URI", e);
+      throw new MatrixException("Failure parsing URI", e);
     }
   }
 

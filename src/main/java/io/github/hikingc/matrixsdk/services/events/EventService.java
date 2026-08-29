@@ -15,6 +15,7 @@ import io.github.hikingc.matrixsdk.api.events.sync.Sync;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.context.ClientContext;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
+import io.github.hikingc.matrixsdk.exceptions.MatrixSerializationException;
 import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
 import java.net.URI;
@@ -50,7 +51,7 @@ public class EventService implements Event {
   @Override
   public ClientEvent<?> getEvent(RoomID roomId, String eventId) {
     Objects.requireNonNull(eventId, "The event ID must not be null");
-    String response =
+    var response =
         httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
@@ -66,7 +67,7 @@ public class EventService implements Event {
   @Override
   public RoomMembers getJoinedMembers(RoomID roomId) {
 
-    String response =
+    var response =
         httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
@@ -90,7 +91,7 @@ public class EventService implements Event {
             ROOM_ENDPOINT + roomId + "/members",
             args);
 
-    String response = httpTransport.getRequest(uri, context.token());
+    var response = httpTransport.getRequest(uri, context.token());
     // We can skip the chunk parent, we don't use ObjectFromString because it is NOT a raw Array as
     // detailed
     // on the spec.
@@ -99,7 +100,7 @@ public class EventService implements Event {
 
   @Override
   public List<StateEvent<?>> getStateEvents(RoomID roomId) {
-    String response =
+    var response =
         httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
@@ -121,7 +122,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/state/" + eventType + "/" + stateKey,
             args);
-    String response = httpTransport.getRequest(uri, context.token());
+    var response = httpTransport.getRequest(uri, context.token());
 
     return Mapper.getObjectFromString(response, StateEvent.class);
   }
@@ -140,8 +141,8 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/messages",
             args);
-    String queryResponse = httpTransport.getRequest(uri, context.token());
-    return Mapper.getObjectFromString(queryResponse, Messages.class);
+    var response = httpTransport.getRequest(uri, context.token());
+    return Mapper.getObjectFromString(response, Messages.class);
   }
 
   @Override
@@ -159,14 +160,14 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/timestamp_to_event",
             args);
-    String response = httpTransport.getRequest(uri, context.token());
+    var response = httpTransport.getRequest(uri, context.token());
     return Mapper.getObjectFromString(response, EventTimestamp.class);
   }
 
   @Override
   public RoomInfo getInitialSync(RoomID roomId) {
 
-    String response =
+    var response =
         httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
@@ -183,7 +184,7 @@ public class EventService implements Event {
     try {
       jsonPayload = Mapper.writeValueAsString(content);
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse input data", e);
+      throw new MatrixSerializationException("Failed to parse input data", e);
     }
     String type = resolveStateWireType(content);
 
@@ -192,7 +193,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/state/" + type + "/" + stateKey,
             null);
-    String response = httpTransport.putRequest(uri, jsonPayload, context.token());
+    var response = httpTransport.putRequest(uri, jsonPayload, context.token());
     return Mapper.getStringValueOfAJsonKey(response, "event_id");
   }
 
@@ -204,7 +205,7 @@ public class EventService implements Event {
     try {
       jsonPayload = Mapper.writeValueAsString(content);
     } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse input data", e);
+      throw new MatrixSerializationException("Failed to parse input data", e);
     }
 
     URI uri =
@@ -212,7 +213,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/send/" + type + "/" + txnId,
             null);
-    String response = httpTransport.putRequest(uri, jsonPayload, context.token());
+    var response = httpTransport.putRequest(uri, jsonPayload, context.token());
     return Mapper.getStringValueOfAJsonKey(response, "event_id");
   }
 
@@ -224,7 +225,7 @@ public class EventService implements Event {
     if (reason != null) {
       json = Mapper.createObjectFromMap(Map.ofEntries(Map.entry("reason", reason)));
     }
-    String response =
+    var response =
         httpTransport.putRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
@@ -275,15 +276,15 @@ public class EventService implements Event {
         httpTransport.generateEncodedURI(
             context.discoveryResponse().homeserver().baseUrl(), "/_matrix/client/v3/sync", args);
 
-    String response = httpTransport.getRequest(query, context.token());
+    var response = httpTransport.getRequest(query, context.token());
     return Mapper.getObjectFromString(response, Sync.class);
   }
 
   /// Creates a new mxc:// for immediate usage.
   ///
   /// @return a [String] representing the MXC
-  private String createAndReserveMXC() throws JacksonException {
-    String queryResponse =
+  private String createAndReserveMXC() {
+    var queryResponse =
         httpTransport.postRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()

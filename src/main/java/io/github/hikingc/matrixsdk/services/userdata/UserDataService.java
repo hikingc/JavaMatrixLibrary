@@ -45,7 +45,7 @@ public class UserDataService implements UserData {
                 """
             .formatted(limitToUse, searchTerm);
 
-    String responseBody =
+    var responseBody =
         httpTransport.postRequest(
             URI.create(context.discoveryResponse().homeserver().baseUrl() + USER_DIR),
             rawTextPayload,
@@ -55,7 +55,7 @@ public class UserDataService implements UserData {
 
   @Override
   public UserProfile getUserProfile(UserID userId) {
-    String responseBody =
+    var responseBody =
         httpTransport.getRequest(
             URI.create(context.discoveryResponse().homeserver().baseUrl() + PROFILE_DIR + userId),
             context.token());
@@ -65,7 +65,7 @@ public class UserDataService implements UserData {
   @Override
   public String getUserProfileByProperty(UserID userId, @Nullable String keyName) {
     Objects.requireNonNull(keyName, "The key name must no be null");
-    String responseBody =
+    var responseBody =
         httpTransport.getRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()

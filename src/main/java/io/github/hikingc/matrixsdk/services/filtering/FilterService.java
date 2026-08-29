@@ -36,7 +36,7 @@ public class FilterService implements Filter {
             context.discoveryResponse().homeserver().baseUrl(),
             USER_FILTER_ENDPOINT + userId + "/filter",
             null);
-    String responseBody = httpTransport.postRequest(uri, serializedInputData, context.token());
+    var responseBody = httpTransport.postRequest(uri, serializedInputData, context.token());
 
     return Mapper.getStringValueOfAJsonKey(responseBody, "filter_id");
   }
