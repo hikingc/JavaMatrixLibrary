@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-/// This record is used to store discovery information about the domain.
+/// Represents discovery information about the domain.
 ///
 /// This includes non-spec keys such as `org.matrix.msc4143.rtc_foci`
 ///
