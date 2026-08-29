@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.hikingc.matrixsdk.api.events.ClientEvent;
 import io.github.hikingc.matrixsdk.api.events.EphemeralEvent;
 import io.github.hikingc.matrixsdk.api.events.matrix.ephemeral.EphemeralPresence;
+import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import java.util.List;
 import java.util.Map;
-
-import io.github.hikingc.matrixsdk.services.utils.handlers.HandlerEventDeserializer;
-import org.jspecify.annotations.NonNull;
-import tools.jackson.databind.annotation.JsonDeserialize;
+import org.jspecify.annotations.NullMarked;
 
 /// Represents the response body of a `/sync` request against a Matrix homeserver.
 ///
@@ -153,19 +151,18 @@ public record Sync(
   /// @param content the event content, shape depends on `type`.
   /// @param sender the user ID of the event's sender.
   /// @param stateKey the state key for this event.
-  /// @param type the event type, e.g. `m.room.member`.
+  /// @param type the event type, e.g. `m.room.member`
+  @NullMarked
   public record StrippedStateEvent(
-      @NonNull @JsonProperty(required = true) Object content,
-      @NonNull @JsonProperty(required = true) String sender,
-      @NonNull @JsonProperty(required = true) String stateKey,
-      @NonNull @JsonProperty(required = true) String type) {}
+      @JsonProperty(required = true) Object content,
+      @JsonProperty(required = true) UserID sender,
+      @JsonProperty(required = true) String stateKey,
+      @JsonProperty(required = true) String type) {}
 
   /// A batch of room state events.
   ///
   /// @param events the state events.
-  public record State(
-          @JsonDeserialize(using = HandlerEventDeserializer.class)
-          List<ClientEvent<?>> events) {}
+  public record State(List<ClientEvent<?>> events) {}
 
   /// A paginated batch of timeline events for a room.
   ///
