@@ -1,22 +1,24 @@
 package io.github.hikingc.matrixsdk.services.utils;
 
 import io.github.hikingc.matrixsdk.exceptions.*;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -52,21 +54,20 @@ public class HttpTransport {
   ///
   /// @param response the client response.
   /// @throws MatrixApiException when the server responds with an unsuccessful HTTP Code.
-  private void validateResponse(HttpResponse<byte[]> response) {
-    var code = response.statusCode();
-    var body = response.body();
-    var headers = response.headers();
+  private void validateResponse(byte[] response, int code, HttpHeaders headers) {
+    var body = new String(response, StandardCharsets.UTF_8);
+
     logger.debug("Validate response code: {}, for body: {} and headers: {}", code, body, headers);
     if (code >= 200 && code < 300) {
       return;
     }
 
-    if (Arrays.toString(body).isBlank()) {
+    if (body.isBlank()) {
       throw new MatrixException("Server returned with HTTP Code:" + code);
     }
     ErrorResponse errorResponse;
     try {
-      errorResponse = Mapper.getObjectFromString(body, ErrorResponse.class);
+      errorResponse = Mapper.getObjectFromString(response, ErrorResponse.class);
     } catch (MatrixSerializationException e) {
       throw new MatrixApiException(
           "Server returned unparseable error body, HTTP code: " + code, code, e);
@@ -99,13 +100,15 @@ public class HttpTransport {
   /// @throws MatrixApiException when the response from the server is not successful.
   public byte[] getRequest(URI path, @Nullable String authToken) {
     var builderRequest =
-        HttpRequest.newBuilder().uri(path).header(CONTENT_TYPE, APPLICATION_JSON).GET();
-
+        HttpRequest.newBuilder()
+            .uri(path)
+            .header(CONTENT_TYPE, APPLICATION_JSON)
+            .header("Accept-Encoding", "gzip")
+            .GET();
     if (authToken != null) {
       builderRequest.header(AUTHORIZATION, BEARER + authToken);
     }
     var request = builderRequest.build();
-
     HttpResponse<byte[]> response;
     try {
       response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
@@ -116,8 +119,9 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response);
-    return response.body();
+    var uncResponse = decompressIfNeeded(response);
+    this.validateResponse(uncResponse, response.statusCode(), response.headers());
+    return uncResponse;
   }
 
   /// Sends a `POST` request to the given endpoint.
@@ -130,7 +134,7 @@ public class HttpTransport {
   /// @throws MatrixInterruptedException if the operation has been interrupted.
   /// @throws MatrixApiException when the response from the server is not successful.
   public byte[] postRequest(URI path, @Nullable String body, @Nullable String authToken) {
-    var builderRequest = HttpRequest.newBuilder().uri(path);
+    var builderRequest = HttpRequest.newBuilder().header("Accept-Encoding", "gzip").uri(path);
 
     if (body != null) {
       builderRequest.header(CONTENT_TYPE, APPLICATION_JSON);
@@ -156,8 +160,9 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response);
-    return response.body();
+    var uncResponse = decompressIfNeeded(response);
+    this.validateResponse(uncResponse, response.statusCode(), response.headers());
+    return uncResponse;
   }
 
   /// Sends a `POST` request to the given endpoint.
@@ -172,7 +177,7 @@ public class HttpTransport {
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
   public byte[] postAuth(URI path, @Nullable String body) {
-    var builderRequest = HttpRequest.newBuilder().uri(path);
+    var builderRequest = HttpRequest.newBuilder().header("Accept-Encoding", "gzip").uri(path);
 
     builderRequest.header(CONTENT_TYPE, "application/x-www-form-urlencoded");
 
@@ -193,8 +198,9 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response);
-    return response.body();
+    var uncResponse = decompressIfNeeded(response);
+    this.validateResponse(uncResponse, response.statusCode(), response.headers());
+    return uncResponse;
   }
 
   /// Sends a `PUT` request to the given endpoint.
@@ -211,6 +217,7 @@ public class HttpTransport {
 
     var builderRequest =
         HttpRequest.newBuilder()
+            .header("Accept-Encoding", "gzip")
             .uri(path)
             .headers(AUTHORIZATION, BEARER + authToken, CONTENT_TYPE, APPLICATION_JSON);
 
@@ -230,8 +237,9 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response);
-    return response.body();
+    var uncResponse = decompressIfNeeded(response);
+    this.validateResponse(uncResponse, response.statusCode(), response.headers());
+    return uncResponse;
   }
 
   /// Sends a `PUT` request to the given endpoint to upload a resource.
@@ -251,6 +259,7 @@ public class HttpTransport {
     try {
       uploadRequest =
           HttpRequest.newBuilder()
+              .header("Accept-Encoding", "gzip")
               .uri(path)
               .headers(
                   AUTHORIZATION, BEARER + authToken, CONTENT_TYPE, Files.probeContentType(resource))
@@ -271,8 +280,9 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response);
-    return response.body();
+    var uncResponse = decompressIfNeeded(response);
+    this.validateResponse(uncResponse, response.statusCode(), response.headers());
+    return uncResponse;
   }
 
   /// Sends a `DELETE` request to the given endpoint.
@@ -287,6 +297,7 @@ public class HttpTransport {
   public byte[] deleteRequest(URI path, String authToken) {
     HttpRequest deleteRequest =
         HttpRequest.newBuilder()
+            .header("Accept-Encoding", "gzip")
             .uri(path)
             .header(AUTHORIZATION, BEARER + authToken)
             .DELETE()
@@ -302,8 +313,9 @@ public class HttpTransport {
       Thread.currentThread().interrupt();
       throw new MatrixInterruptedException("This request has been interrupted", e);
     }
-    this.validateResponse(response);
-    return response.body();
+    var uncResponse = decompressIfNeeded(response);
+    this.validateResponse(uncResponse, response.statusCode(), response.headers());
+    return uncResponse;
   }
 
   /// URL-encodes a string using UTF-8.
@@ -330,6 +342,23 @@ public class HttpTransport {
           base.getScheme(), base.getAuthority(), path, query.isEmpty() ? null : query, null);
     } catch (URISyntaxException e) {
       throw new MatrixException("Failure parsing URI", e);
+    }
+  }
+
+  /// Method to check if the server did return response as GZIP and then decompress it.
+  ///
+  /// @param response an HTTP Response.
+  /// @return a `byte` array.
+  private byte[] decompressIfNeeded(HttpResponse<byte[]> response) {
+    String encoding = response.headers().firstValue("Content-Encoding").orElse("");
+    if (!encoding.equalsIgnoreCase("gzip")) {
+      return response.body();
+    }
+    try (var gzip = new GZIPInputStream(new ByteArrayInputStream(response.body()))) {
+      logger.debug("Server has returned with GZIP compression. Decompressing response");
+      return gzip.readAllBytes();
+    } catch (IOException e) {
+      throw new MatrixIOException("Failed to decompress gzip response body", e);
     }
   }
 
