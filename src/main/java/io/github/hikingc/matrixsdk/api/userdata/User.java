@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URI;
 import org.jspecify.annotations.NonNull;
 
-/// Represents the user information requested from a directory search request.
+/// User information requested from a directory search request.
 ///
 /// Only data field guaranteed to be available is the user's id.
 ///

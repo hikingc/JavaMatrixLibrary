@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-/// Defines all key parameters of a user's profile. The server might respond with additional profile
+/// All key parameters of a user's profile. The server might respond with additional profile
 /// fields which will be deserialized in the additionalFields map.
 ///
 /// @param avatarUrl the user’s avatar URL if they have set one, otherwise not present.
