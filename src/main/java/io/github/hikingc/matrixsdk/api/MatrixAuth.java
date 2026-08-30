@@ -3,10 +3,7 @@ package io.github.hikingc.matrixsdk.api;
 import io.fusionauth.http.server.HTTPHandler;
 import io.fusionauth.http.server.HTTPListenerConfiguration;
 import io.fusionauth.http.server.HTTPServer;
-import io.github.hikingc.matrixsdk.api.auth.AuthMetadata;
-import io.github.hikingc.matrixsdk.api.auth.TokenMetadata;
-import io.github.hikingc.matrixsdk.api.auth.Versions;
-import io.github.hikingc.matrixsdk.api.auth.WhoAmI;
+import io.github.hikingc.matrixsdk.api.auth.*;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
 import io.github.hikingc.matrixsdk.exceptions.ErrorResponse;
 import io.github.hikingc.matrixsdk.exceptions.MatrixException;
@@ -139,6 +136,24 @@ public class MatrixAuth implements Auth {
   /// @throws MatrixIOException when a network or parsing step fails.
   /// @throws MatrixException when the auth code is not supported by the server.
   public TokenMetadata performOAuthLogin(String clientName, int port, String deviceId) {
+    return performOAuthLogin(clientName, port, deviceId, this::openBrowser);
+  }
+
+  /// Runs the full MSC2965/2966/2967 OAuth 2.0 flow: discovery, dynamic client registration, PKCE
+  /// authorization via a loopback callback server, and token exchange.
+  ///
+  /// This flow is intended for native local clients that can invoke a browser and receive
+  /// callbacks, it follows Matrix "authorization code flow".
+  ///
+  /// @param clientName the client name
+  /// @param port the port connection
+  /// @param deviceId the device id
+  /// @param launcher
+  /// @return a [TokenMetadata] with all the necessary information about the tokens.
+  /// @throws MatrixIOException when a network or parsing step fails.
+  /// @throws MatrixException when the auth code is not supported by the server.
+  public TokenMetadata performOAuthLogin(
+      String clientName, int port, String deviceId, BrowserLauncher launcher) {
     // We get the auth metadata
     var metadata = this.getAuthMetadata();
     if (!metadata.grantTypesSupported().contains("authorization_code")) {
@@ -256,7 +271,7 @@ public class MatrixAuth implements Auth {
       server.start();
 
       logger.debug("URI AUTH: {}", uriAuth);
-      openBrowser(uriAuth);
+      launcher.open(uriAuth);
       code = authorizationCode.get(5, TimeUnit.MINUTES); // Might modify later...?
     } catch (IOException | InterruptedException | ExecutionException | TimeoutException e) {
       Thread.currentThread().interrupt();
@@ -282,7 +297,7 @@ public class MatrixAuth implements Auth {
   /// Attempts to retrieve new [TokenMetadata] by exchanging a refresh token for a new auth token.
   ///
   /// @param tokenMetadata either a previous [TokenMetadata] from a refresh or the data received
-  ///   from [#performOAuthLogin(String, int, String)]
+  ///   from [#performOAuthLogin(String, int, String, BrowserLauncher)]
   /// @return a refreshed [TokenMetadata].
   /// @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-6">RFC 6749 section 6.</a>
   public TokenMetadata attemptRefreshToken(TokenMetadata tokenMetadata) {
