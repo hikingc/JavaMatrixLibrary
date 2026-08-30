@@ -5,6 +5,7 @@ import io.fusionauth.http.server.HTTPListenerConfiguration;
 import io.fusionauth.http.server.HTTPServer;
 import io.github.hikingc.matrixsdk.api.auth.AuthMetadata;
 import io.github.hikingc.matrixsdk.api.auth.TokenMetadata;
+import io.github.hikingc.matrixsdk.api.auth.Versions;
 import io.github.hikingc.matrixsdk.api.auth.WhoAmI;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
 import io.github.hikingc.matrixsdk.exceptions.ErrorResponse;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.jackson.core.JacksonException;
@@ -295,6 +297,15 @@ public class MatrixAuth implements Auth {
     var refreshRes = httpTransport.postAuth(metadata.tokenEndpoint(), tokenRequestBody);
 
     return Mapper.getObjectFromString(refreshRes, TokenMetadata.class);
+  }
+
+  @Override
+  public Versions getVersions(@Nullable String authToken) {
+    var wellKnown = fetchWellKnown();
+    var response =
+        httpTransport.getRequest(
+            URI.create(wellKnown.homeserver().baseUrl() + "/_matrix/client/versions"), authToken);
+    return Mapper.getObjectFromString(response, Versions.class);
   }
 
   private String generateCodeVerifier() {
