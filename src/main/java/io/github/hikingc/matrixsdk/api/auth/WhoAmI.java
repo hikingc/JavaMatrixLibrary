@@ -14,4 +14,4 @@ import org.jspecify.annotations.NonNull;
 ///   presumed to be a non-guest user.
 /// @param userId the [UserID] that owns the access token.
 public record WhoAmI(
-    String deviceId, boolean isGuest, @NonNull @JsonProperty(required = true) UserID userId) {}
+    String deviceId, Boolean isGuest, @NonNull @JsonProperty(required = true) UserID userId) {}
