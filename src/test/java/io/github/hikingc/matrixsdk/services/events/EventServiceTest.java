@@ -848,6 +848,30 @@ class EventServiceTest {
   }
 
   @Test
+  void sendRedactEvent_WithACorrectPayload_ThenReturnAString() {
+    EventID eventId = EventID.create("$mYcVerificationRequestEventID12345");
+    String txnID = UUID.randomUUID().toString();
+    stubFor(
+        put(urlEqualTo(
+                "/_matrix/client/v3/rooms/" + ROOM_ID + "/redact/" + eventId + "/" + txnID))
+            .withRequestBody(
+                equalToJson(
+                    """
+                            {
+                            "reason": "Reason"
+                            }"""))
+            .willReturn(
+                okJson(
+                    """
+                        {
+                          "event_id": "$YUwQidLecu:example.com"
+                        }""")));
+
+    var response = client.events().redactEvent(ROOM_ID, eventId, txnID, "Reason");
+    assertThat(response).isNotNull();
+  }
+
+  @Test
   void sendPublishRoomMessageFile_WithACorrectPayload_thenReturnAString(@TempDir Path tempDir)
       throws IOException {
     Result result = getResult(tempDir);
