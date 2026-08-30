@@ -32,3 +32,6 @@ public record DiscoveryResponse(
   /// @param livekitServiceUrl The livekit URL.
   public record RtcFocus(String type, String livekitServiceUrl) {}
 }
+
+// For future reference about msc2965 field appearing in this response: https://github.com/element-hq/synapse/issues/19227
+
