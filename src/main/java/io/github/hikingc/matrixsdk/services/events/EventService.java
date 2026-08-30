@@ -6,7 +6,6 @@ import io.github.hikingc.matrixsdk.api.events.matrix.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.call.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.key.*;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.*;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomThirdPartyInvite;
 import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceChild;
 import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceParent;
 import io.github.hikingc.matrixsdk.api.events.queries.*;
