@@ -41,7 +41,7 @@ public class HttpTransport {
   private static final String BEARER = "Bearer ";
   private final HttpClient client;
 
-  Logger logger = LoggerFactory.getLogger(HttpTransport.class);
+  private final Logger logger = LoggerFactory.getLogger(HttpTransport.class);
 
   /// Constructor to initialize the HTTP Client.
   ///
