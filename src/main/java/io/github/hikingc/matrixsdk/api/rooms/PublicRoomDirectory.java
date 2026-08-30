@@ -5,7 +5,7 @@ import io.github.hikingc.matrixsdk.api.rooms.models.PublishedRoomsChunk;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 
-/// Record used to store all the information about published rooms on the server.
+/// Information about published rooms on the server.
 ///
 /// @param chunk a paginated chunk of published rooms.
 /// @param nextBatch a pagination token for the response. If null, then the record contains data of

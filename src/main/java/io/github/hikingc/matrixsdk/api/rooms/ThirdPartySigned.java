@@ -6,7 +6,7 @@ import java.util.Map;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import org.jspecify.annotations.NullMarked;
 
-/// Holds information to supply the server and verify a `m.room.third_party_invite` event.
+/// Holds information to supply the server and verify a [`m.room.third_party_invite`][io.github.hikingc.matrixsdk.api.events.server.state.RoomThirdPartyInviteEvent] event.
 ///
 /// @param mxid the Matrix ID of the invitee.
 /// @param sender the Matrix ID of the user who issued the invite.

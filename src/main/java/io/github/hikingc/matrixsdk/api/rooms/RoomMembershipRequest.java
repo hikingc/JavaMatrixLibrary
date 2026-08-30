@@ -4,7 +4,7 @@ import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 
 import java.util.Objects;
 
-/// This record represents the required values to be supplied to actions like banning or kicking.
+/// Required values to be supplied to actions like banning or kicking.
 ///
 /// @param reason The reason of the expulsion, the target will receive this message.
 /// @param userId The id of the target to expel.

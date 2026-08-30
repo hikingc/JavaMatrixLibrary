@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URI;
 import org.jspecify.annotations.NonNull;
 
-/// Holds detailed information about a room in specific.
+/// Information about a room in specific.
 ///
 /// @param allowedRoomsIds
 /// @param avatarUrl the [URI] for the room’s avatar, if one is set.

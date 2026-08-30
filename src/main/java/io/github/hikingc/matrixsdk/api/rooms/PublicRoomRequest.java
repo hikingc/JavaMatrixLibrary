@@ -1,7 +1,6 @@
 package io.github.hikingc.matrixsdk.api.rooms;
 
-/// Utility configuration record to pass desired arguments to query the server's public rooms'
-/// directory.
+/// Configuration parameters to query at the server's public rooms' directory.
 ///
 /// @param filter to apply in the results.
 /// @param includeAllNetworks whether to include all known networks/protocols from application
@@ -12,10 +11,8 @@ package io.github.hikingc.matrixsdk.api.rooms;
 ///   supplied, rather than via an explicit flag.
 /// @param thirdPartyInstanceId the specific third-party network/protocol to request from the
 ///   homeserver. Can only be used if `includeAllNetworks` is `false`.
-/// @see <a
-///   href="https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3thirdpartyprotocols">
-///   `/thirdparty/protocols`, the endpoint that returns the instance_id of a `Protocol`
-///   Instance</a>
+/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3thirdpartyprotocols">
+///   `/thirdparty/protocols`</a>, the endpoint that returns the instance_id of a `Protocol`
 public record PublicRoomRequest(
     RoomFilter filter,
     Boolean includeAllNetworks,

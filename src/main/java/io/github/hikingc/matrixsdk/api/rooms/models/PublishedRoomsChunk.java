@@ -2,9 +2,9 @@ package io.github.hikingc.matrixsdk.api.rooms.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.hikingc.matrixsdk.api.Room;
+import io.github.hikingc.matrixsdk.api.identifiers.Identifier;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
-import io.github.hikingc.matrixsdk.api.identifiers.Validator;
 import java.net.URI;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
@@ -23,7 +23,7 @@ import org.jspecify.annotations.NonNull;
 /// @param topic the plain text topic of the room. Omitted if no text/plain mimetype exists in
 ///   `m.room.topic`.
 /// @param worldReadable whether the room may be viewed by users without joining.
-/// @see Room#getRoomSummary(Validator, List) getRoomSummary(), which returns an endpoint with
+/// @see Room#getRoomSummary(Identifier, List) getRoomSummary(), which returns an endpoint with
 ///   additional values for a determinate room
 public record PublishedRoomsChunk(
     URI avatarUrl,

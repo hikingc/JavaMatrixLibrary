@@ -3,7 +3,7 @@ package io.github.hikingc.matrixsdk.api.rooms.models;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import java.util.List;
 
-/// This record contains data when resolving a room alias.
+/// Resolved Room alias information.
 ///
 /// @param roomId the room id for the room alias.
 /// @param servers a list of servers aware of said alias.

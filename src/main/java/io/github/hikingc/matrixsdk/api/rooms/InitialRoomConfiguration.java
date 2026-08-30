@@ -12,7 +12,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/// The configuration data that a server will follow to configure the room.
+/// Configuration object that the server will follow to configure the room.
 ///
 /// @param creationContent extra keys, currently only `m.federate` is mapped.
 /// @param initialState a [List] of state events to set in the new room. This allows the user to
