@@ -1,6 +1,6 @@
 package io.github.hikingc.matrixsdk.api.events.queries;
 
-/// Represents the arguments required to format the [URI] used to query the `/sync` endpoint.
+/// Represents the arguments required to format the [java.net.URI] used to query the `/sync` endpoint.
 ///
 /// @param filter The ID of a filter created using the filter API or a filter JSON object encoded as
 ///   a [String].
