@@ -9,6 +9,7 @@ import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersMessages;
 import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersSync;
 import io.github.hikingc.matrixsdk.api.events.server.state.RoomMemberEvent;
 import io.github.hikingc.matrixsdk.api.events.sync.Sync;
+import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixInterruptedException;
@@ -149,7 +150,7 @@ public interface Event {
   /// @return a [String] representing a unique identifier of the event.
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws MatrixInterruptedException when the client was interrupted.
-  String redactEvent(RoomID roomId, String eventId, String txnId, String reason);
+  String redactEvent(RoomID roomId, EventID eventId, String txnId, String reason);
 
   /// Synchronously uploads a local multimedia resource to the Matrix media server.
   ///

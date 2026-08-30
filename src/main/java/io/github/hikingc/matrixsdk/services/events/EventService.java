@@ -11,6 +11,7 @@ import io.github.hikingc.matrixsdk.api.events.matrix.space.SpaceParent;
 import io.github.hikingc.matrixsdk.api.events.queries.*;
 import io.github.hikingc.matrixsdk.api.events.server.state.RoomMemberEvent;
 import io.github.hikingc.matrixsdk.api.events.sync.Sync;
+import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.context.ClientContext;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
@@ -217,7 +218,7 @@ public class EventService implements Event {
   }
 
   @Override
-  public String redactEvent(RoomID roomId, String eventId, String txnId, @Nullable String reason) {
+  public String redactEvent(RoomID roomId, EventID eventId, String txnId, @Nullable String reason) {
     Objects.requireNonNull(eventId, "The event ID" + " must not be null");
     Objects.requireNonNull(txnId, "The transaction ID" + " must not be null");
     String json = null;
