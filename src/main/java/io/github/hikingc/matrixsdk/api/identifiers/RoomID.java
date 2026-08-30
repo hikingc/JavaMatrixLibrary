@@ -11,7 +11,7 @@ import java.util.Objects;
 ///
 /// The `opaque_id` of a [RoomID] **MUST** only contain valid non-surrogate Unicode code points,
 /// including control characters, except `:` and `NUL` (`U+0000`). The localpart **SHOULD** only
-/// consist of alphanumeric characters (`A-Z, a-z, 0-9`) when generating them..
+/// consist of alphanumeric characters (`A-Z, a-z, 0-9`) when generating them.
 ///
 /// The `domain` of a [RoomID] is the server name of the homeserver which allocated the room.
 ///

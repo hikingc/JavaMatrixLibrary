@@ -10,7 +10,7 @@ import java.util.Objects;
 ///
 /// The `localpart` of a [RoomAlias] **MAY** contain valid non-surrogate Unicode code points, except
 /// `:` and `NUL` (`U+0000`). The localpart **SHOULD** only consist of alphanumeric characters
-/// (`A-Z, a-z, 0-9`) when generating them..
+/// (`A-Z, a-z, 0-9`) when generating them.
 ///
 /// The `domain` of a [RoomAlias] is the server name of the homeserver which created the alias.
 ///
