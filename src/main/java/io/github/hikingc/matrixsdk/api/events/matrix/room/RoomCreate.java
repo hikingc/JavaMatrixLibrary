@@ -24,8 +24,9 @@ import org.jspecify.annotations.Nullable;
 ///   Note: Because `creator` was removed in room version 11, the field is not used to determine
 ///   which user(s) are room creators in room version 12 and beyond either.
 /// @param mFederate the `user_id` of the room creator. **Required** for, and only present in, room
-///   versions 1 - 10. Starting with room version 11 the event [`sender`][ClientEvent#sender] should
-///   be used instead.
+///   versions 1 - 10. Starting with room version 11 the event
+///   [`sender`][io.github.hikingc.matrixsdk.api.events.ClientEvent#sender()] should be used
+///   instead.
 /// @param predecessor a reference to the room this room replaces, if the previous room was
 ///   upgraded.
 /// @param roomVersion the version of the room. Defaults to "1" if the key does not exist.
