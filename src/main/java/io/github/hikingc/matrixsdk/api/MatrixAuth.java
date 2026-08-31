@@ -176,14 +176,12 @@ public class MatrixAuth implements Auth {
     // Send the payload using the aforementioned record obtained and get the client_id
     var responseBody =
         httpTransport.postRequest(metadata.registrationEndpoint(), mappedInput, null);
-    String responseBodyString = new String(responseBody);
+    String responseBodyString = responseBody.toString();
     logger.info("Registration response: {}", responseBodyString);
 
     var clientId = Mapper.getStringValueOfAJsonKey(responseBody, "client_id");
     if (clientId.isBlank()) {
-      throw new MatrixIOException(
-          "Dynamic client registration failed or returned no client_id. Response: "
-              + Arrays.toString(responseBody));
+      throw new MatrixIOException("Dynamic client registration failed or returned no client_id.");
     }
 
     // Finish registering client, now we do the login flow

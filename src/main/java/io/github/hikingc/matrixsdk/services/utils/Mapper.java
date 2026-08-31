@@ -5,6 +5,7 @@ import io.github.hikingc.matrixsdk.api.events.matrix.room.Ciphertext;
 import io.github.hikingc.matrixsdk.exceptions.MatrixSerializationException;
 import io.github.hikingc.matrixsdk.services.utils.handlers.CiphertextDeserializer;
 import io.github.hikingc.matrixsdk.services.utils.handlers.HandlerEventDeserializer;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.NullMarked;
@@ -80,12 +81,12 @@ public class Mapper {
   /// Attempts to extract a key value from a deserialized JSON Object as a [String]. Useful for
   /// dealing with simple [String] responses.
   ///
-  /// @param json a JSON [String].
+  /// @param inputStream an [InputStream] to process as JSON returned by a server.
   /// @param key the key of the JSON Object.
   /// @return the corresponding value.
   /// @throws MatrixSerializationException when the key was not in the response
-  public static String getStringValueOfAJsonKey(byte[] json, String key) {
-    JsonNode tree = INSTANCE.readTree(json);
+  public static String getStringValueOfAJsonKey(InputStream inputStream, String key) {
+    JsonNode tree = INSTANCE.readTree(inputStream);
     if (tree == null || tree.isMissingNode()) {
       throw new MatrixSerializationException("Empty or malformed server response.");
     }
@@ -99,15 +100,16 @@ public class Mapper {
   /// Attempts to extract a key value from a deserialized JSON Object to a [List]. Useful for
   /// dealing with iteration of [Object]s.
   ///
-  /// @param json a JSON [String].
+  /// @param <T> the type to deserialize each element into
+  /// @param inputStream an [InputStream] to process as JSON returned by a server.
   /// @param key the key of the JSON Object.
   /// @param elementType the [Class] to deserialize each element into.
-  /// @param <T> the type to deserialize each element into
   /// @return the deserialized [List] of values for the given key
   /// @throws MatrixSerializationException when the key was not in the response or the key value was
   ///   not an Array
-  public static <T> List<T> getListFromAJsonKey(byte[] json, String key, Class<T> elementType) {
-    JsonNode tree = INSTANCE.readTree(json);
+  public static <T> List<T> getListFromAJsonKey(
+      InputStream inputStream, String key, Class<T> elementType) {
+    JsonNode tree = INSTANCE.readTree(inputStream);
     JsonNode value = tree.get(key);
     if (value == null || value.isMissingNode()) {
       throw new MatrixSerializationException("Missing '%s' in server response".formatted(key));
@@ -149,14 +151,14 @@ public class Mapper {
 
   /// Deserializes a JSON response body into an instance of the given type.
   ///
-  /// @param responseBody the raw JSON string returned by the Matrix API
-  /// @param type the target class to deserialize into
   /// @param <T> the [Class] type to deserialize into
+  /// @param inputStream an [InputStream] to process as JSON returned by a server.
+  /// @param type the target class to deserialize into
   /// @return the deserialized [Object]
   /// @throws MatrixSerializationException if the response cannot be parsed into the target type.
-  public static <T> T getObjectFromString(byte[] responseBody, Class<T> type) {
+  public static <T> T getObjectFromString(InputStream inputStream, Class<T> type) {
     try {
-      return INSTANCE.readValue(responseBody, type);
+      return INSTANCE.readValue(inputStream, type);
     } catch (DatabindException e) {
       throw new MatrixSerializationException(
           "Unable to deserialize server response into expected structure", e);
@@ -170,15 +172,15 @@ public class Mapper {
 
   /// Deserializes a JSON response body into an instance of a class based on a [TypeReference].
   ///
-  /// @param responseBody the raw JSON string returned by the Matrix API
-  /// @param type a [TypeReference]
   /// @param <T> the [Class] type to deserialize into
+  /// @param inputStream an [InputStream] to process as JSON returned by a server.
+  /// @param type a [TypeReference]
   /// @return the deserialized [Object]
   /// @throws MatrixSerializationException if the response cannot be parsed into the target type
-  public static <T> T getObjectFromString(byte[] responseBody, TypeReference<T> type) {
+  public static <T> T getObjectFromString(InputStream inputStream, TypeReference<T> type) {
 
     try {
-      return INSTANCE.readValue(responseBody, type);
+      return INSTANCE.readValue(inputStream, type);
     } catch (DatabindException e) {
       throw new MatrixSerializationException(
           "Unable to deserialize server response into expected structure", e);

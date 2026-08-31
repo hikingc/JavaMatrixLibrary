@@ -1,8 +1,9 @@
 package io.github.hikingc.matrixsdk.services.utils;
 
 import io.github.hikingc.matrixsdk.exceptions.*;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -54,36 +55,42 @@ public class HttpTransport {
   ///
   /// @param response the client response.
   /// @throws MatrixApiException when the server responds with an unsuccessful HTTP Code.
-  private void validateResponse(byte[] response, int code, HttpHeaders headers) {
-    var body = new String(response, StandardCharsets.UTF_8);
-
-    logger.debug("Validate response code: {}, for body: {} and headers: {}", code, body, headers);
+  private void validateResponse(InputStream response, int code, HttpHeaders headers) {
     if (code >= 200 && code < 300) {
+      logger.debug("Validate response code: {}, headers: {}", code, headers);
       return;
     }
+
+    // Only read/stringify the stream into memory when handling an error payload
+    String body;
+    try {
+      body = new String(response.readAllBytes(), StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new UncheckedIOException("Failed to read error response stream", e);
+    }
+
+    logger.debug("Validate response code: {}, body: {}, headers: {}", code, body, headers);
 
     if (body.isBlank()) {
       throw new MatrixException("Server returned with HTTP Code:" + code);
     }
+
     ErrorResponse errorResponse;
     try {
       errorResponse = Mapper.getObjectFromString(response, ErrorResponse.class);
     } catch (MatrixSerializationException e) {
       throw new MatrixApiException(
-          "Server returned unparseable error body, HTTP code: " + code, code, e);
+              "Server returned unparseable error body, HTTP code: " + code, code, e);
     }
 
     var retryAfter = headers.firstValue("Retry-After");
     if (retryAfter.isPresent()) {
-      // Retry-After header is the current standard; retry_after_ms in the
-      // error body is deprecated but some homeservers may still only send that.
       try {
         int retryAfterSeconds = Integer.parseInt(retryAfter.get().trim());
         errorResponse =
-            new ErrorResponse(errorResponse.errCode(), errorResponse.error(), retryAfterSeconds);
+                new ErrorResponse(errorResponse.errCode(), errorResponse.error(), retryAfterSeconds);
       } catch (NumberFormatException _) {
         logger.debug("Retry-After header was not a valid integer: {}", retryAfter.get());
-        // fall through, keep original errorResponse without retryAfter override
       }
     }
 
@@ -94,11 +101,11 @@ public class HttpTransport {
   ///
   /// @param path the [URI] of the endpoint to `GET`.
   /// @param authToken if supplied, the `Bearer` token.
-  /// @return a JSON [String].
+  /// @return an [InputStream] to process as JSON.
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixInterruptedException if the operation has been interrupted.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public byte[] getRequest(URI path, @Nullable String authToken) {
+  public InputStream getRequest(URI path, @Nullable String authToken) {
     var builderRequest =
         HttpRequest.newBuilder()
             .uri(path)
@@ -109,9 +116,9 @@ public class HttpTransport {
       builderRequest.header(AUTHORIZATION, BEARER + authToken);
     }
     var request = builderRequest.build();
-    HttpResponse<byte[]> response;
+    HttpResponse<InputStream> response;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+      response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -129,11 +136,11 @@ public class HttpTransport {
   /// @param path the [URI] of the endpoint to `POST`.
   /// @param body a JSON [String].
   /// @param authToken if supplied, the `Bearer` token.
-  /// @return a JSON [String].
+  /// @return an [InputStream] to process as JSON.
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixInterruptedException if the operation has been interrupted.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public byte[] postRequest(URI path, @Nullable String body, @Nullable String authToken) {
+  public InputStream postRequest(URI path, @Nullable String body, @Nullable String authToken) {
     var builderRequest = HttpRequest.newBuilder().header("Accept-Encoding", "gzip").uri(path);
 
     if (body != null) {
@@ -150,9 +157,9 @@ public class HttpTransport {
     }
     var request = builderRequest.build();
 
-    HttpResponse<byte[]> response;
+    HttpResponse<InputStream> response;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+      response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -171,12 +178,12 @@ public class HttpTransport {
   ///
   /// @param path the [URI] of the endpoint to query.
   /// @param body a JSON [String].
-  /// @return a JSON [String].
+  /// @return an [InputStream] to process as JSON.
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public byte[] postAuth(URI path, @Nullable String body) {
+  public InputStream postAuth(URI path, @Nullable String body) {
     var builderRequest = HttpRequest.newBuilder().header("Accept-Encoding", "gzip").uri(path);
 
     builderRequest.header(CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -188,9 +195,9 @@ public class HttpTransport {
 
     var request = builderRequest.build();
 
-    HttpResponse<byte[]> response;
+    HttpResponse<InputStream> response;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+      response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -208,12 +215,12 @@ public class HttpTransport {
   /// @param path the [URI] of the endpoint to query.
   /// @param body a JSON [String]
   /// @param authToken if supplied, the `Bearer` token.
-  /// @return a JSON [String] when the operation is successful.
+  /// @return an [InputStream] to process as JSON.
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public byte[] putRequest(URI path, @Nullable String body, String authToken) {
+  public InputStream putRequest(URI path, @Nullable String body, String authToken) {
 
     var builderRequest =
         HttpRequest.newBuilder()
@@ -227,9 +234,9 @@ public class HttpTransport {
             : HttpRequest.BodyPublishers.noBody());
     var request = builderRequest.build();
 
-    HttpResponse<byte[]> response;
+    HttpResponse<InputStream> response;
     try {
-      response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+      response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -249,12 +256,12 @@ public class HttpTransport {
   /// @param path the [URI] of the endpoint to query.
   /// @param resource a [Path] pointing to the resource to be uploaded.
   /// @param authToken if supplied, the `Bearer` token.
-  /// @return a JSON [String].
+  /// @return an [InputStream] to process as JSON.
   /// @throws MatrixIOException if an I/O error has occurred while sending the request
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public byte[] putResource(URI path, Path resource, String authToken) {
+  public InputStream putResource(URI path, Path resource, String authToken) {
     HttpRequest uploadRequest;
     try {
       uploadRequest =
@@ -270,9 +277,9 @@ public class HttpTransport {
           "There has been an I/O error attempting to process this request", e);
     }
 
-    HttpResponse<byte[]> response;
+    HttpResponse<InputStream> response;
     try {
-      response = client.send(uploadRequest, HttpResponse.BodyHandlers.ofByteArray());
+      response = client.send(uploadRequest, HttpResponse.BodyHandlers.ofInputStream());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -289,12 +296,12 @@ public class HttpTransport {
   ///
   /// @param path the [URI] of the endpoint to query.
   /// @param authToken if supplied, the `Bearer` token.
-  /// @return a JSON [String].
+  /// @return an [InputStream] to process as JSON.
   /// @throws MatrixIOException if an I/O error has occurred while sending the request.
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public byte[] deleteRequest(URI path, String authToken) {
+  public InputStream deleteRequest(URI path, String authToken) {
     HttpRequest deleteRequest =
         HttpRequest.newBuilder()
             .header("Accept-Encoding", "gzip")
@@ -303,9 +310,9 @@ public class HttpTransport {
             .DELETE()
             .build();
 
-    HttpResponse<byte[]> response;
+    HttpResponse<InputStream> response;
     try {
-      response = client.send(deleteRequest, HttpResponse.BodyHandlers.ofByteArray());
+      response = client.send(deleteRequest, HttpResponse.BodyHandlers.ofInputStream());
     } catch (IOException e) {
       throw new MatrixIOException(
           "There has been an I/O error attempting to process this request", e);
@@ -349,14 +356,14 @@ public class HttpTransport {
   ///
   /// @param response an HTTP Response.
   /// @return a `byte` array.
-  private byte[] decompressIfNeeded(HttpResponse<byte[]> response) {
+  private InputStream decompressIfNeeded(HttpResponse<InputStream> response) {
     String encoding = response.headers().firstValue("Content-Encoding").orElse("");
     if (!encoding.equalsIgnoreCase("gzip")) {
       return response.body();
     }
-    try (var gzip = new GZIPInputStream(new ByteArrayInputStream(response.body()))) {
+    try {
       logger.debug("Server has returned with GZIP compression. Decompressing response");
-      return gzip.readAllBytes();
+      return new GZIPInputStream(response.body());
     } catch (IOException e) {
       throw new MatrixIOException("Failed to decompress gzip response body", e);
     }
