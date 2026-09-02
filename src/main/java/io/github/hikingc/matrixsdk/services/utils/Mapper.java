@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tools.jackson.core.JacksonException;
-import tools.jackson.core.exc.StreamReadException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.*;
 import tools.jackson.databind.deser.ValueDeserializerModifier;
@@ -26,6 +27,7 @@ import tools.jackson.databind.type.CollectionType;
 public class Mapper {
 
   private static final JsonMapper INSTANCE = buildMapper();
+  private static final Logger log = LoggerFactory.getLogger(Mapper.class);
 
   private Mapper() {}
 
@@ -70,9 +72,9 @@ public class Mapper {
   /// @param object to serialize.
   /// @return a serialized [String]
   /// @throws MatrixSerializationException when the serialization returned with an issue.
-  public static String writeValueAsString(Object object) {
+  public static byte[] writeValueAsString(Object object) {
     try {
-      return INSTANCE.writeValueAsString(object); // when does it fail specifically?
+      return INSTANCE.writeValueAsBytes(object);
     } catch (JacksonException e) {
       throw new MatrixSerializationException("Failed to parse input data", e);
     }
@@ -127,7 +129,7 @@ public class Mapper {
   ///
   /// @param map the key-values for the JSON Object
   /// @return a serialized [String].
-  public static String createObjectFromMap(Map<String, @Nullable Object> map) {
+  public static byte[] createObjectFromMap(Map<String, @Nullable Object> map) {
 
     ObjectNode node = INSTANCE.createObjectNode();
     map.forEach(
@@ -146,7 +148,7 @@ public class Mapper {
             default -> node.put(key, value.toString());
           }
         });
-    return node.toString();
+    return INSTANCE.writeValueAsBytes(node);
   }
 
   /// Deserializes a JSON response body into an instance of the given type.
@@ -159,11 +161,6 @@ public class Mapper {
   public static <T> T getObjectFromString(InputStream inputStream, Class<T> type) {
     try {
       return INSTANCE.readValue(inputStream, type);
-    } catch (DatabindException e) {
-      throw new MatrixSerializationException(
-          "Unable to deserialize server response into expected structure", e);
-    } catch (StreamReadException e) {
-      throw new MatrixSerializationException("Unable to process invalid response.", e);
     } catch (JacksonException e) {
       throw new MatrixSerializationException(
           "A failure has occurred while attempting to process a response object.", e);
@@ -178,14 +175,8 @@ public class Mapper {
   /// @return the deserialized [Object]
   /// @throws MatrixSerializationException if the response cannot be parsed into the target type
   public static <T> T getObjectFromString(InputStream inputStream, TypeReference<T> type) {
-
     try {
       return INSTANCE.readValue(inputStream, type);
-    } catch (DatabindException e) {
-      throw new MatrixSerializationException(
-          "Unable to deserialize server response into expected structure", e);
-    } catch (StreamReadException e) {
-      throw new MatrixSerializationException("Unable to process invalid response.", e);
     } catch (JacksonException e) {
       throw new MatrixSerializationException(
           "A failure has occurred while attempting to process a response object.", e);

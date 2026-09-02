@@ -3,7 +3,6 @@ package io.github.hikingc.matrixsdk.services.utils;
 import io.github.hikingc.matrixsdk.exceptions.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -56,23 +55,10 @@ public class HttpTransport {
   /// @param response the client response.
   /// @throws MatrixApiException when the server responds with an unsuccessful HTTP Code.
   private void validateResponse(InputStream response, int code, HttpHeaders headers) {
+    logger.debug(
+        "Validating response code: {}, headers: {}, for body: {}", code, headers, response);
     if (code >= 200 && code < 300) {
-      logger.debug("Validate response code: {}, headers: {}", code, headers);
       return;
-    }
-
-    // Only read/stringify the stream into memory when handling an error payload
-    String body;
-    try {
-      body = new String(response.readAllBytes(), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      throw new UncheckedIOException("Failed to read error response stream", e);
-    }
-
-    logger.debug("Validate response code: {}, body: {}, headers: {}", code, body, headers);
-
-    if (body.isBlank()) {
-      throw new MatrixException("Server returned with HTTP Code:" + code);
     }
 
     ErrorResponse errorResponse;
@@ -80,7 +66,7 @@ public class HttpTransport {
       errorResponse = Mapper.getObjectFromString(response, ErrorResponse.class);
     } catch (MatrixSerializationException e) {
       throw new MatrixApiException(
-              "Server returned unparseable error body, HTTP code: " + code, code, e);
+          "Server returned unparseable error body, HTTP code: " + code, code, e);
     }
 
     var retryAfter = headers.firstValue("Retry-After");
@@ -88,7 +74,7 @@ public class HttpTransport {
       try {
         int retryAfterSeconds = Integer.parseInt(retryAfter.get().trim());
         errorResponse =
-                new ErrorResponse(errorResponse.errCode(), errorResponse.error(), retryAfterSeconds);
+            new ErrorResponse(errorResponse.errCode(), errorResponse.error(), retryAfterSeconds);
       } catch (NumberFormatException _) {
         logger.debug("Retry-After header was not a valid integer: {}", retryAfter.get());
       }
@@ -106,6 +92,7 @@ public class HttpTransport {
   /// @throws MatrixInterruptedException if the operation has been interrupted.
   /// @throws MatrixApiException when the response from the server is not successful.
   public InputStream getRequest(URI path, @Nullable String authToken) {
+    logger.trace("Get HTTP Request for path: {}, authToken: {}", path, authToken);
     var builderRequest =
         HttpRequest.newBuilder()
             .uri(path)
@@ -137,11 +124,15 @@ public class HttpTransport {
   /// @param body a JSON [String].
   /// @param authToken if supplied, the `Bearer` token.
   /// @return an [InputStream] to process as JSON.
-  /// @throws MatrixIOException if an I/O error has occurred while sending the request.
+  /// @throws MatrixIOException if an I/O error has occurred while processing the request.
   /// @throws MatrixInterruptedException if the operation has been interrupted.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public InputStream postRequest(URI path, @Nullable String body, @Nullable String authToken) {
+  public InputStream postRequest(URI path, byte @Nullable [] body, @Nullable String authToken) {
+    logger.trace("Post HTTP Request for path: {}, authToken: {}", path, authToken);
     var builderRequest = HttpRequest.newBuilder().header("Accept-Encoding", "gzip").uri(path);
+    if (authToken != null) {
+      builderRequest.header(AUTHORIZATION, BEARER + authToken);
+    }
 
     if (body != null) {
       builderRequest.header(CONTENT_TYPE, APPLICATION_JSON);
@@ -149,12 +140,9 @@ public class HttpTransport {
 
     builderRequest.POST(
         body != null
-            ? HttpRequest.BodyPublishers.ofString(body)
+            ? HttpRequest.BodyPublishers.ofByteArray(body)
             : HttpRequest.BodyPublishers.noBody());
 
-    if (authToken != null) {
-      builderRequest.header(AUTHORIZATION, BEARER + authToken);
-    }
     var request = builderRequest.build();
 
     HttpResponse<InputStream> response;
@@ -184,6 +172,7 @@ public class HttpTransport {
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
   public InputStream postAuth(URI path, @Nullable String body) {
+    logger.trace("Post [Auth] HTTP Request for path: {}, body: {}", path, body);
     var builderRequest = HttpRequest.newBuilder().header("Accept-Encoding", "gzip").uri(path);
 
     builderRequest.header(CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -220,8 +209,8 @@ public class HttpTransport {
   /// @throws MatrixInterruptedException if the operation has been interrupted or a server returned
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
-  public InputStream putRequest(URI path, @Nullable String body, String authToken) {
-
+  public InputStream putRequest(URI path, byte @Nullable [] body, String authToken) {
+    logger.trace("Put HTTP Request for path: {}, body: {}", path, body);
     var builderRequest =
         HttpRequest.newBuilder()
             .header("Accept-Encoding", "gzip")
@@ -230,7 +219,7 @@ public class HttpTransport {
 
     builderRequest.PUT(
         body != null
-            ? HttpRequest.BodyPublishers.ofString(body)
+            ? HttpRequest.BodyPublishers.ofByteArray(body)
             : HttpRequest.BodyPublishers.noBody());
     var request = builderRequest.build();
 
@@ -262,6 +251,7 @@ public class HttpTransport {
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
   public InputStream putResource(URI path, Path resource, String authToken) {
+    logger.trace("Put HTTP Resource for path: {}, authToken: {}", path, authToken);
     HttpRequest uploadRequest;
     try {
       uploadRequest =
@@ -302,6 +292,7 @@ public class HttpTransport {
   ///   with unsuccessful HTTP Code.
   /// @throws MatrixApiException when the response from the server is not successful.
   public InputStream deleteRequest(URI path, String authToken) {
+    logger.trace("Delete HTTP Request for path: {}, authToken: {}", path, authToken);
     HttpRequest deleteRequest =
         HttpRequest.newBuilder()
             .header("Accept-Encoding", "gzip")
@@ -356,7 +347,10 @@ public class HttpTransport {
   ///
   /// @param response an HTTP Response.
   /// @return a `byte` array.
+  /// @throws MatrixIOException if an I/O exception has occurred.
   private InputStream decompressIfNeeded(HttpResponse<InputStream> response) {
+    logger.trace(
+        "Decompress HTTP Response for path: {}, body: {}", response.statusCode(), response.body());
     String encoding = response.headers().firstValue("Content-Encoding").orElse("");
     if (!encoding.equalsIgnoreCase("gzip")) {
       return response.body();
