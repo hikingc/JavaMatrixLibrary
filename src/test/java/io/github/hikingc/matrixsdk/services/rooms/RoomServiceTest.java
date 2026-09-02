@@ -511,7 +511,15 @@ class RoomServiceTest {
                         """)));
 
     var response =
-        client.room().getPublishedRoomDirectory(new PublicRoomRequest(null, null, 10, null, null));
+        client
+            .room()
+            .getPublishedRoomDirectory(
+                new PublicRoomRequest(
+                    new RoomFilter("searchTerm", List.of("foo")),
+                    true,
+                    10,
+                    "since",
+                    "thirdPartyInstanceId"));
 
     assertNotNull(response);
     assertFalse(response.chunk().isEmpty());

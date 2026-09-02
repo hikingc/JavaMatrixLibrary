@@ -600,7 +600,15 @@ class EventServiceTest {
                 null,
                 Membership.JOIN,
                 null,
-                null),
+                new ThirdPartyInvite(
+                    "displayName",
+                    new ThirdPartyInvite.SignedThirdPartyInvite(
+                        UserID.create("@user:example.org"),
+                        Map.ofEntries(
+                            Map.entry(
+                                "magic.forest",
+                                Map.ofEntries(Map.entry("ed25519:0", "SomeSignatureBase64Here")))),
+                        "token"))),
             "@alice:example.org"),
         Arguments.of(new RoomName("Test Room"), ""),
         Arguments.of(new RoomPinnedEvents(List.of("$event1:example.org")), ""),
@@ -653,11 +661,11 @@ class EventServiceTest {
     String expectedPath =
         "/_matrix/client/v3/rooms/" + ROOM_ID + "/state/" + eventType + "/" + stateKey;
 
-    String expectedBody = Mapper.writeValueAsString(stateEvent);
+    var expectedBody = Mapper.writeValueAsString(stateEvent);
 
     stubFor(
         put(urlEqualTo(expectedPath))
-            .withRequestBody(equalToJson(expectedBody, true, true))
+            .withRequestBody(equalToJson(new String(expectedBody), true, true))
             .willReturn(
                 aResponse()
                     .withStatus(200)
@@ -852,8 +860,7 @@ class EventServiceTest {
     EventID eventId = EventID.create("$mYcVerificationRequestEventID12345");
     String txnID = UUID.randomUUID().toString();
     stubFor(
-        put(urlEqualTo(
-                "/_matrix/client/v3/rooms/" + ROOM_ID + "/redact/" + eventId + "/" + txnID))
+        put(urlEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/redact/" + eventId + "/" + txnID))
             .withRequestBody(
                 equalToJson(
                     """
