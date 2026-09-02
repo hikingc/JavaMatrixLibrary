@@ -12,6 +12,7 @@ import io.github.hikingc.matrixsdk.exceptions.MatrixException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import org.jspecify.annotations.NullMarked;
@@ -51,14 +52,14 @@ public class RoomService implements Room {
   @Override
   public String create(InitialRoomConfiguration configuration) {
 
-    String jsonPayload = Mapper.writeValueAsString(configuration);
+    var payload = Mapper.writeValueAsString(configuration);
 
     var responseBody =
         httpTransport.postRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + "/_matrix/client/v3/createRoom"),
-            jsonPayload,
+            payload,
             context.token());
 
     return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
@@ -87,7 +88,12 @@ public class RoomService implements Room {
     Map<String, Object> map = new HashMap<>();
     map.put(ROOM_ID, roomId);
 
-    httpTransport.putRequest(uri, Mapper.createObjectFromMap(map), context.token());
+    try (var _ =
+        httpTransport.putRequest(uri, Mapper.createObjectFromMap(map), context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException("Failed to set alias '" + roomAlias + "' in room " + roomId, e);
+    }
   }
 
   @Override
@@ -97,7 +103,12 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             DIRECTORY_ENDPOINT_ROOM + roomAlias,
             null);
-    httpTransport.deleteRequest(uri, context.token());
+    try (var _ = httpTransport.deleteRequest(uri, context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException(
+          "Failed to delete alias '" + roomAlias + "' in room " + roomAlias, e);
+    }
   }
 
   @Override
@@ -140,15 +151,21 @@ public class RoomService implements Room {
 
   @Override
   public void inviteUser(RoomID roomId, RoomMembershipRequest event) {
-    String serializedInputData = Mapper.writeValueAsString(event);
-    httpTransport.postRequest(
-        URI.create(
-            context.discoveryResponse().homeserver().baseUrl()
-                + ROOM_ENDPOINT
-                + roomId
-                + "/invite"),
-        serializedInputData,
-        this.context.token());
+    var serializedInputData = Mapper.writeValueAsString(event);
+    try (var _ =
+        httpTransport.postRequest(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl()
+                    + ROOM_ENDPOINT
+                    + roomId
+                    + "/invite"),
+            serializedInputData,
+            this.context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException(
+          "Failed to invite user in room " + roomId + "with event body:" + event, e);
+    }
   }
 
   @Override
@@ -165,8 +182,8 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             "/_matrix/client/v3/join/" + roomIdOrAlias,
             params);
-    String serializedInputData = Mapper.writeValueAsString(request);
-    var responseBody = httpTransport.postRequest(uri, serializedInputData, context.token());
+    var payload = Mapper.writeValueAsString(request);
+    var responseBody = httpTransport.postRequest(uri, payload, context.token());
     return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
 
@@ -179,8 +196,8 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/join",
             params);
-    String serializedInputData = Mapper.writeValueAsString(request);
-    var responseBody = httpTransport.postRequest(uri, serializedInputData, context.token());
+    var payload = Mapper.writeValueAsString(request);
+    var responseBody = httpTransport.postRequest(uri, payload, context.token());
     return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
 
@@ -200,62 +217,99 @@ public class RoomService implements Room {
 
     var responseBody =
         httpTransport.postRequest(uri, Mapper.createObjectFromMap(map), context.token());
-    try {
-      return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
-    } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
-    }
+
+    return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
 
   @Override
   public void forget(RoomID roomId) {
-    httpTransport.postRequest(
-        URI.create(
-            context.discoveryResponse().homeserver().baseUrl()
-                + ROOM_ENDPOINT
-                + roomId
-                + "/forget"),
-        null,
-        this.context.token());
+    try (var _ =
+        httpTransport.postRequest(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl()
+                    + ROOM_ENDPOINT
+                    + roomId
+                    + "/forget"),
+            null,
+            this.context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException("Failed to invite user in room " + roomId, e);
+    }
   }
 
   @Override
   public void leave(RoomID roomId) {
-    httpTransport.postRequest(
-        URI.create(
-            context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/leave"),
-        null,
-        this.context.token());
+    try (var _ =
+        httpTransport.postRequest(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl()
+                    + ROOM_ENDPOINT
+                    + roomId
+                    + "/leave"),
+            null,
+            this.context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException("Failed to leave room " + roomId + ".", e);
+    }
   }
 
   @Override
   public void kick(RoomID roomId, RoomMembershipRequest event) {
-    String serializedInputData = Mapper.writeValueAsString(event);
-    httpTransport.postRequest(
-        URI.create(
-            context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/kick"),
-        serializedInputData,
-        this.context.token());
+    var payload = Mapper.writeValueAsString(event);
+    try (var _ =
+        httpTransport.postRequest(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl()
+                    + ROOM_ENDPOINT
+                    + roomId
+                    + "/kick"),
+            payload,
+            this.context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException(
+          "Failed to kick in room " + roomId + "with event body:" + event, e);
+    }
   }
 
   @Override
   public void ban(RoomID roomId, RoomMembershipRequest event) {
-    String serializedInputData = Mapper.writeValueAsString(event);
-    httpTransport.postRequest(
-        URI.create(
-            context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/ban"),
-        serializedInputData,
-        this.context.token());
+    var payload = Mapper.writeValueAsString(event);
+    try (var _ =
+        httpTransport.postRequest(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl()
+                    + ROOM_ENDPOINT
+                    + roomId
+                    + "/ban"),
+            payload,
+            this.context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException(
+          "Failed to ban in room " + roomId + "with event body:" + event, e);
+    }
   }
 
   @Override
   public void unban(RoomID roomId, RoomMembershipRequest event) {
-    String responseBody = Mapper.writeValueAsString(event);
-    httpTransport.postRequest(
-        URI.create(
-            context.discoveryResponse().homeserver().baseUrl() + ROOM_ENDPOINT + roomId + "/unban"),
-        responseBody,
-        this.context.token());
+    var payload = Mapper.writeValueAsString(event);
+    try (var _ =
+        httpTransport.postRequest(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl()
+                    + ROOM_ENDPOINT
+                    + roomId
+                    + "/unban"),
+            payload,
+            this.context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException(
+          "Failed to unban in room " + roomId + "with event body:" + event, e);
+    }
   }
 
   @Override
@@ -273,11 +327,17 @@ public class RoomService implements Room {
     Map<String, Object> map = new HashMap<>();
     map.put("visibility", roomType);
 
-    httpTransport.putRequest(
-        URI.create(
-            context.discoveryResponse().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
-        Mapper.createObjectFromMap(map),
-        this.context.token());
+    try (var _ =
+        httpTransport.putRequest(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
+            Mapper.createObjectFromMap(map),
+            this.context.token()); ) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException(
+          "Failed to set visibility  '" + roomType + "' in room " + roomId + ".", e);
+    }
   }
 
   @Override
@@ -303,14 +363,14 @@ public class RoomService implements Room {
 
   @Override
   public PublicRoomDirectory getPublishedRoomDirectory(PublicRoomRequest request) {
-    String serializedInputData = Mapper.writeValueAsString(request);
+    var payload = Mapper.writeValueAsString(request);
 
     var responseBody =
         httpTransport.postRequest(
             URI.create(
                 context.discoveryResponse().homeserver().baseUrl()
                     + "/_matrix/client/v3/publicRooms"),
-            serializedInputData,
+            payload,
             context.token());
     return Mapper.getObjectFromString(responseBody, PublicRoomDirectory.class);
   }

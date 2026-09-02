@@ -39,16 +39,16 @@ public class UserDataService implements UserData {
   public UsersFound searchUsersByTerm(@Nullable Integer limit, String searchTerm) {
     Objects.requireNonNull(searchTerm, "The search term must no be null");
     int limitToUse = (limit != null) ? limit : 10;
-    String rawTextPayload =
-        """
-                {"limit": "%d","search_term":"%s"}
-                """
-            .formatted(limitToUse, searchTerm);
+    byte[] payload =
+            """
+                    {"limit": "%d","search_term":"%s"}
+                    """
+                .formatted(limitToUse, searchTerm).getBytes();
 
     var responseBody =
         httpTransport.postRequest(
             URI.create(context.discoveryResponse().homeserver().baseUrl() + USER_DIR),
-            rawTextPayload,
+            payload,
             context.token());
     return Mapper.getObjectFromString(responseBody, UsersFound.class);
   }

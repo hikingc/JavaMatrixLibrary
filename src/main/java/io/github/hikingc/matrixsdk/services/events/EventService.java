@@ -180,9 +180,9 @@ public class EventService implements Event {
 
   @Override
   public String sendStateEvent(RoomID roomId, String stateKey, StateEventContent content) {
-    String jsonPayload;
+    byte[] payload;
     try {
-      jsonPayload = Mapper.writeValueAsString(content);
+      payload = Mapper.writeValueAsString(content);
     } catch (JacksonException e) {
       throw new MatrixSerializationException("Failed to parse input data", e);
     }
@@ -193,7 +193,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/state/" + type + "/" + stateKey,
             null);
-    var response = httpTransport.putRequest(uri, jsonPayload, context.token());
+    var response = httpTransport.putRequest(uri, payload, context.token());
     return Mapper.getStringValueOfAJsonKey(response, "event_id");
   }
 
@@ -201,9 +201,9 @@ public class EventService implements Event {
   public String sendMessageEvent(RoomID roomId, String txnId, MessageEventContent content) {
     Objects.requireNonNull(txnId, "The transaction id is required.");
     String type = resolveMessageWireType(content);
-    String jsonPayload;
+    byte[] payload;
     try {
-      jsonPayload = Mapper.writeValueAsString(content);
+      payload = Mapper.writeValueAsString(content);
     } catch (JacksonException e) {
       throw new MatrixSerializationException("Failed to parse input data", e);
     }
@@ -213,7 +213,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/send/" + type + "/" + txnId,
             null);
-    var response = httpTransport.putRequest(uri, jsonPayload, context.token());
+    var response = httpTransport.putRequest(uri, payload, context.token());
     return Mapper.getStringValueOfAJsonKey(response, "event_id");
   }
 
@@ -221,9 +221,9 @@ public class EventService implements Event {
   public String redactEvent(RoomID roomId, EventID eventId, String txnId, @Nullable String reason) {
     Objects.requireNonNull(eventId, "The event ID" + " must not be null");
     Objects.requireNonNull(txnId, "The transaction ID" + " must not be null");
-    String json = null;
+    byte[] payload = null;
     if (reason != null) {
-      json = Mapper.createObjectFromMap(Map.ofEntries(Map.entry("reason", reason)));
+      payload = Mapper.createObjectFromMap(Map.ofEntries(Map.entry("reason", reason)));
     }
     var response =
         httpTransport.putRequest(
@@ -235,7 +235,7 @@ public class EventService implements Event {
                     + eventId
                     + "/"
                     + txnId),
-            json,
+            payload,
             context.token());
     return Mapper.getStringValueOfAJsonKey(response, "event_id");
   }
