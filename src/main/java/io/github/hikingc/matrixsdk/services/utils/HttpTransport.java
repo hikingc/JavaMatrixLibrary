@@ -72,7 +72,7 @@ public class HttpTransport {
     var retryAfter = headers.firstValue("Retry-After");
     if (retryAfter.isPresent()) {
       try {
-        int retryAfterSeconds = Integer.parseInt(retryAfter.get().trim());
+        long retryAfterSeconds = Integer.parseInt(retryAfter.get().trim());
         errorResponse =
             new ErrorResponse(errorResponse.errCode(), errorResponse.error(), retryAfterSeconds);
       } catch (NumberFormatException _) {
