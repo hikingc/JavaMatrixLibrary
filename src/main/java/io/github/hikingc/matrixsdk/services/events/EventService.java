@@ -273,7 +273,7 @@ public class EventService implements Event {
     args.put("timeout", String.valueOf(params.timeout()));
     args.put("use_state_after", String.valueOf(params.useStateAfter()));
     URI query =
-        httpTransport.generateEncodedURI(
+        httpTransport.generateRawURI(
             context.discoveryResponse().homeserver().baseUrl(), "/_matrix/client/v3/sync", args);
 
     var response = httpTransport.getRequest(query, context.token());
