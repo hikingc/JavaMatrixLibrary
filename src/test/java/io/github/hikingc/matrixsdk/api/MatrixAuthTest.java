@@ -34,18 +34,53 @@ class MatrixOAuthLoginTest {
 
   @BeforeEach
   void setupAuth(WireMockRuntimeInfo wireMockRuntimeInfo) throws IOException {
-    baseUrl = wireMockRuntimeInfo.getHttpBaseUrl();
-    matrixAuth = new MatrixAuth(URI.create(baseUrl), HttpClient.newBuilder().build());
-    callbackPort = findFreePort();
-
     stubFor(
         get(urlEqualTo("/.well-known/matrix/client"))
             .willReturn(
                 okJson(
                     """
-                                    {"m.homeserver": {"base_url": "%s"}}
-                                    """
+                                        {
+                                          "contacts": [
+                                            {
+                                              "email_address": "admin@example.org",
+                                              "matrix_id": "@admin:example.org",
+                                              "role": "m.role.admin"
+                                            },
+                                            {
+                                              "email_address": "security@example.org",
+                                              "role": "m.role.security"
+                                            }
+                                          ],
+                                          "support_page": "https://example.org/support.html"
+                                        }
+
+                                        """)));
+    stubFor(
+        get(urlEqualTo("/_matrix/client/versions"))
+            .willReturn(
+                okJson(
+                    """
+                                            {
+                                              "unstable_features": {
+                                                "org.example.my_feature": true
+                                              },
+                                              "versions": [
+                                                "r0.0.1",
+                                                "v1.1"
+                                              ]
+                                            }
+                                            """)));
+    baseUrl = wireMockRuntimeInfo.getHttpBaseUrl();
+    stubFor(
+        get(urlEqualTo("/.well-known/matrix/client"))
+            .willReturn(
+                okJson(
+                    """
+                                                    {"m.homeserver": {"base_url": "%s"}}
+                                                    """
                         .formatted(baseUrl))));
+    matrixAuth = new MatrixAuth(URI.create(baseUrl), HttpClient.newBuilder().build());
+    callbackPort = findFreePort();
 
     stubFor(
         get(urlEqualTo("/_matrix/client/v1/auth_metadata"))
@@ -221,7 +256,7 @@ class MatrixOAuthLoginTest {
   }
 
   private String lastTokenRequestBody() {
-    return findAll(postRequestedFor(urlEqualTo("/oauth2/token"))).get(0).getBodyAsString();
+    return findAll(postRequestedFor(urlEqualTo("/oauth2/token"))).getFirst().getBodyAsString();
   }
 
   private static String sha256Base64Url(String input) throws Exception {
@@ -250,7 +285,7 @@ class MatrixOAuthLoginTest {
   @Test
   void getFetchWellKnown() {
     stubFor(
-        get(urlEqualTo("/.well-known/matrix/client "))
+        get(urlEqualTo("/.well-known/matrix/client"))
             .withHeader("Authorization", containing("Bearer .*"))
             .willReturn(
                 okJson(

@@ -3,6 +3,7 @@ package io.github.hikingc.matrixsdk.api;
 import io.github.hikingc.matrixsdk.api.auth.Versions;
 import io.github.hikingc.matrixsdk.api.auth.WhoAmI;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
+import io.github.hikingc.matrixsdk.exceptions.MatrixException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -29,7 +30,7 @@ public interface Auth {
   ///
   /// @return a [DiscoveryResponse] with data.
   /// @throws IllegalArgumentException when the homeserver url violates RFC 2396 or is null
-  /// @throws MatrixIOException when the payload cannot be processed
+  /// @throws MatrixException when the payload cannot be processed
   DiscoveryResponse fetchWellKnown();
 
   /// Checks what versions and unstable features are supported by the server.
@@ -43,10 +44,10 @@ public interface Auth {
   /// spec and the server deems it reasonable to do so.
   ///
   /// Servers can choose to enable some features only for some users, so clients should include
-  /// authentication in the request to get all the features available for the logged-in user. **If no
-  /// authentication is provided, the server should only return the features available to all users.
-  /// Servers may wish to keep advertising features here after they’ve been released into the spec
-  /// to give clients a chance to upgrade appropriately.**
+  /// authentication in the request to get all the features available for the logged-in user. **If
+  /// no authentication is provided, the server should only return the features available to all
+  /// users. Servers may wish to keep advertising features here after they’ve been released into the
+  /// spec to give clients a chance to upgrade appropriately.**
   ///
   /// **Additionally, clients should avoid using unstable features in their stable releases.**
   ///

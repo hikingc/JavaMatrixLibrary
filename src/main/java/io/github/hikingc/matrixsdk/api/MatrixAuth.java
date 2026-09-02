@@ -32,7 +32,6 @@ import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tools.jackson.core.JacksonException;
 
 /// This class handles endpoints to retrieve essential data to operate with Matrix servers, it
 /// provides a basic implementation of the OAuth 2.0 API, and additional methods to retrieve
@@ -49,13 +48,22 @@ public class MatrixAuth implements Auth {
   private final Random random = new SecureRandom();
   private final URI baseUrl;
 
-  /// Constructor that instantiates the class.
+  /// Instantiates the authenticator and checks if the supplied `baseUrl` is valid.
   ///
   /// @param baseUrl the base [URI]
   /// @param httpClient an [HttpClient].
+  /// @throws MatrixException if the supplied `baseUrl` is not a matrix server.
   public MatrixAuth(URI baseUrl, HttpClient httpClient) {
     this.baseUrl = baseUrl;
     this.httpTransport = new HttpTransport(httpClient);
+    try {
+      this.getVersions(null);
+    } catch (MatrixException e) {
+      throw new MatrixException(
+          baseUrl
+              + " is not being recognized as a valid Matrix server. If you believe this is incorrect please contact your operator.",
+          e);
+    }
   }
 
   private static String generateCodeChallenge(String codeVerifier) {
@@ -118,8 +126,8 @@ public class MatrixAuth implements Auth {
       URI uri = URI.create(baseUrl + "/.well-known/matrix/client");
       var response = httpTransport.getRequest(uri, null);
       return Mapper.getObjectFromString(response, DiscoveryResponse.class);
-    } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix discovery JSON", e);
+    } catch (MatrixException e) {
+      throw new MatrixException("Failed to retrieve Matrix discovery /.well_known", e);
     }
   }
 
@@ -145,10 +153,10 @@ public class MatrixAuth implements Auth {
   /// This flow is intended for native local clients that can invoke a browser and receive
   /// callbacks, it follows Matrix "authorization code flow".
   ///
-  /// @param clientName the client name
-  /// @param port the port connection
-  /// @param deviceId the device id
-  /// @param launcher
+  /// @param clientName the client name.
+  /// @param port the port connection.
+  /// @param deviceId the device id.
+  /// @param launcher the browser launcher.
   /// @return a [TokenMetadata] with all the necessary information about the tokens.
   /// @throws MatrixIOException when a network or parsing step fails.
   /// @throws MatrixException when the auth code is not supported by the server.
