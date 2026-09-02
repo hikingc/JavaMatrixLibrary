@@ -131,22 +131,21 @@ class RoomServiceTest {
             List.of(
                 new InitialRoomConfiguration.Invite3pid(
                     "alice@example.com", "abc123_OpaqueString", "identity.example.com", "email")),
-            false, // is_direct
+            false,
             "The Grand Duke Pub",
             new RoomPowerLevels(
-                50, // ban
+                50,
                 Map.of(
                     "m.room.name", 50,
                     "m.room.power_levels", 100), // events
-                0, // eventsDefault
-                0, // invite
-                50, // kick
-                null, // notifications — not present in source JSON
-                50, // redact
+                0,
+                0,
+                50,
+                new RoomPowerLevels.Notifications(0, null),
+                50,
                 50, // stateDefault
-                Map.of(UserID.create("@alice:example.com"), 100), // users
-                0 // users_default
-                ),
+                Map.of(UserID.create("@alice:example.com"), 100),
+                0),
             CreationRoomType.PRIVATE_CHAT,
             "thepub",
             "11",
@@ -551,7 +550,7 @@ class RoomServiceTest {
                         }
                         """)));
 
-    // fix: pass List<String> not URI
+    // TODO: Check via args across the api and see if via should be a URI
     var response = client.room().getRoomSummary(roomIdOrAlias, List.of("example.com"));
 
     assertNotNull(response);

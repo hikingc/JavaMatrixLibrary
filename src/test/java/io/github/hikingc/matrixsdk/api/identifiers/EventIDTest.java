@@ -23,8 +23,7 @@ class EventIDTest {
         "$acR1l0raRc2h8DzKlR4E9RAxwbrIY8v_4V-1kfBGCiA:matrix.org",
         "$event1:example.com",
         "$143273582443PhrSn:example.org",
-        // opaque content is allowed to contain "unusual" characters per spec —
-        // clients must not impose structure beyond the sigil
+        // opaque content is allowed to contain "unusual" characters per spec
         "$acR1l0raRc2h8DzKlR4E9RAxwbrIY8v/4V+1kfBGCiA", // non-base64url chars, still opaque
         "$has spaces in it",
         "$has\nnewline",
