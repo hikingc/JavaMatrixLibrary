@@ -26,7 +26,7 @@ import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
-import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
+import io.github.hikingc.matrixsdk.exceptions.MatrixSerializationException;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
 import java.io.IOException;
 import java.net.URI;
@@ -661,7 +661,7 @@ class EventServiceTest {
     String expectedPath =
         "/_matrix/client/v3/rooms/" + ROOM_ID + "/state/" + eventType + "/" + stateKey;
 
-    var expectedBody = Mapper.writeValueAsString(stateEvent);
+    var expectedBody = Mapper.writeValueAsBytes(stateEvent);
 
     stubFor(
         put(urlEqualTo(expectedPath))
@@ -938,7 +938,7 @@ class EventServiceTest {
                     .withBody("{ malformed json : [")));
 
     assertThatThrownBy(() -> client.events().uploadResource(result.tempFile))
-        .isInstanceOf(MatrixIOException.class);
+        .isInstanceOf(MatrixSerializationException.class);
   }
 
   @Test
