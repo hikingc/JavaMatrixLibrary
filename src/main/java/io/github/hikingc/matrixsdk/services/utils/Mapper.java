@@ -65,6 +65,7 @@ public class Mapper {
         .addModule(ciphertextModule)
         .addModule(handlerEventModule)
         .build();
+    //            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
   }
 
   /// Attempts to serialize an [Object] into a JSON [String] using the configured mapper.
@@ -88,7 +89,12 @@ public class Mapper {
   /// @return the corresponding value.
   /// @throws MatrixSerializationException when the key was not in the response
   public static String getStringValueOfAJsonKey(InputStream inputStream, String key) {
-    JsonNode tree = INSTANCE.readTree(inputStream);
+    JsonNode tree;
+    try {
+      tree = INSTANCE.readTree(inputStream);
+    } catch (JacksonException e) {
+      throw new MatrixSerializationException("Failed to parse input data", e);
+    }
     if (tree == null || tree.isMissingNode()) {
       throw new MatrixSerializationException("Empty or malformed server response.");
     }
