@@ -15,15 +15,14 @@ import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.context.ClientContext;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
-import io.github.hikingc.matrixsdk.exceptions.MatrixSerializationException;
 import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 
 /// Main service implementation class of the [Event] interface, providing all the required endpoints
@@ -180,12 +179,8 @@ public class EventService implements Event {
 
   @Override
   public String sendStateEvent(RoomID roomId, String stateKey, StateEventContent content) {
-    byte[] payload;
-    try {
-      payload = Mapper.writeValueAsBytes(content);
-    } catch (JacksonException e) {
-      throw new MatrixSerializationException("Failed to parse input data", e);
-    }
+    byte[] payload = Mapper.writeValueAsBytes(content);
+
     String type = resolveStateWireType(content);
 
     URI uri =
@@ -201,12 +196,7 @@ public class EventService implements Event {
   public String sendMessageEvent(RoomID roomId, String txnId, MessageEventContent content) {
     Objects.requireNonNull(txnId, "The transaction id is required.");
     String type = resolveMessageWireType(content);
-    byte[] payload;
-    try {
-      payload = Mapper.writeValueAsBytes(content);
-    } catch (JacksonException e) {
-      throw new MatrixSerializationException("Failed to parse input data", e);
-    }
+    byte[] payload = Mapper.writeValueAsBytes(content);
 
     URI uri =
         httpTransport.generateEncodedURI(
@@ -242,25 +232,23 @@ public class EventService implements Event {
 
   @Override
   public String uploadResource(Path resource) {
-    try {
-      String mxc = createAndReserveMXC();
+    String mxc = createAndReserveMXC();
 
-      String rawPath = mxc.replace("mxc://", "");
-      URI uploadTargetUri =
-          URI.create(
-              context.discoveryResponse().homeserver().baseUrl()
-                  + "/_matrix/media"
-                  + "/v3/upload/"
-                  + rawPath
-                  + "?filename="
-                  + resource.getFileName().toString());
-      httpTransport.putResource(uploadTargetUri, resource, context.token());
-
-      return mxc;
-
-    } catch (JacksonException e) {
-      throw new MatrixIOException("Failed to parse Matrix response JSON ", e);
+    String rawPath = mxc.replace("mxc://", "");
+    Map<String, Object> args = new HashMap<>();
+    args.put("filename", resource.getFileName().toString());
+    URI uploadTargetUri =
+        httpTransport.generateRawURI(
+            context.discoveryResponse().homeserver().baseUrl(),
+            "/_matrix/media" + "/v3/upload/" + rawPath,
+            args);
+    try (var _ = httpTransport.putResource(uploadTargetUri, resource, context.token())) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException("Failed to upload a resource to the server.", e);
     }
+
+    return mxc;
   }
 
   @Override
