@@ -106,7 +106,7 @@ public class MatrixAuth implements Auth {
         httpTransport.generateEncodedURI(
             discoveryResponse.homeserver().baseUrl(), "/_matrix/client/v1/auth_metadata", null);
     var responseBody = httpTransport.getRequest(uri, null);
-    return Mapper.getObjectFromString(responseBody, AuthMetadata.class);
+    return Mapper.getObjectFromInputStream(responseBody, AuthMetadata.class);
   }
 
   @Override
@@ -117,7 +117,7 @@ public class MatrixAuth implements Auth {
             URI.create(
                 discoveryResponse.homeserver().baseUrl() + "/_matrix/client/v3/account/whoami"),
             token);
-    return Mapper.getObjectFromString(response, WhoAmI.class);
+    return Mapper.getObjectFromInputStream(response, WhoAmI.class);
   }
 
   @Override
@@ -125,7 +125,7 @@ public class MatrixAuth implements Auth {
     try {
       URI uri = URI.create(baseUrl + "/.well-known/matrix/client");
       var response = httpTransport.getRequest(uri, null);
-      return Mapper.getObjectFromString(response, DiscoveryResponse.class);
+      return Mapper.getObjectFromInputStream(response, DiscoveryResponse.class);
     } catch (MatrixException e) {
       throw new MatrixException("Failed to retrieve Matrix discovery /.well_known", e);
     }
@@ -297,7 +297,7 @@ public class MatrixAuth implements Auth {
 
     var tokenRes = httpTransport.postAuth(metadata.tokenEndpoint(), tokenRequestBody);
 
-    return Mapper.getObjectFromString(tokenRes, TokenMetadata.class);
+    return Mapper.getObjectFromInputStream(tokenRes, TokenMetadata.class);
   }
 
   /// Attempts to retrieve new [TokenMetadata] by exchanging a refresh token for a new auth token.
@@ -317,7 +317,7 @@ public class MatrixAuth implements Auth {
             .formatted(URLEncoder.encode(refreshToken, StandardCharsets.UTF_8));
     var refreshRes = httpTransport.postAuth(metadata.tokenEndpoint(), tokenRequestBody);
 
-    return Mapper.getObjectFromString(refreshRes, TokenMetadata.class);
+    return Mapper.getObjectFromInputStream(refreshRes, TokenMetadata.class);
   }
 
   @Override
@@ -326,7 +326,7 @@ public class MatrixAuth implements Auth {
     var response =
         httpTransport.getRequest(
             URI.create(wellKnown.homeserver().baseUrl() + "/_matrix/client/versions"), authToken);
-    return Mapper.getObjectFromString(response, Versions.class);
+    return Mapper.getObjectFromInputStream(response, Versions.class);
   }
 
   private String generateCodeVerifier() {

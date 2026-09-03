@@ -61,7 +61,7 @@ public class EventService implements Event {
                     + eventId),
             context.token());
 
-    return Mapper.getObjectFromString(response, ClientEvent.class);
+    return Mapper.getObjectFromInputStream(response, ClientEvent.class);
   }
 
   @Override
@@ -75,7 +75,7 @@ public class EventService implements Event {
                     + roomId
                     + "/joined_members"),
             context.token());
-    return Mapper.getObjectFromString(response, RoomMembers.class);
+    return Mapper.getObjectFromInputStream(response, RoomMembers.class);
   }
 
   @Override
@@ -109,7 +109,7 @@ public class EventService implements Event {
                     + "/state"),
             context.token());
 
-    return Mapper.getObjectFromString(response, new TypeReference<>() {});
+    return Mapper.getObjectFromInputStream(response, new TypeReference<>() {});
   }
 
   @Override
@@ -124,7 +124,7 @@ public class EventService implements Event {
             args);
     var response = httpTransport.getRequest(uri, context.token());
 
-    return Mapper.getObjectFromString(response, StateEvent.class);
+    return Mapper.getObjectFromInputStream(response, StateEvent.class);
   }
 
   @Override
@@ -142,7 +142,7 @@ public class EventService implements Event {
             ROOM_ENDPOINT + roomId + "/messages",
             args);
     var response = httpTransport.getRequest(uri, context.token());
-    return Mapper.getObjectFromString(response, Messages.class);
+    return Mapper.getObjectFromInputStream(response, Messages.class);
   }
 
   @Override
@@ -161,7 +161,7 @@ public class EventService implements Event {
             ROOM_ENDPOINT + roomId + "/timestamp_to_event",
             args);
     var response = httpTransport.getRequest(uri, context.token());
-    return Mapper.getObjectFromString(response, EventTimestamp.class);
+    return Mapper.getObjectFromInputStream(response, EventTimestamp.class);
   }
 
   @Override
@@ -175,14 +175,14 @@ public class EventService implements Event {
                     + roomId
                     + "/initialSync"),
             context.token());
-    return Mapper.getObjectFromString(response, RoomInfo.class);
+    return Mapper.getObjectFromInputStream(response, RoomInfo.class);
   }
 
   @Override
   public String sendStateEvent(RoomID roomId, String stateKey, StateEventContent content) {
     byte[] payload;
     try {
-      payload = Mapper.writeValueAsString(content);
+      payload = Mapper.writeValueAsBytes(content);
     } catch (JacksonException e) {
       throw new MatrixSerializationException("Failed to parse input data", e);
     }
@@ -203,7 +203,7 @@ public class EventService implements Event {
     String type = resolveMessageWireType(content);
     byte[] payload;
     try {
-      payload = Mapper.writeValueAsString(content);
+      payload = Mapper.writeValueAsBytes(content);
     } catch (JacksonException e) {
       throw new MatrixSerializationException("Failed to parse input data", e);
     }
@@ -277,7 +277,7 @@ public class EventService implements Event {
             context.discoveryResponse().homeserver().baseUrl(), "/_matrix/client/v3/sync", args);
 
     var response = httpTransport.getRequest(query, context.token());
-    return Mapper.getObjectFromString(response, Sync.class);
+    return Mapper.getObjectFromInputStream(response, Sync.class);
   }
 
   /// Creates a new mxc:// for immediate usage.

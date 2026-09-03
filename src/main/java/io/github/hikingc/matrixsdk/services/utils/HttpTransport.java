@@ -63,7 +63,7 @@ public class HttpTransport {
 
     ErrorResponse errorResponse;
     try {
-      errorResponse = Mapper.getObjectFromString(response, ErrorResponse.class);
+      errorResponse = Mapper.getObjectFromInputStream(response, ErrorResponse.class);
     } catch (MatrixSerializationException e) {
       throw new MatrixApiException(
           "Server returned unparseable error body, HTTP code: " + code, code, e);

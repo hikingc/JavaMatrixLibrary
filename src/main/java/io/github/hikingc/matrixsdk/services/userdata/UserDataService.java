@@ -50,7 +50,7 @@ public class UserDataService implements UserData {
             URI.create(context.discoveryResponse().homeserver().baseUrl() + USER_DIR),
             payload,
             context.token());
-    return Mapper.getObjectFromString(responseBody, UsersFound.class);
+    return Mapper.getObjectFromInputStream(responseBody, UsersFound.class);
   }
 
   @Override
@@ -59,7 +59,7 @@ public class UserDataService implements UserData {
         httpTransport.getRequest(
             URI.create(context.discoveryResponse().homeserver().baseUrl() + PROFILE_DIR + userId),
             context.token());
-    return Mapper.getObjectFromString(responseBody, UserProfile.class);
+    return Mapper.getObjectFromInputStream(responseBody, UserProfile.class);
   }
 
   @Override

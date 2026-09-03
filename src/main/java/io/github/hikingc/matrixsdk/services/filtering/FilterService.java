@@ -30,7 +30,7 @@ public class FilterService implements Filter {
 
   @Override
   public String publishFilter(UserID userId, FilterDefinition filter) {
-    var serializedInputData = Mapper.writeValueAsString(filter);
+    var serializedInputData = Mapper.writeValueAsBytes(filter);
     URI uri =
         httpTransport.generateEncodedURI(
             context.discoveryResponse().homeserver().baseUrl(),
@@ -49,7 +49,7 @@ public class FilterService implements Filter {
             context.discoveryResponse().homeserver().baseUrl(),
             USER_FILTER_ENDPOINT + userId + "/filter/" + filterId,
             null);
-    return Mapper.getObjectFromString(
+    return Mapper.getObjectFromInputStream(
         httpTransport.getRequest(uri, context.token()), FilterDefinition.class);
   }
 }

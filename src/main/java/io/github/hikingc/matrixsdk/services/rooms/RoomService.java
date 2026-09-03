@@ -52,7 +52,7 @@ public class RoomService implements Room {
   @Override
   public String create(InitialRoomConfiguration configuration) {
 
-    var payload = Mapper.writeValueAsString(configuration);
+    var payload = Mapper.writeValueAsBytes(configuration);
 
     var responseBody =
         httpTransport.postRequest(
@@ -74,7 +74,7 @@ public class RoomService implements Room {
             null);
 
     var responseBody = httpTransport.getRequest(uri, context.token());
-    return Mapper.getObjectFromString(responseBody, ResolvedAlias.class);
+    return Mapper.getObjectFromInputStream(responseBody, ResolvedAlias.class);
   }
 
   @Override
@@ -151,7 +151,7 @@ public class RoomService implements Room {
 
   @Override
   public void inviteUser(RoomID roomId, RoomMembershipRequest event) {
-    var serializedInputData = Mapper.writeValueAsString(event);
+    var serializedInputData = Mapper.writeValueAsBytes(event);
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -182,7 +182,7 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             "/_matrix/client/v3/join/" + roomIdOrAlias,
             params);
-    var payload = Mapper.writeValueAsString(request);
+    var payload = Mapper.writeValueAsBytes(request);
     var responseBody = httpTransport.postRequest(uri, payload, context.token());
     return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
@@ -196,7 +196,7 @@ public class RoomService implements Room {
             context.discoveryResponse().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/join",
             params);
-    var payload = Mapper.writeValueAsString(request);
+    var payload = Mapper.writeValueAsBytes(request);
     var responseBody = httpTransport.postRequest(uri, payload, context.token());
     return Mapper.getStringValueOfAJsonKey(responseBody, ROOM_ID);
   }
@@ -257,7 +257,7 @@ public class RoomService implements Room {
 
   @Override
   public void kick(RoomID roomId, RoomMembershipRequest event) {
-    var payload = Mapper.writeValueAsString(event);
+    var payload = Mapper.writeValueAsBytes(event);
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -276,7 +276,7 @@ public class RoomService implements Room {
 
   @Override
   public void ban(RoomID roomId, RoomMembershipRequest event) {
-    var payload = Mapper.writeValueAsString(event);
+    var payload = Mapper.writeValueAsBytes(event);
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -295,7 +295,7 @@ public class RoomService implements Room {
 
   @Override
   public void unban(RoomID roomId, RoomMembershipRequest event) {
-    var payload = Mapper.writeValueAsString(event);
+    var payload = Mapper.writeValueAsBytes(event);
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -358,12 +358,12 @@ public class RoomService implements Room {
             params);
     var responseBody = httpTransport.getRequest(uri, context.token());
 
-    return Mapper.getObjectFromString(responseBody, PublicRoomDirectory.class);
+    return Mapper.getObjectFromInputStream(responseBody, PublicRoomDirectory.class);
   }
 
   @Override
   public PublicRoomDirectory getPublishedRoomDirectory(PublicRoomRequest request) {
-    var payload = Mapper.writeValueAsString(request);
+    var payload = Mapper.writeValueAsBytes(request);
 
     var responseBody =
         httpTransport.postRequest(
@@ -372,7 +372,7 @@ public class RoomService implements Room {
                     + "/_matrix/client/v3/publicRooms"),
             payload,
             context.token());
-    return Mapper.getObjectFromString(responseBody, PublicRoomDirectory.class);
+    return Mapper.getObjectFromInputStream(responseBody, PublicRoomDirectory.class);
   }
 
   @Override
@@ -391,6 +391,6 @@ public class RoomService implements Room {
             args);
     var responseBody = httpTransport.getRequest(uri, context.token());
 
-    return Mapper.getObjectFromString(responseBody, RoomSummary.class);
+    return Mapper.getObjectFromInputStream(responseBody, RoomSummary.class);
   }
 }

@@ -72,7 +72,7 @@ public class Mapper {
   /// @param object to serialize.
   /// @return a serialized [String]
   /// @throws MatrixSerializationException when the serialization returned with an issue.
-  public static byte[] writeValueAsString(Object object) {
+  public static byte[] writeValueAsBytes(Object object) {
     try {
       return INSTANCE.writeValueAsBytes(object);
     } catch (JacksonException e) {
@@ -158,7 +158,7 @@ public class Mapper {
   /// @param type the target class to deserialize into
   /// @return the deserialized [Object]
   /// @throws MatrixSerializationException if the response cannot be parsed into the target type.
-  public static <T> T getObjectFromString(InputStream inputStream, Class<T> type) {
+  public static <T> T getObjectFromInputStream(InputStream inputStream, Class<T> type) {
     try {
       return INSTANCE.readValue(inputStream, type);
     } catch (JacksonException e) {
@@ -174,7 +174,7 @@ public class Mapper {
   /// @param type a [TypeReference]
   /// @return the deserialized [Object]
   /// @throws MatrixSerializationException if the response cannot be parsed into the target type
-  public static <T> T getObjectFromString(InputStream inputStream, TypeReference<T> type) {
+  public static <T> T getObjectFromInputStream(InputStream inputStream, TypeReference<T> type) {
     try {
       return INSTANCE.readValue(inputStream, type);
     } catch (JacksonException e) {
