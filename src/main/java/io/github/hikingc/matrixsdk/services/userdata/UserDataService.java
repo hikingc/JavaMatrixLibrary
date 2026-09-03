@@ -5,8 +5,10 @@ import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.api.userdata.UserProfile;
 import io.github.hikingc.matrixsdk.api.userdata.UsersFound;
 import io.github.hikingc.matrixsdk.context.ClientContext;
+import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
@@ -40,10 +42,11 @@ public class UserDataService implements UserData {
     Objects.requireNonNull(searchTerm, "The search term must no be null");
     int limitToUse = (limit != null) ? limit : 10;
     byte[] payload =
-            """
+        """
                     {"limit": "%d","search_term":"%s"}
                     """
-                .formatted(limitToUse, searchTerm).getBytes();
+            .formatted(limitToUse, searchTerm)
+            .getBytes();
 
     var responseBody =
         httpTransport.postRequest(
@@ -99,13 +102,18 @@ public class UserDataService implements UserData {
   public void deleteUserProfileProperty(UserID userId, String keyName) {
     Objects.requireNonNull(keyName, "The key name must no be null");
 
-    httpTransport.deleteRequest(
-        URI.create(
-            context.discoveryResponse().homeserver().baseUrl()
-                + PROFILE_DIR
-                + userId
-                + "/"
-                + keyName),
-        context.token());
+    try (var _ =
+        httpTransport.deleteRequest(
+            URI.create(
+                context.discoveryResponse().homeserver().baseUrl()
+                    + PROFILE_DIR
+                    + userId
+                    + "/"
+                    + keyName),
+            context.token())) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException("Failed to delete user profile property", e);
+    }
   }
 }
