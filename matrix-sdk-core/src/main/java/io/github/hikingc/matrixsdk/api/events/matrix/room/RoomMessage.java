@@ -6,7 +6,7 @@ import io.github.hikingc.matrixsdk.api.events.matrix.MessageEventContent;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.message.*;
 
 /// Interface that enforces fields required by all `m.room.message` content events.
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "msgtype")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "msgtype")
 public sealed interface RoomMessage extends MessageEventContent
     permits AudioContent,
         EmoteContent,

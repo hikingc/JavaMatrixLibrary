@@ -17,7 +17,7 @@ import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
     property = "type",
     defaultImpl = UnknownEvent.class)
 // This interface CANNOT permit anything other than these two.
