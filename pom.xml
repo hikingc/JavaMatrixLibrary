@@ -30,6 +30,7 @@
     <modules>
         <module>matrix-sdk-benchmarks</module>
         <module>matrix-sdk-core</module>
+        <module>matrix-sdk-examples</module>
     </modules>
 
     <scm>
