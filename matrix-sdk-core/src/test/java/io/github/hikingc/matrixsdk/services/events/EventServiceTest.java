@@ -955,238 +955,257 @@ class EventServiceTest {
             .willReturn(
                 okJson(
                     """
-                        {
-                          "account_data": {
-                            "events": [
-                              {
-                                "content": {
-                                  "custom_config_key": "custom_config_value"
-                                },
-                                "type": "org.example.custom.config"
-                              }
-                            ]
-                          },
-                          "next_batch": "s72595_4483_1934",
-                          "device_lists": {
-                            "changed": ["@alice:matrix.org"],
-                            "left": []
-                          },
-                          "to_device": {
-                            "events": [
-                              {
-                                "content": {
-                                  "example_content_key": "value"
-                                },
-                                "sender": "@alice:example.com",
-                                "type": "m.new_device"
-                              }
-                            ]
-                          },
-                          "presence": {
-                            "events": [
-                              {
-                                "content": {
-                                  "avatar_url": "mxc://localhost/wefuiwegh8742w",
-                                  "currently_active": false,
-                                  "last_active_ago": 2478593,
-                                  "presence": "online",
-                                  "status_msg": "Making cupcakes"
-                                },
-                                "sender": "@example:localhost",
-                                "type": "m.presence"
-                              }
-                            ]
-                          },
-                          "rooms": {
-                            "invite": {
-                              "!696r7674:example.com": {
-                                "invite_state": {
-                                  "events": [
-                                    {
-                                      "content": {
-                                        "name": "My Room Name"
-                                      },
-                                      "sender": "@alice:example.com",
-                                      "state_key": "",
-                                      "type": "m.room.name"
+                            {
+                              "account_data": {
+                                "events": [
+                                  {
+                                    "content": {
+                                      "custom_config_key": "custom_config_value"
                                     },
-                                    {
-                                      "content": {
-                                        "membership": "invite"
-                                      },
-                                      "sender": "@alice:example.com",
-                                      "state_key": "@bob:example.com",
-                                      "type": "m.room.member"
-                                    }
-                                  ]
-                                }
-                              }
-                            },
-                            "join": {
-                              "!726s6s6q:example.com": {
-                                "account_data": {
-                                  "events": [
-                                    {
-                                      "content": {
-                                        "tags": {
-                                          "u.work": {
-                                            "order": 0.9
-                                          }
+                                    "type": "org.example.custom.config"
+                                  }
+                                ]
+                              },
+                              "next_batch": "s72595_4483_1934",
+                              "device_lists": {
+                                "changed": [
+                                  "@alice:matrix.org"
+                                ],
+                                "left": []
+                              },
+                              "to_device": {
+                                "events": [
+                                  {
+                                    "content": {
+                                      "example_content_key": "value"
+                                    },
+                                    "sender": "@alice:example.com",
+                                    "type": "m.new_device"
+                                  }
+                                ]
+                              },
+                              "presence": {
+                                "events": [
+                                  {
+                                    "content": {
+                                      "avatar_url": "mxc://localhost/wefuiwegh8742w",
+                                      "currently_active": false,
+                                      "last_active_ago": 2478593,
+                                      "presence": "online",
+                                      "status_msg": "Making cupcakes"
+                                    },
+                                    "sender": "@example:localhost",
+                                    "type": "m.presence"
+                                  }
+                                ]
+                              },
+                              "rooms": {
+                                "invite": {
+                                  "!696r7674:example.com": {
+                                    "invite_state": {
+                                      "events": [
+                                        {
+                                          "content": {
+                                            "name": "My Room Name"
+                                          },
+                                          "sender": "@alice:example.com",
+                                          "state_key": "",
+                                          "type": "m.room.name"
+                                        },
+                                        {
+                                          "content": {
+                                            "membership": "invite"
+                                          },
+                                          "sender": "@alice:example.com",
+                                          "state_key": "@bob:example.com",
+                                          "type": "m.room.member"
                                         }
-                                      },
-                                      "type": "m.tag"
-                                    },
-                                    {
-                                      "content": {
-                                        "custom_config_key": "custom_config_value"
-                                      },
-                                      "type": "org.example.custom.room.config"
+                                      ]
                                     }
-                                  ]
+                                  }
                                 },
-                                "ephemeral": {
-                                  "events": [
-                                    {
-                                      "content": {
-                                        "user_ids": [
-                                          "@alice:matrix.org",
-                                          "@bob:example.com"
-                                        ]
-                                      },
-                                      "type": "m.typing"
-                                    },
-                                    {
-                                      "content": {
-                                        "$1435641916114394fHBLK:matrix.org": {
-                                          "m.read": {
-                                            "@erikj:jki.re": {
-                                              "ts": 1436451550453
+                                "join": {
+                                  "!726s6s6q:example.com": {
+                                    "account_data": {
+                                      "events": [
+                                        {
+                                          "content": {
+                                            "tags": {
+                                              "u.work": {
+                                                "order": 0.9
+                                              }
                                             }
                                           },
-                                          "m.read.private": {
-                                            "@self:example.org": {
-                                              "ts": 1661384801651
+                                          "type": "m.tag"
+                                        },
+                                        {
+                                          "content": {
+                                            "custom_config_key": "custom_config_value"
+                                          },
+                                          "type": "org.example.custom.room.config"
+                                        }
+                                      ]
+                                    },
+                                    "ephemeral": {
+                                      "events": [
+                                        {
+                                          "content": {
+                                            "user_ids": [
+                                              "@alice:matrix.org",
+                                              "@bob:example.com"
+                                            ]
+                                          },
+                                          "type": "m.typing"
+                                        },
+                                        {
+                                          "content": {
+                                            "$1435641916114394fHBLK:matrix.org": {
+                                              "m.read": {
+                                                "@erikj:jki.re": {
+                                                  "ts": 1436451550453
+                                                }
+                                              },
+                                              "m.read.private": {
+                                                "@self:example.org": {
+                                                  "ts": 1661384801651
+                                                }
+                                              }
                                             }
+                                          },
+                                          "type": "m.receipt"
+                                        },
+                                        {
+                                          "content": {
+                                            "presence": "online",
+                                            "user_id": "@alice:matrix.org",
+                                            "last_active_ago": 100,
+                                            "currently_active": true
+                                          },
+                                          "type": "m.presence"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "events": [
+                                        {
+                                          "content": {
+                                            "avatar_url": "mxc://example.org/SFHyPlCeYUSFFxlgbQYZmoEoe",
+                                            "displayname": "Example user",
+                                            "membership": "join"
+                                          },
+                                          "event_id": "$143273976499sgjks:example.org",
+                                          "origin_server_ts": 1432735824653,
+                                          "sender": "@example:example.org",
+                                          "state_key": "@example:example.org",
+                                          "type": "m.room.member",
+                                          "unsigned": {
+                                            "age": 45603,
+                                            "membership": "join"
                                           }
                                         }
-                                      },
-                                      "type": "m.receipt"
-                                    }
-                                  ]
-                                },
-                                "state": {
-                                  "events": [
-                                    {
-                                      "content": {
-                                        "avatar_url": "mxc://example.org/SFHyPlCeYUSFFxlgbQYZmoEoe",
-                                        "displayname": "Example user",
-                                        "membership": "join"
-                                      },
-                                      "event_id": "$143273976499sgjks:example.org",
-                                      "origin_server_ts": 1432735824653,
-                                      "sender": "@example:example.org",
-                                      "state_key": "@example:example.org",
-                                      "type": "m.room.member",
-                                      "unsigned": {
-                                        "age": 45603,
-                                        "membership": "join"
-                                      }
-                                    }
-                                  ]
-                                },
-                                "summary": {
-                                  "m.heroes": [
-                                    "@alice:example.com",
-                                    "@bob:example.com"
-                                  ],
-                                  "m.invited_member_count": 0,
-                                  "m.joined_member_count": 2
-                                },
-                                "timeline": {
-                                  "events": [
-                                    {
-                                      "content": {
-                                        "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF",
-                                        "displayname": "Alice Margatroid",
-                                        "membership": "join",
-                                        "reason": "Looking for support"
-                                      },
-                                      "event_id": "$143273582443PhrSn:example.org",
-                                      "origin_server_ts": 1432735824653,
-                                      "sender": "@alice:example.org",
-                                      "state_key": "@alice:example.org",
-                                      "type": "m.room.member",
-                                      "unsigned": {
-                                        "age": 1234,
-                                        "membership": "join"
-                                      }
+                                      ]
                                     },
-                                    {
-                                      "content": {
-                                        "body": "This is an example text message",
-                                        "format": "org.matrix.custom.html",
-                                        "formatted_body": "<b>This is an example text message</b>",
-                                        "msgtype": "m.text"
-                                      },
-                                      "event_id": "$143273582443PhrSn2:example.org",
-                                      "origin_server_ts": 1432735824653,
-                                      "sender": "@example:example.org",
-                                      "type": "m.room.message",
-                                      "unsigned": {
-                                        "age": 1234,
-                                        "membership": "join"
+                                    "summary": {
+                                      "m.heroes": [
+                                        "@alice:example.com",
+                                        "@bob:example.com"
+                                      ],
+                                      "m.invited_member_count": 0,
+                                      "m.joined_member_count": 2
+                                    },
+                                    "timeline": {
+                                      "events": [
+                                        {
+                                          "content": {
+                                            "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF",
+                                            "displayname": "Alice Margatroid",
+                                            "membership": "join",
+                                            "reason": "Looking for support"
+                                          },
+                                          "event_id": "$143273582443PhrSn:example.org",
+                                          "origin_server_ts": 1432735824653,
+                                          "sender": "@alice:example.org",
+                                          "state_key": "@alice:example.org",
+                                          "type": "m.room.member",
+                                          "unsigned": {
+                                            "age": 1234,
+                                            "membership": "join"
+                                          }
+                                        },
+                                        {
+                                          "content": {
+                                            "body": "This is an example text message",
+                                            "format": "org.matrix.custom.html",
+                                            "formatted_body": "<b>This is an example text message</b>",
+                                            "msgtype": "m.text"
+                                          },
+                                          "event_id": "$143273582443PhrSn2:example.org",
+                                          "origin_server_ts": 1432735824653,
+                                          "sender": "@example:example.org",
+                                          "type": "m.room.message",
+                                          "unsigned": {
+                                            "age": 1234,
+                                            "membership": "join"
+                                          }
+                                        }
+                                      ],
+                                      "limited": true,
+                                      "prev_batch": "t34-23535_0_0"
+                                    },
+                                    "unread_notifications": {
+                                      "highlight_count": 1,
+                                      "notification_count": 5
+                                    },
+                                    "unread_thread_notifications": {
+                                      "$threadroot": {
+                                        "highlight_count": 3,
+                                        "notification_count": 6
                                       }
                                     }
-                                  ],
-                                  "limited": true,
-                                  "prev_batch": "t34-23535_0_0"
+                                  }
                                 },
-                                "unread_notifications": {
-                                  "highlight_count": 1,
-                                  "notification_count": 5
+                                "knock": {
+                                  "!223asd456:example.com": {
+                                    "knock_state": {
+                                      "events": [
+                                        {
+                                          "content": {
+                                            "name": "My Room Name"
+                                          },
+                                          "sender": "@alice:example.com",
+                                          "state_key": "",
+                                          "type": "m.room.name"
+                                        },
+                                        {
+                                          "content": {
+                                            "membership": "knock"
+                                          },
+                                          "sender": "@bob:example.com",
+                                          "state_key": "@bob:example.com",
+                                          "type": "m.room.member"
+                                        }
+                                      ]
+                                    }
+                                  }
                                 },
-                                "unread_thread_notifications": {
-                                  "$threadroot": {
-                                    "highlight_count": 3,
-                                    "notification_count": 6
+                                "leave": {
+                                  "!left12345:example.com": {
+                                    "account_data": {
+                                      "events": []
+                                    },
+                                    "state": {
+                                      "events": []
+                                    },
+                                    "timeline": {
+                                      "events": [],
+                                      "limited": false,
+                                      "prev_batch": "t00-00000_0_0"
+                                    }
                                   }
                                 }
                               }
-                            },
-                            "knock": {
-                              "!223asd456:example.com": {
-                                "knock_state": {
-                                  "events": [
-                                    {
-                                      "content": {
-                                        "name": "My Room Name"
-                                      },
-                                      "sender": "@alice:example.com",
-                                      "state_key": "",
-                                      "type": "m.room.name"
-                                    },
-                                    {
-                                      "content": {
-                                        "membership": "knock"
-                                      },
-                                      "sender": "@bob:example.com",
-                                      "state_key": "@bob:example.com",
-                                      "type": "m.room.member"
-                                    }
-                                  ]
-                                }
-                              }
-                            },
-                            "leave": {
-                              "!left12345:example.com": {
-                                "account_data": { "events": [] },
-                                "state": { "events": [] },
-                                "timeline": { "events": [], "limited": false, "prev_batch": "t00-00000_0_0" }
-                              }
                             }
-                          }
-                        }
-                        """)));
+                            """)));
 
     Sync actualResponse =
         client.events().sync(new QueryParametersSync(null, true, null, null, null, null));
