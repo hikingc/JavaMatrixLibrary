@@ -44,7 +44,7 @@ The baseline to reach v1.0 is to implement all endpoints that are required in th
 
 Currently, the only way to use this library is to compile it on your own using ```mvn compile```.
 
-Set-up and usage is described in the [examples directory](examples).
+Set-up and usage is described in the [examples module](matrix-sdk-examples).
 
 ### Requirements
 
