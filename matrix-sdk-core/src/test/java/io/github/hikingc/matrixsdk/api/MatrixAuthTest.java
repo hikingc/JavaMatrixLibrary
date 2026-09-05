@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 @WireMockTest
 class MatrixOAuthLoginTest {
 
-  private static MatrixAuth matrixAuth;
+  private static MatrixOAuth matrixAuth;
   private static String baseUrl;
   private int callbackPort;
   private TokenMetadata tokens = new TokenMetadata("ABCD", null, null, null, null);
@@ -79,7 +79,7 @@ class MatrixOAuthLoginTest {
                                                     {"m.homeserver": {"base_url": "%s"}}
                                                     """
                         .formatted(baseUrl))));
-    matrixAuth = new MatrixAuth(URI.create(baseUrl), HttpClient.newBuilder().build());
+    matrixAuth = new MatrixOAuth(URI.create(baseUrl), HttpClient.newBuilder().build());
     callbackPort = findFreePort();
 
     stubFor(

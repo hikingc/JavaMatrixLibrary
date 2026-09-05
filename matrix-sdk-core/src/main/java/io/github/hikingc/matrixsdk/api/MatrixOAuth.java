@@ -41,9 +41,9 @@ import org.slf4j.LoggerFactory;
 ///   Client-Server API Specification for OAuth 2.0</a>
 /// @see <a href="https://datatracker.ietf.org/doc/html/rfc6749">OAuth 2.0 specification</a>
 @NullMarked
-public class MatrixAuth implements Auth {
+public class MatrixOAuth implements Auth {
 
-  private final Logger logger = LoggerFactory.getLogger(MatrixAuth.class);
+  private final Logger logger = LoggerFactory.getLogger(MatrixOAuth.class);
   private final HttpTransport httpTransport;
   private final Random random = new SecureRandom();
   private final URI baseUrl;
@@ -53,7 +53,7 @@ public class MatrixAuth implements Auth {
   /// @param baseUrl the base [URI]
   /// @param httpClient an [HttpClient].
   /// @throws MatrixException if the supplied `baseUrl` is not a matrix server.
-  public MatrixAuth(URI baseUrl, HttpClient httpClient) {
+  public MatrixOAuth(URI baseUrl, HttpClient httpClient) {
     this.baseUrl = baseUrl;
     this.httpTransport = new HttpTransport(httpClient);
     try {

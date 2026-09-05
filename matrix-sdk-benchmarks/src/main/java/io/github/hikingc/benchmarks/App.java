@@ -1,6 +1,6 @@
 package io.github.hikingc.benchmarks;
 
-import io.github.hikingc.matrixsdk.api.MatrixAuth;
+import io.github.hikingc.matrixsdk.api.MatrixOAuth;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
 import io.github.hikingc.matrixsdk.api.auth.TokenMetadata;
@@ -24,8 +24,8 @@ public class App {
   public void doSync() {
     HttpClient httpClient =
         HttpClient.newBuilder().build(); // Create a client, this will do for this example.
-    MatrixAuth auth =
-        new MatrixAuth(URI.create("https://example.org"), httpClient); // Set the URI and the client
+    MatrixOAuth auth =
+        new MatrixOAuth(URI.create("https://example.org"), httpClient); // Set the URI and the client
     TokenMetadata res =
         auth.performOAuthLogin(
             "clienttest", 8080, "defgagagea"); // Perform interactive login (browser needed)
