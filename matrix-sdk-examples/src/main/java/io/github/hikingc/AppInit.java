@@ -24,7 +24,7 @@ public class AppInit {
     HttpClient httpClient =
         HttpClient.newBuilder().build(); // Create a client, this will do for this example.
     MatrixAuth auth =
-        new MatrixAuth(URI.create("https://kde.org"), httpClient); // Set the URI and the client
+        new MatrixAuth(URI.create("https://example.org"), httpClient); // Set the URI and the client
     TokenMetadata res =
         auth.performOAuthLogin(
             "clienttest", 8080, "defgagagea"); // Perform interactive login (browser needed)
