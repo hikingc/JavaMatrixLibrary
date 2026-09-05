@@ -15,7 +15,7 @@ handles all matters of serialization, validation and authentication.
 | Service              | Capabilities                                | Status              |
 |----------------------|---------------------------------------------|---------------------|
 | Rooms                | Banning, kicking, room summary, room search | Supported           |
-| Events               | Sending and reading events, `/sync`         | Partial             |
+| Events               | Sending and reading events, `/sync`         | Mostly supported    |
 | User Data            | Profile search, profile modification        | Supported           |
 | Filtering            | Creating and retrieving filters             | Supported           |
 | Auth                 | OpenIDConnect handshake                     | Partial             |
@@ -25,9 +25,11 @@ handles all matters of serialization, validation and authentication.
 
 The baseline to reach v1.0 is to implement all endpoints that are required in the specification, this means:
 
-- Support for OAuth 2.0 _and_ Legacy API Auth.
-- Be able to send and receive events seamlessly without handling raw JSON.
-- Get room and server information without losing any data field while deserializing.
+- Support for OAuth 2.0 _and_ Legacy API Auth (not all flows will be delivered in 1.0).
+- Be able to send and receive events seamlessly without handling raw JSON. (Done, except for `/sync` who allows it)
+- Get room and server information without losing any data field while deserializing. (Done)
+
+
 
 ## Current limitations & project scope
 
