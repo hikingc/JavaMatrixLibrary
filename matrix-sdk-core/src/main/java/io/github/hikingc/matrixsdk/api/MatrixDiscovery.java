@@ -37,8 +37,7 @@ public class MatrixDiscovery {
   /// Retrieve the `.well-known/matrix/client` data. This is the info you need to call before
   /// authenticating and performing any kind of operation to the rest of the lib.
   ///
-  /// @apiNote this method strips `homeserver().baseUrl()` trailing slashes to remove any
-  ///   inconsistency.
+  /// This method strips `homeserver().baseUrl()` trailing slashes to maintain consistency.
   ///
   /// @return a [DomainInformation] record object with data.
   /// @throws MatrixException when the payload cannot be processed
