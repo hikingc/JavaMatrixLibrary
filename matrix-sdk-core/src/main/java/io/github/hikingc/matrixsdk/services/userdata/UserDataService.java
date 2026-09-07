@@ -50,7 +50,7 @@ public class UserDataService implements UserData {
 
     var responseBody =
         httpTransport.postRequest(
-            URI.create(context.discoveryResponse().homeserver().baseUrl() + USER_DIR),
+            URI.create(context.domainInformation().homeserver().baseUrl() + USER_DIR),
             payload,
             context.token());
     return Mapper.getObjectFromInputStream(responseBody, UsersFound.class);
@@ -60,7 +60,7 @@ public class UserDataService implements UserData {
   public UserProfile getUserProfile(UserID userId) {
     var responseBody =
         httpTransport.getRequest(
-            URI.create(context.discoveryResponse().homeserver().baseUrl() + PROFILE_DIR + userId),
+            URI.create(context.domainInformation().homeserver().baseUrl() + PROFILE_DIR + userId),
             context.token());
     return Mapper.getObjectFromInputStream(responseBody, UserProfile.class);
   }
@@ -71,7 +71,7 @@ public class UserDataService implements UserData {
     var responseBody =
         httpTransport.getRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + PROFILE_DIR
                     + userId
                     + "/"
@@ -89,7 +89,7 @@ public class UserDataService implements UserData {
 
     httpTransport.putRequest(
         URI.create(
-            context.discoveryResponse().homeserver().baseUrl()
+            context.domainInformation().homeserver().baseUrl()
                 + PROFILE_DIR
                 + userId
                 + "/"
@@ -105,7 +105,7 @@ public class UserDataService implements UserData {
     try (var _ =
         httpTransport.deleteRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + PROFILE_DIR
                     + userId
                     + "/"

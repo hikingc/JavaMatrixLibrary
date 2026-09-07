@@ -1,7 +1,7 @@
 package io.github.hikingc.matrixsdk.api;
 
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import io.github.hikingc.matrixsdk.context.ClientContext;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
 import io.github.hikingc.matrixsdk.services.events.EventService;
 import io.github.hikingc.matrixsdk.services.filtering.FilterService;
 import io.github.hikingc.matrixsdk.services.rooms.RoomService;
@@ -22,13 +22,9 @@ public class MatrixClient {
   private final Filter filter;
 
   MatrixClient(
-      DiscoveryResponse discoveryResponse, String authToken, @Nullable HttpClient httpClient) {
-    HttpClient client =
-        httpClient == null
-            ? HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build()
-            : httpClient;
-    var context = new ClientContext(authToken, discoveryResponse);
-    HttpTransport httpTransport = new HttpTransport(client);
+      DomainInformation domainInformation, String authToken, @Nullable HttpClient httpClient) {
+    var context = new ClientContext(authToken, domainInformation);
+    HttpTransport httpTransport = new HttpTransport(httpClient);
     this.event = new EventService(context, httpTransport);
     this.roomService = new RoomService(context, httpTransport);
     this.userDataService = new UserDataService(context, httpTransport);

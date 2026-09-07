@@ -25,6 +25,7 @@ module io.github.hikingc.matrixsdk {
   // Exposed interfaces, facade and user classes
   exports io.github.hikingc.matrixsdk.api;
   exports io.github.hikingc.matrixsdk.api.identifiers;
+  exports io.github.hikingc.matrixsdk.api.well_known;
   exports io.github.hikingc.matrixsdk.context;
 
   // Records and Interfaces

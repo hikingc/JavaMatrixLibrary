@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import org.instancio.junit.Given;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @WireMockTest
 class MatrixAPIClientTest {
   private static final String AUTH_TOKEN = "1234";
-  @Given private DiscoveryResponse discoveryResponse;
+  @Given private DomainInformation domainInformation;
 
   @BeforeEach
   void setUp(WireMockRuntimeInfo wireMockRuntimeInfo) {
@@ -37,7 +37,7 @@ class MatrixAPIClientTest {
       WireMockRuntimeInfo wireMockRuntimeInfo) {
     MatrixClient client =
         new MatrixClientBuilder()
-            .setDiscoveryResponse(discoveryResponse)
+            .setdomainInformation(domainInformation)
             .setAuthToken(AUTH_TOKEN)
             .createMatrixClient();
     assertDoesNotThrow(() -> client, "The client should not throw given a good url.");

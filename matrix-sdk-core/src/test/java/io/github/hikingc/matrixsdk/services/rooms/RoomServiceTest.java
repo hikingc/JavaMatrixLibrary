@@ -13,7 +13,7 @@ import io.github.hikingc.matrixsdk.api.rooms.*;
 import io.github.hikingc.matrixsdk.api.rooms.queries.CreationRoomType;
 import io.github.hikingc.matrixsdk.api.rooms.queries.JoinRoomRequest;
 import io.github.hikingc.matrixsdk.api.rooms.queries.VisibilityRoomType;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,20 +27,20 @@ class RoomServiceTest {
   private static final UserID USER_ID = UserID.create("@example:example.com");
   private static final String AUTH_TOKEN = "1234";
   private static MatrixClient client;
-  private static DiscoveryResponse DISCOVERY_RESPONSE;
+  private static DomainInformation DISCOVERY_RESPONSE;
 
   @BeforeAll
   static void setUpDiscovery(WireMockRuntimeInfo wireMockRuntimeInfo) {
     DISCOVERY_RESPONSE =
-        new DiscoveryResponse(
-            new DiscoveryResponse.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
+        new DomainInformation(
+            new DomainInformation.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
   }
 
   @BeforeEach
   void createClient() {
     client =
         new MatrixClientBuilder()
-            .setDiscoveryResponse(DISCOVERY_RESPONSE)
+            .setdomainInformation(DISCOVERY_RESPONSE)
             .setAuthToken(AUTH_TOKEN)
             .createMatrixClient();
   }

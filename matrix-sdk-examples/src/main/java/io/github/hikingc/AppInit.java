@@ -1,8 +1,9 @@
 package io.github.hikingc;
 
-import io.github.hikingc.matrixsdk.api.MatrixOAuth;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
+import io.github.hikingc.matrixsdk.api.MatrixDiscovery;
+import io.github.hikingc.matrixsdk.api.MatrixOAuth;
 import io.github.hikingc.matrixsdk.api.auth.TokenMetadata;
 import io.github.hikingc.matrixsdk.api.events.RoomInfo;
 import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersSync;
@@ -23,19 +24,23 @@ public class AppInit {
   static void main() {
     HttpClient httpClient =
         HttpClient.newBuilder().build(); // Create a client, this will do for this example.
-    MatrixOAuth auth =
-        new MatrixOAuth(URI.create("https://example.org"), httpClient); // Set the URI and the client
+    MatrixDiscovery matrixDiscovery =
+        new MatrixDiscovery(URI.create("http://localhost"), httpClient);
+    var wellKnown = matrixDiscovery.fetchWellKnown();
+
+    MatrixOAuth auth = new MatrixOAuth(httpClient, wellKnown); // Set the URI and the client
+
     TokenMetadata res =
         auth.performOAuthLogin(
             "clienttest", 8080, "defgagagea"); // Perform interactive login (browser needed)
 
     MatrixClient client =
         new MatrixClientBuilder()
-            .setDiscoveryResponse(auth.fetchWellKnown()) // Get .well_known
+            .setdomainInformation(wellKnown) // Supply .well_known
             .setAuthToken(res.accessToken()) // Set up the code
             .createMatrixClient();
-    try {
 
+    try {
       Sync sync =
           client
               .events()

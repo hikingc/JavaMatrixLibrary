@@ -33,7 +33,7 @@ public class FilterService implements Filter {
     var serializedInputData = Mapper.writeValueAsBytes(filter);
     URI uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             USER_FILTER_ENDPOINT + userId + "/filter",
             null);
     var responseBody = httpTransport.postRequest(uri, serializedInputData, context.token());
@@ -46,7 +46,7 @@ public class FilterService implements Filter {
     Objects.requireNonNull(filterId, "Filter ID must not be null");
     URI uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             USER_FILTER_ENDPOINT + userId + "/filter/" + filterId,
             null);
     return Mapper.getObjectFromInputStream(

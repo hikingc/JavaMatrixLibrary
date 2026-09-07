@@ -57,7 +57,7 @@ public class RoomService implements Room {
     var responseBody =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + "/_matrix/client/v3/createRoom"),
             payload,
             context.token());
@@ -69,7 +69,7 @@ public class RoomService implements Room {
   public ResolvedAlias resolveAlias(RoomAlias roomAlias) {
     URI uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             DIRECTORY_ENDPOINT_ROOM + roomAlias,
             null);
 
@@ -81,7 +81,7 @@ public class RoomService implements Room {
   public void setAlias(RoomAlias roomAlias, RoomID roomId) {
     URI uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             DIRECTORY_ENDPOINT_ROOM + roomAlias,
             null);
 
@@ -100,7 +100,7 @@ public class RoomService implements Room {
   public void deleteAlias(RoomAlias roomAlias) {
     URI uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             DIRECTORY_ENDPOINT_ROOM + roomAlias,
             null);
     try (var _ = httpTransport.deleteRequest(uri, context.token()); ) {
@@ -117,7 +117,7 @@ public class RoomService implements Room {
     var response =
         httpTransport.getRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/aliases"),
@@ -141,7 +141,7 @@ public class RoomService implements Room {
     var response =
         httpTransport.getRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + "/_matrix"
                     + "/client/v3/joined_rooms"),
             context.token());
@@ -155,7 +155,7 @@ public class RoomService implements Room {
     try (var _ =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/invite"),
@@ -179,7 +179,7 @@ public class RoomService implements Room {
     params.put("via", via);
     URI uri =
         this.httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             "/_matrix/client/v3/join/" + roomIdOrAlias,
             params);
     var payload = Mapper.writeValueAsBytes(request);
@@ -193,7 +193,7 @@ public class RoomService implements Room {
     params.put("via", via);
     URI uri =
         this.httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/join",
             params);
     var payload = Mapper.writeValueAsBytes(request);
@@ -209,7 +209,7 @@ public class RoomService implements Room {
 
     URI uri =
         this.httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             "/_matrix/client/v3/knock/" + roomIdOrAlias,
             Map.ofEntries(Map.entry("via", via)));
     Map<String, Object> map = new HashMap<>();
@@ -226,7 +226,7 @@ public class RoomService implements Room {
     try (var _ =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/forget"),
@@ -243,7 +243,7 @@ public class RoomService implements Room {
     try (var _ =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/leave"),
@@ -261,7 +261,7 @@ public class RoomService implements Room {
     try (var _ =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/kick"),
@@ -280,7 +280,7 @@ public class RoomService implements Room {
     try (var _ =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/ban"),
@@ -299,7 +299,7 @@ public class RoomService implements Room {
     try (var _ =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/unban"),
@@ -317,7 +317,7 @@ public class RoomService implements Room {
     var responseBody =
         httpTransport.getRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
+                context.domainInformation().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
             null);
     return Mapper.getStringValueOfAJsonKey(responseBody, "visibility");
   }
@@ -330,7 +330,7 @@ public class RoomService implements Room {
     try (var _ =
         httpTransport.putRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
+                context.domainInformation().homeserver().baseUrl() + DIRECTORY_ENDPOINT + roomId),
             Mapper.createObjectFromMap(map),
             this.context.token()); ) {
       // do nothing
@@ -353,7 +353,7 @@ public class RoomService implements Room {
     }
     URI uri =
         this.httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             "/_matrix/client/v3/publicRooms",
             params);
     var responseBody = httpTransport.getRequest(uri, context.token());
@@ -368,7 +368,7 @@ public class RoomService implements Room {
     var responseBody =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + "/_matrix/client/v3/publicRooms"),
             payload,
             context.token());
@@ -386,7 +386,7 @@ public class RoomService implements Room {
 
     URI uri =
         this.httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             "/_matrix/client/v1/room_summary/" + roomIdOrAlias,
             args);
     var responseBody = httpTransport.getRequest(uri, context.token());

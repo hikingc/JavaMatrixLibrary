@@ -25,7 +25,7 @@ import io.github.hikingc.matrixsdk.api.events.sync.Sync;
 import io.github.hikingc.matrixsdk.api.identifiers.EventID;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import io.github.hikingc.matrixsdk.exceptions.MatrixSerializationException;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
 import java.io.IOException;
@@ -50,14 +50,14 @@ class EventServiceTest {
 
   public static final RoomID ROOM_ID = RoomID.create("!room:example.org");
   private static final String AUTH_TOKEN = "1234";
-  private static DiscoveryResponse DISCOVERY_RESPONSE;
+  private static DomainInformation DISCOVERY_RESPONSE;
   private static MatrixClient client;
 
   @BeforeAll
   static void setUpDiscovery(WireMockRuntimeInfo wireMockRuntimeInfo) {
     DISCOVERY_RESPONSE =
-        new DiscoveryResponse(
-            new DiscoveryResponse.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
+        new DomainInformation(
+            new DomainInformation.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
   }
 
   private static Result getResult(Path tempDir) throws IOException {
@@ -78,7 +78,7 @@ class EventServiceTest {
   void createClient() {
     client =
         new MatrixClientBuilder()
-            .setDiscoveryResponse(DISCOVERY_RESPONSE)
+            .setdomainInformation(DISCOVERY_RESPONSE)
             .setAuthToken(AUTH_TOKEN)
             .createMatrixClient();
   }

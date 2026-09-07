@@ -53,7 +53,7 @@ public class EventService implements Event {
     var response =
         httpTransport.getRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/event/"
@@ -69,7 +69,7 @@ public class EventService implements Event {
     var response =
         httpTransport.getRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/joined_members"),
@@ -86,7 +86,7 @@ public class EventService implements Event {
     args.put("not_membership", notMembership.getValue());
     URI uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/members",
             args);
 
@@ -102,7 +102,7 @@ public class EventService implements Event {
     var response =
         httpTransport.getRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/state"),
@@ -118,7 +118,7 @@ public class EventService implements Event {
     args.put("format", Format.EVENT.getValue()); // Hardcode this for now
     var uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/state/" + eventType + "/" + stateKey,
             args);
     var response = httpTransport.getRequest(uri, context.token());
@@ -137,7 +137,7 @@ public class EventService implements Event {
     args.put("limit", params.limit());
     URI uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/messages",
             args);
     var response = httpTransport.getRequest(uri, context.token());
@@ -156,7 +156,7 @@ public class EventService implements Event {
     args.put("ts", unixEpochMiliseconds);
     var uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/timestamp_to_event",
             args);
     var response = httpTransport.getRequest(uri, context.token());
@@ -169,7 +169,7 @@ public class EventService implements Event {
     var response =
         httpTransport.getRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/initialSync"),
@@ -185,7 +185,7 @@ public class EventService implements Event {
 
     URI uri =
         httpTransport.generateRawURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/state/" + type + "/" + stateKey,
             null);
     var response = httpTransport.putRequest(uri, payload, context.token());
@@ -200,7 +200,7 @@ public class EventService implements Event {
 
     URI uri =
         httpTransport.generateEncodedURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             ROOM_ENDPOINT + roomId + "/send/" + type + "/" + txnId,
             null);
     var response = httpTransport.putRequest(uri, payload, context.token());
@@ -218,7 +218,7 @@ public class EventService implements Event {
     var response =
         httpTransport.putRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + ROOM_ENDPOINT
                     + roomId
                     + "/redact/"
@@ -239,7 +239,7 @@ public class EventService implements Event {
     args.put("filename", resource.getFileName().toString());
     URI uploadTargetUri =
         httpTransport.generateRawURI(
-            context.discoveryResponse().homeserver().baseUrl(),
+            context.domainInformation().homeserver().baseUrl(),
             "/_matrix/media" + "/v3/upload/" + rawPath,
             args);
     try (var _ = httpTransport.putResource(uploadTargetUri, resource, context.token())) {
@@ -262,7 +262,7 @@ public class EventService implements Event {
     args.put("use_state_after", String.valueOf(params.useStateAfter()));
     URI query =
         httpTransport.generateRawURI(
-            context.discoveryResponse().homeserver().baseUrl(), "/_matrix/client/v3/sync", args);
+            context.domainInformation().homeserver().baseUrl(), "/_matrix/client/v3/sync", args);
 
     var response = httpTransport.getRequest(query, context.token());
     return Mapper.getObjectFromInputStream(response, Sync.class);
@@ -275,7 +275,7 @@ public class EventService implements Event {
     var queryResponse =
         httpTransport.postRequest(
             URI.create(
-                context.discoveryResponse().homeserver().baseUrl()
+                context.domainInformation().homeserver().baseUrl()
                     + "/_matrix"
                     + "/media/v1/create"),
             null,

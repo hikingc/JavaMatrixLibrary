@@ -1,4 +1,4 @@
-package io.github.hikingc.matrixsdk.context;
+package io.github.hikingc.matrixsdk.api.well_known;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,14 +12,15 @@ import java.util.List;
 /// @param identityServer Used to discover identity server information.
 /// @param rtcFoci Used to store Matrix RTC data that's currently not on spec
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record DiscoveryResponse(
+public record DomainInformation(
     @JsonProperty("m.homeserver") HomeserverInfo homeserver,
     @JsonProperty("m.identity_server") IdentityServerInfo identityServer,
     @JsonProperty("org.matrix.msc4143.rtc_foci") List<RtcFocus> rtcFoci) {
   /// Record used to store homeserver information.
   ///
   /// @param baseUrl The base URL for the homeserver for client-server connections.
-  public record HomeserverInfo(String baseUrl) {}
+  public record HomeserverInfo(
+      @JsonProperty(required = true) String baseUrl) {} // Err on baseUrl missing
 
   /// Record used to store identity server information.
   ///
@@ -33,5 +34,5 @@ public record DiscoveryResponse(
   public record RtcFocus(String type, String livekitServiceUrl) {}
 }
 
-// For future reference about msc2965 field appearing in this response: https://github.com/element-hq/synapse/issues/19227
-
+// For future reference about msc2965 field appearing in this response:
+// https://github.com/element-hq/synapse/issues/19227

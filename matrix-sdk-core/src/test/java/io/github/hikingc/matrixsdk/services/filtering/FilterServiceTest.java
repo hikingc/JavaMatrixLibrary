@@ -9,7 +9,7 @@ import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
 import io.github.hikingc.matrixsdk.api.filters.FilterDefinition;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
 import org.instancio.junit.Given;
 import org.instancio.junit.InstancioExtension;
@@ -27,21 +27,21 @@ class FilterServiceTest {
   private static final String AUTH_TOKEN = "1234";
   private static final UserID USER_ID = UserID.create("@matrix:example.org");
   private static MatrixClient client;
-  private static DiscoveryResponse DISCOVERY_RESPONSE;
+  private static DomainInformation DISCOVERY_RESPONSE;
   @Given private FilterDefinition filterDefinition;
 
   @BeforeAll
   static void setUpDiscovery(WireMockRuntimeInfo wireMockRuntimeInfo) {
     DISCOVERY_RESPONSE =
-        new DiscoveryResponse(
-            new DiscoveryResponse.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
+        new DomainInformation(
+            new DomainInformation.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
   }
 
   @BeforeEach
   void createClient() {
     client =
         new MatrixClientBuilder()
-            .setDiscoveryResponse(DISCOVERY_RESPONSE)
+            .setdomainInformation(DISCOVERY_RESPONSE)
             .setAuthToken(AUTH_TOKEN)
             .createMatrixClient();
   }

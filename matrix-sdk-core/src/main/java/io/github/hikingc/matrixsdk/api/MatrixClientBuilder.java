@@ -1,17 +1,17 @@
 package io.github.hikingc.matrixsdk.api;
 
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import org.jspecify.annotations.Nullable;
 
 import java.net.http.HttpClient;
 
 public class MatrixClientBuilder{
-    private DiscoveryResponse discoveryResponse;
+    private DomainInformation domainInformation;
     private String authToken;
     private @Nullable HttpClient httpClient;
 
-    public MatrixClientBuilder setDiscoveryResponse(DiscoveryResponse discoveryResponse) {
-        this.discoveryResponse = discoveryResponse;
+    public MatrixClientBuilder setdomainInformation(DomainInformation domainInformation) {
+        this.domainInformation = domainInformation;
         return this;
     }
 
@@ -26,6 +26,6 @@ public class MatrixClientBuilder{
     }
 
     public MatrixClient createMatrixClient() {
-        return new MatrixClient(discoveryResponse, authToken, httpClient);
+        return new MatrixClient(domainInformation, authToken, httpClient);
     }
 }

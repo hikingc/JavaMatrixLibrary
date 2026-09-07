@@ -9,7 +9,7 @@ import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.api.userdata.UserProfile;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,20 +20,20 @@ class UserDataServiceTest {
   private static final String AUTH_TOKEN = "1234";
   private static final UserID USER_ID = UserID.create("@user:example.com");
   private static MatrixClient client;
-  private static DiscoveryResponse DISCOVERY_RESPONSE;
+  private static DomainInformation DISCOVERY_RESPONSE;
 
   @BeforeAll
   static void setUpDiscovery(WireMockRuntimeInfo wireMockRuntimeInfo) {
     DISCOVERY_RESPONSE =
-        new DiscoveryResponse(
-            new DiscoveryResponse.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
+        new DomainInformation(
+            new DomainInformation.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
   }
 
   @BeforeEach
   void createClient() {
     client =
         new MatrixClientBuilder()
-            .setDiscoveryResponse(DISCOVERY_RESPONSE)
+            .setdomainInformation(DISCOVERY_RESPONSE)
             .setAuthToken(AUTH_TOKEN)
             .createMatrixClient();
   }
