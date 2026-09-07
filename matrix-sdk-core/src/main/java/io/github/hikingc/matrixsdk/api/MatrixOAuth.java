@@ -4,7 +4,7 @@ import io.fusionauth.http.server.HTTPHandler;
 import io.fusionauth.http.server.HTTPListenerConfiguration;
 import io.fusionauth.http.server.HTTPServer;
 import io.github.hikingc.matrixsdk.api.auth.*;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import io.github.hikingc.matrixsdk.exceptions.ErrorResponse;
 import io.github.hikingc.matrixsdk.exceptions.MatrixException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
@@ -46,24 +46,18 @@ public class MatrixOAuth implements Auth {
   private final Logger logger = LoggerFactory.getLogger(MatrixOAuth.class);
   private final HttpTransport httpTransport;
   private final Random random = new SecureRandom();
-  private final URI baseUrl;
+  private final DomainInformation domainInformation;
 
   /// Instantiates the authenticator and checks if the supplied `baseUrl` is valid.
   ///
-  /// @param baseUrl the base [URI]
-  /// @param httpClient an [HttpClient].
+  /// @param httpClient if supplied, the [HttpClient] that the library will use to perform calls,
+  ///   otherwise the library will create one.
+  /// @param domainInformation required to perform calls.
   /// @throws MatrixException if the supplied `baseUrl` is not a matrix server.
-  public MatrixOAuth(URI baseUrl, HttpClient httpClient) {
-    this.baseUrl = baseUrl;
+  public MatrixOAuth(@Nullable HttpClient httpClient, DomainInformation domainInformation) {
     this.httpTransport = new HttpTransport(httpClient);
-    try {
-      this.getVersions(null);
-    } catch (MatrixException e) {
-      throw new MatrixException(
-          baseUrl
-              + " is not being recognized as a valid Matrix server. If you believe this is incorrect please contact your operator.",
-          e);
-    }
+    this.domainInformation = domainInformation;
+    this.getVersions(null);
   }
 
   private static String generateCodeChallenge(String codeVerifier) {
@@ -101,34 +95,21 @@ public class MatrixOAuth implements Auth {
   /// @return an [AuthMetadata] object.
   /// @throws MatrixIOException when the payload cannot be processed
   public AuthMetadata getAuthMetadata() {
-    DiscoveryResponse discoveryResponse = this.fetchWellKnown();
     var uri =
         httpTransport.generateEncodedURI(
-            discoveryResponse.homeserver().baseUrl(), "/_matrix/client/v1/auth_metadata", null);
+            domainInformation.homeserver().baseUrl(), "/_matrix/client/v1/auth_metadata", null);
     var responseBody = httpTransport.getRequest(uri, null);
     return Mapper.getObjectFromInputStream(responseBody, AuthMetadata.class);
   }
 
   @Override
   public WhoAmI getCurrentAccountInformation(String token) {
-    DiscoveryResponse discoveryResponse = this.fetchWellKnown();
     var response =
         httpTransport.getRequest(
             URI.create(
-                discoveryResponse.homeserver().baseUrl() + "/_matrix/client/v3/account/whoami"),
+                domainInformation.homeserver().baseUrl() + "/_matrix/client/v3/account/whoami"),
             token);
     return Mapper.getObjectFromInputStream(response, WhoAmI.class);
-  }
-
-  @Override
-  public DiscoveryResponse fetchWellKnown() {
-    try {
-      URI uri = URI.create(baseUrl + "/.well-known/matrix/client");
-      var response = httpTransport.getRequest(uri, null);
-      return Mapper.getObjectFromInputStream(response, DiscoveryResponse.class);
-    } catch (MatrixException e) {
-      throw new MatrixException("Failed to retrieve Matrix discovery /.well_known", e);
-    }
   }
 
   /// Runs the full MSC2965/2966/2967 OAuth 2.0 flow: discovery, dynamic client registration, PKCE
@@ -322,10 +303,10 @@ public class MatrixOAuth implements Auth {
 
   @Override
   public Versions getVersions(@Nullable String authToken) {
-    var wellKnown = fetchWellKnown();
     var response =
         httpTransport.getRequest(
-            URI.create(wellKnown.homeserver().baseUrl() + "/_matrix/client/versions"), authToken);
+            URI.create(domainInformation.homeserver().baseUrl() + "/_matrix/client/versions"),
+            authToken);
     return Mapper.getObjectFromInputStream(response, Versions.class);
   }
 

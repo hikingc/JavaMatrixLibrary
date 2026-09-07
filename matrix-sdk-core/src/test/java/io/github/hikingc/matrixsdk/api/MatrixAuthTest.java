@@ -8,6 +8,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.auth.BrowserLauncher;
 import io.github.hikingc.matrixsdk.api.auth.TokenMetadata;
+import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import io.github.hikingc.matrixsdk.exceptions.MatrixException;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -21,6 +22,7 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,30 +33,17 @@ class MatrixOAuthLoginTest {
   private static String baseUrl;
   private int callbackPort;
   private TokenMetadata tokens = new TokenMetadata("ABCD", null, null, null, null);
+  private static DomainInformation DISCOVERY_RESPONSE;
+
+  @BeforeAll
+  static void setUpDiscovery(WireMockRuntimeInfo wireMockRuntimeInfo) {
+    DISCOVERY_RESPONSE =
+        new DomainInformation(
+            new DomainInformation.HomeserverInfo(wireMockRuntimeInfo.getHttpBaseUrl()), null, null);
+  }
 
   @BeforeEach
   void setupAuth(WireMockRuntimeInfo wireMockRuntimeInfo) throws IOException {
-    stubFor(
-        get(urlEqualTo("/.well-known/matrix/client"))
-            .willReturn(
-                okJson(
-                    """
-                                        {
-                                          "contacts": [
-                                            {
-                                              "email_address": "admin@example.org",
-                                              "matrix_id": "@admin:example.org",
-                                              "role": "m.role.admin"
-                                            },
-                                            {
-                                              "email_address": "security@example.org",
-                                              "role": "m.role.security"
-                                            }
-                                          ],
-                                          "support_page": "https://example.org/support.html"
-                                        }
-
-                                        """)));
     stubFor(
         get(urlEqualTo("/_matrix/client/versions"))
             .willReturn(
@@ -79,7 +68,7 @@ class MatrixOAuthLoginTest {
                                                     {"m.homeserver": {"base_url": "%s"}}
                                                     """
                         .formatted(baseUrl))));
-    matrixAuth = new MatrixOAuth(URI.create(baseUrl), HttpClient.newBuilder().build());
+    matrixAuth = new MatrixOAuth(HttpClient.newBuilder().build(), DISCOVERY_RESPONSE);
     callbackPort = findFreePort();
 
     stubFor(
@@ -282,33 +271,33 @@ class MatrixOAuthLoginTest {
     assertThat(response).isNotNull();
   }
 
-  @Test
-  void getFetchWellKnown() {
-    stubFor(
-        get(urlEqualTo("/.well-known/matrix/client"))
-            .withHeader("Authorization", containing("Bearer .*"))
-            .willReturn(
-                okJson(
-                    """
-                        {
-                          "contacts": [
-                            {
-                              "email_address": "admin@example.org",
-                              "matrix_id": "@admin:example.org",
-                              "role": "m.role.admin"
-                            },
-                            {
-                              "email_address": "security@example.org",
-                              "role": "m.role.security"
-                            }
-                          ],
-                          "support_page": "https://example.org/support.html"
-                        }
-
-                        """)));
-    var response = matrixAuth.fetchWellKnown();
-    assertThat(response).isNotNull();
-  }
+//  @Test
+//  void getFetchWellKnown() {
+//    stubFor(
+//        get(urlEqualTo("/.well-known/matrix/client"))
+//            .withHeader("Authorization", containing("Bearer .*"))
+//            .willReturn(
+//                okJson(
+//                    """
+//                        {
+//                          "contacts": [
+//                            {
+//                              "email_address": "admin@example.org",
+//                              "matrix_id": "@admin:example.org",
+//                              "role": "m.role.admin"
+//                            },
+//                            {
+//                              "email_address": "security@example.org",
+//                              "role": "m.role.security"
+//                            }
+//                          ],
+//                          "support_page": "https://example.org/support.html"
+//                        }
+//
+//                        """)));
+//    var response = matrixAuth.fetchWellKnown();
+//    assertThat(response).isNotNull();
+//  }
 
   @Test
   void getVersions_WithACorrectPayload_ReturnAnObject() {

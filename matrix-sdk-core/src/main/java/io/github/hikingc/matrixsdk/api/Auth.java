@@ -2,20 +2,16 @@ package io.github.hikingc.matrixsdk.api;
 
 import io.github.hikingc.matrixsdk.api.auth.Versions;
 import io.github.hikingc.matrixsdk.api.auth.WhoAmI;
-import io.github.hikingc.matrixsdk.context.DiscoveryResponse;
-import io.github.hikingc.matrixsdk.exceptions.MatrixException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/// Core interface for executing protocol operations to authenticate and server discovery.
+/// Core interface for executing protocol operations to authenticate.
 ///
 /// @apiNote This is a Work-In-Progress interface
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#client-authentication">Matrix
 ///   Client-Server API Specification for Authentication</a>
-/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#server-discovery">Matrix
-///   Client-Server API Specification for Server Discovery</a>
 @NullMarked
 public interface Auth {
 
@@ -25,13 +21,6 @@ public interface Auth {
   /// @return a [WhoAmI] object if the token belongs to someone
   /// @throws MatrixIOException when the payload cannot be processed
   WhoAmI getCurrentAccountInformation(String token);
-
-  /// Method used to obtain the `.well-known/matrix/client` data.
-  ///
-  /// @return a [DiscoveryResponse] with data.
-  /// @throws IllegalArgumentException when the homeserver url violates RFC 2396 or is null
-  /// @throws MatrixException when the payload cannot be processed
-  DiscoveryResponse fetchWellKnown();
 
   /// Checks what versions and unstable features are supported by the server.
   ///
