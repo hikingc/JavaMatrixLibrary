@@ -8,7 +8,6 @@ import io.github.hikingc.matrixsdk.services.rooms.RoomService;
 import io.github.hikingc.matrixsdk.services.userdata.UserDataService;
 import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
 import java.net.http.HttpClient;
-import java.time.Duration;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
