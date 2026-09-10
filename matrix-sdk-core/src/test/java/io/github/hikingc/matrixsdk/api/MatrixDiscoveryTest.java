@@ -98,5 +98,6 @@ class MatrixDiscoveryTest {
                                                         """)));
         var response = matrixDiscovery.fetchPolicyServer();
         assertThat(response).isNotNull();
+        assertThat(response.publicKeys().get("ed25519")).contains("6yhHGKhCiXTSEN2ksjV7kX_N6rBQZ3Xb-M7LlC6NS-s");
     }
 }
