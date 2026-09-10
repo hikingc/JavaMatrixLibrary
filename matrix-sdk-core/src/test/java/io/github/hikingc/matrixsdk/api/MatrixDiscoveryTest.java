@@ -1,5 +1,6 @@
 package io.github.hikingc.matrixsdk.api;
 
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,12 +12,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @WireMockTest
 class MatrixDiscoveryTest {
-    private static final URI baseUrl = URI.create("https://example.org");
     private static MatrixDiscovery matrixDiscovery;
 
     @BeforeEach
-    void setUp() {
-        matrixDiscovery = new MatrixDiscovery(baseUrl, null);
+    void setUp(WireMockRuntimeInfo wireMockRuntimeInfo) {
+        matrixDiscovery = new MatrixDiscovery(URI.create(wireMockRuntimeInfo.getHttpBaseUrl()), null);
     }
 
     @Test
@@ -71,8 +71,9 @@ class MatrixDiscoveryTest {
                                                           "support_page": "https://example.org/support.html"
                                                         }
                                                         
+                                                        
                                                         """)));
-        var response = matrixDiscovery.fetchPolicyServer();
+        var response = matrixDiscovery.fetchServerSupport();
         assertThat(response).isNotNull();
     }
 
