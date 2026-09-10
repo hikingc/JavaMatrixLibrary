@@ -68,7 +68,7 @@ public class MatrixDiscovery {
   /// @throws MatrixException when the payload cannot be processed
   public ServerSupportInformation fetchServerSupport() {
     try {
-      URI uri = URI.create(baseUrl + "/.well-known/matrix/client");
+      URI uri = URI.create(baseUrl + "/.well-known/matrix/support");
       var response = httpTransport.getRequest(uri, null);
       return Mapper.getObjectFromInputStream(response, ServerSupportInformation.class);
     } catch (MatrixException e) {
@@ -82,7 +82,7 @@ public class MatrixDiscovery {
   /// @throws MatrixException when the payload cannot be processed
   public PolicyServerInformation fetchPolicyServer() {
     try {
-      URI uri = URI.create(baseUrl + "/.well-known/matrix/client");
+      URI uri = URI.create(baseUrl + "/.well-known/matrix/policy_server");
       var response = httpTransport.getRequest(uri, null);
       return Mapper.getObjectFromInputStream(response, PolicyServerInformation.class);
     } catch (MatrixException e) {

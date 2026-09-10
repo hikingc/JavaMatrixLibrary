@@ -49,7 +49,7 @@ class MatrixDiscoveryTest {
     @Test
     void getFetchSupportServer_ReturnAnObject() {
         stubFor(
-                get(urlEqualTo("/.well-known/matrix/client"))
+                get(urlEqualTo("/.well-known/matrix/support"))
                         .willReturn(
                                 aResponse()
                                         .withStatus(200)
@@ -75,12 +75,14 @@ class MatrixDiscoveryTest {
                                                         """)));
         var response = matrixDiscovery.fetchServerSupport();
         assertThat(response).isNotNull();
+        assertThat(response.supportPage()).isEqualTo(URI.create("https://example.org/support.html"));
+
     }
 
     @Test
     void getFetchPolicyServer_ReturnAnObject() {
         stubFor(
-                get(urlEqualTo("/.well-known/matrix/client"))
+                get(urlEqualTo("/.well-known/matrix/policy_server"))
                         .willReturn(
                                 aResponse()
                                         .withStatus(200)
@@ -88,18 +90,9 @@ class MatrixDiscoveryTest {
                                         .withBody(
                                                 """
                                                         {
-                                                          "contacts": [
-                                                            {
-                                                              "email_address": "admin@example.org",
-                                                              "matrix_id": "@admin:example.org",
-                                                              "role": "m.role.admin"
-                                                            },
-                                                            {
-                                                              "email_address": "security@example.org",
-                                                              "role": "m.role.security"
-                                                            }
-                                                          ],
-                                                          "support_page": "https://example.org/support.html"
+                                                          "public_keys": {
+                                                            "ed25519": "6yhHGKhCiXTSEN2ksjV7kX_N6rBQZ3Xb-M7LlC6NS-s"
+                                                          }
                                                         }
                                                         
                                                         """)));
