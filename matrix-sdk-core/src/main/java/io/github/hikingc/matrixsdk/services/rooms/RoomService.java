@@ -88,6 +88,7 @@ public class RoomService implements Room {
     Map<String, Object> map = new HashMap<>();
     map.put(ROOM_ID, roomId);
 
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.putRequest(uri, Mapper.createObjectFromMap(map), context.token()); ) {
       // do nothing
@@ -103,6 +104,8 @@ public class RoomService implements Room {
             context.domainInformation().homeserver().baseUrl(),
             DIRECTORY_ENDPOINT_ROOM + roomAlias,
             null);
+
+    //noinspection EmptyTryBlock
     try (var _ = httpTransport.deleteRequest(uri, context.token()); ) {
       // do nothing
     } catch (IOException e) {
@@ -152,6 +155,8 @@ public class RoomService implements Room {
   @Override
   public void inviteUser(RoomID roomId, RoomMembershipRequest event) {
     var serializedInputData = Mapper.writeValueAsBytes(event);
+
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -223,6 +228,7 @@ public class RoomService implements Room {
 
   @Override
   public void forget(RoomID roomId) {
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -240,6 +246,7 @@ public class RoomService implements Room {
 
   @Override
   public void leave(RoomID roomId) {
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -258,6 +265,7 @@ public class RoomService implements Room {
   @Override
   public void kick(RoomID roomId, RoomMembershipRequest event) {
     var payload = Mapper.writeValueAsBytes(event);
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -277,6 +285,7 @@ public class RoomService implements Room {
   @Override
   public void ban(RoomID roomId, RoomMembershipRequest event) {
     var payload = Mapper.writeValueAsBytes(event);
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -296,6 +305,7 @@ public class RoomService implements Room {
   @Override
   public void unban(RoomID roomId, RoomMembershipRequest event) {
     var payload = Mapper.writeValueAsBytes(event);
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.postRequest(
             URI.create(
@@ -327,6 +337,7 @@ public class RoomService implements Room {
     Map<String, Object> map = new HashMap<>();
     map.put("visibility", roomType);
 
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.putRequest(
             URI.create(

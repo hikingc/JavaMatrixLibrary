@@ -4,5 +4,4 @@ public sealed interface HasArea permits ImageInfo, ThumbnailInfo, VideoContent.V
   Integer h();
 
   Integer w();
-
 }

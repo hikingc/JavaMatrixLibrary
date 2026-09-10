@@ -2,7 +2,6 @@ package io.github.hikingc.matrixsdk.api.events.matrix.room.message;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
-
 import java.net.URI;
 
 /// Message that represents a file resource. If the type of file is known, it's better to use their

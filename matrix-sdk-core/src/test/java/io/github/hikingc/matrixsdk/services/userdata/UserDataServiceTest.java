@@ -45,13 +45,13 @@ class UserDataServiceTest {
             .willReturn(
                 okJson(
                     """
-                            {
-                              "results": [
-                                {"user_id": "@user:example.com", "display_name": "Search Term"}
-                              ],
-                              "limited": false
-                            }
-                            """)));
+                    {
+                      "results": [
+                        {"user_id": "@user:example.com", "display_name": "Search Term"}
+                      ],
+                      "limited": false
+                    }
+                    """)));
 
     var results = client.userData().searchUsersByTerm(10, "searchterm");
 
@@ -69,11 +69,11 @@ class UserDataServiceTest {
             .willReturn(
                 okJson(
                     """
-                        {
-                          "displayname": "Test User",
-                          "avatar_url": "mxc://matrix.org/abc123"
-                        }
-                        """)));
+                    {
+                      "displayname": "Test User",
+                      "avatar_url": "mxc://matrix.org/abc123"
+                    }
+                    """)));
 
     UserProfile profile = client.userData().getUserProfile(USER_ID);
 

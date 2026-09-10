@@ -21,7 +21,8 @@ import java.util.List;
 ///   excluding any port information to determine the servers to disallow in the room.
 ///
 ///   This defaults to an empty list when not provided.
-/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#mroomserver_acl">`m.room.server_acl` in
+/// @see <a
+/// href="https://spec.matrix.org/v1.19/client-server-api/#mroomserver_acl">`m.room.server_acl` in
 ///   the spec.</a>
 public record RoomServerAcl(List<String> allow, Boolean allowIpLiterals, List<String> deny)
     implements StateEventContent {}

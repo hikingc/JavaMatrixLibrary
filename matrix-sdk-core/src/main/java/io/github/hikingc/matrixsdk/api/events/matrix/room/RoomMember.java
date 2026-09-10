@@ -36,7 +36,8 @@ import org.jspecify.annotations.Nullable;
 ///   the potential for spam and abuse. Hiding the reason behind a button or other component is
 ///   recommended.**
 /// @param thirdPartyInvite a third-party invite, if this `m.room.member` is the successor to an
-///   [`m.room.third_party_invite`][io.github.hikingc.matrixsdk.api.events.server.state.RoomThirdPartyInviteEvent]
+///
+/// [`m.room.third_party_invite`][io.github.hikingc.matrixsdk.api.events.server.state.RoomThirdPartyInviteEvent]
 ///   event.
 public record RoomMember(
     URI avatarUrl,

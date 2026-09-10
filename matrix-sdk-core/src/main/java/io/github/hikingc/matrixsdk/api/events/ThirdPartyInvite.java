@@ -23,7 +23,8 @@ public record ThirdPartyInvite(
   /// @see <a href="https://spec.matrix.org/v1.19/appendices/#signing-json">documentation about
   ///   Signing JSON</a>
   /// @see <a
-  ///   href="https://spec.matrix.org/v1.19/identity-service-api/#post_matrixidentityv2store-invite">Identity
+  ///
+  /// href="https://spec.matrix.org/v1.19/identity-service-api/#post_matrixidentityv2store-invite">Identity
   ///   Service API</a>
   public record SignedThirdPartyInvite(
       @JsonProperty(required = true) UserID mxid,

@@ -55,9 +55,10 @@ class FilterServiceTest {
             .willReturn(
                 okJson(
                     """
-                        {
-                          "filter_id": "66696p746572"
-                        }""")));
+                    {
+                      "filter_id": "66696p746572"
+                    }\
+                    """)));
 
     String response = client.filter().publishFilter(USER_ID, filterDefinition);
 

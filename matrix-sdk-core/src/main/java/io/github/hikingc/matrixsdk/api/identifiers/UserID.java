@@ -34,9 +34,10 @@ public final class UserID implements Identifier {
   /// @throws NullPointerException if the [String] is null.
   public static UserID create(String rawUserId) {
 
-    Validator.validateSigilId(rawUserId, '@', "User ID", false,true );
+    Validator.validateSigilId(rawUserId, '@', "User ID", false, true);
 
-    // We don't allow creation, but some historical ids do have uppercase. This is why there is a difference
+    // We don't allow creation, but some historical ids do have uppercase. This is why there is a
+    // difference
     if (rawUserId.chars().anyMatch(Character::isUpperCase)) {
       throw new IllegalArgumentException("User ID cannot have uppercase symbols: " + rawUserId);
     }
@@ -54,7 +55,7 @@ public final class UserID implements Identifier {
   }
 
   private static UserID of(String value, boolean strict) {
-    Validator.validateSigilId(value, '@', "UserId", strict,true );
+    Validator.validateSigilId(value, '@', "UserId", strict, true);
     int colonIdx = value.indexOf(':');
     if (colonIdx == -1) {
       throw new IllegalArgumentException("User ID missing domain: " + value);

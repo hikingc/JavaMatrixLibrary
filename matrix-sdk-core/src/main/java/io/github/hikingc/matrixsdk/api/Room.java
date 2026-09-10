@@ -1,9 +1,8 @@
 package io.github.hikingc.matrixsdk.api;
 
+import io.github.hikingc.matrixsdk.api.identifiers.Identifier;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
 import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
-import io.github.hikingc.matrixsdk.api.identifiers.Identifier;
-import io.github.hikingc.matrixsdk.api.identifiers.Validator;
 import io.github.hikingc.matrixsdk.api.rooms.*;
 import io.github.hikingc.matrixsdk.api.rooms.models.ResolvedAlias;
 import io.github.hikingc.matrixsdk.api.rooms.models.RoomSummary;
@@ -19,7 +18,8 @@ import java.util.List;
 /// avoid synchronization blocks that cause carrier thread pinning during network I/O.
 ///
 /// Unless otherwise noted, every method in this interface throws [MatrixIOException] if the request
-/// or response payload cannot be processed, and [MatrixInterruptedException] if the server's response
+/// or response payload cannot be processed, and [MatrixInterruptedException] if the server's
+/// response
 /// status is not successful.
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#rooms">Matrix Client-Server API
@@ -98,9 +98,9 @@ public interface Room {
   /// @return the room ID.
   /// @throws MatrixIOException when the payload cannot be processed.
   /// @throws MatrixInterruptedException when the client was interrupted.
-  /// @throws IllegalArgumentException when using an incorrect [Validator].
+  /// @throws IllegalArgumentException when using an incorrect [Validator][io.github.hikingc.matrixsdk.api.identifiers.Validator].
   String joinByRoomIdOrAliasIfAllowed(
-          Identifier roomIdOrAlias, JoinRoomRequest request, List<String> via);
+      Identifier roomIdOrAlias, JoinRoomRequest request, List<String> via);
 
   /// If allowed, it starts participation in a room.
   ///

@@ -1,13 +1,14 @@
 package io.github.hikingc.matrixsdk.api.filters;
 
-import io.github.hikingc.matrixsdk.api.Event;
+import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersSync;
 
 import java.util.List;
-import java.net.URI;
+
 /// Holds additional granular filters for events in a room.
 ///
-/// @param containsUrl if `true`, includes only events with a [URI] key in their content. If
-///   `false`, excludes those events. If omitted, [URI] key is not considered for filtering.
+/// @param containsUrl if `true`, includes only events with a [URI][java.net.URI] key in their
+///   content. If `false`, excludes those events. If omitted, [URI][java.net.URI] key is not
+///   considered for filtering.
 /// @param includeRedundantMembers if `true`, sends all membership events for all events, even if
 ///   they have already been sent to the client. Does not apply unless `lazyLoadMembers` is `true`.
 ///   Defaults to `false`.
@@ -30,8 +31,10 @@ import java.net.URI;
 /// @param types a [List] of event types to include. If this [List] is absent then all event types
 ///   are included. A "*" can be used as a wildcard to match any sequence of characters.
 /// @param unreadThreadNotifications if true, enables per-thread notification counts. Only applies
-///   to the [Event#(QueryParametersSync)] endpoint. Defaults to `false`.
-/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#lazy-loading-room-members">Documentation about Lazy-loading room members.</a>
+///   to the [sync][io.github.hikingc.matrixsdk.api.Event#sync(QueryParametersSync)] endpoint. Defaults to
+///   `false`.
+/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#lazy-loading-room-members">Documentation
+// about Lazy-loading room members.</a>
 public record RoomEventFilter(
     Boolean containsUrl,
     Boolean includeRedundantMembers,

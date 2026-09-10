@@ -2,7 +2,6 @@ package io.github.hikingc.matrixsdk.api.events.matrix.room.message;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
-
 import java.net.URI;
 
 /// This type of message represents a single audio clip.

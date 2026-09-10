@@ -1,8 +1,6 @@
 package io.github.hikingc.matrixsdk.api.events.matrix.room.message;
 
-import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
-
-/// Holds information used by [RoomMessage] events to represent metadata information
+/// Holds information used by [Room Messages][io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage] events to represent metadata information
 ///
 /// @param h the intended display height of the image in pixels. This may differ from the intrinsic
 ///   dimensions of the image file.

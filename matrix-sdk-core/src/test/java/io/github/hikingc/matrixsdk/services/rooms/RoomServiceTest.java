@@ -57,67 +57,67 @@ class RoomServiceTest {
             .withRequestBody(
                 equalToJson(
                     """
-                            {
-                              "visibility": "private",
-                              "room_alias_name": "thepub",
-                              "name": "The Grand Duke Pub",
-                              "topic": "All about happy hour",
-                              "invite": ["@alice:example.com", "@bob:example.com"],
-                              "invite_3pid": [
-                                {
-                                  "id_server": "identity.example.com",
-                                  "id_access_token": "abc123_OpaqueString",
-                                  "medium": "email",
-                                  "address": "alice@example.com"
-                                }
-                              ],
-                              "room_version": "11",
-                              "creation_content": {
-                                "m.federate": false
-                              },
-                              "initial_state": [
-                                {
-                                  "type": "m.room.join_rules",
-                                  "state_key": "",
-                                  "content": {
-                                    "join_rule": "public"
-                                  }
-                                },
-                                {
-                                  "type": "m.room.history_visibility",
-                                  "state_key": "",
-                                  "content": {
-                                    "history_visibility": "shared"
-                                  }
-                                }
-                              ],
-                              "preset": "private_chat",
-                              "is_direct": false,
-                              "power_level_content_override": {
-                                "users_default": 0,
-                                "events_default": 0,
-                                "state_default": 50,
-                                "ban": 50,
-                                "kick": 50,
-                                "redact": 50,
-                                "invite": 0,
-                                "events": {
-                                  "m.room.name": 50,
-                                  "m.room.power_levels": 100
-                                },
-                                "users": {
-                                  "@alice:example.com": 100
-                                }
-                              }
-                            }
-                            """,
+                    {
+                      "visibility": "private",
+                      "room_alias_name": "thepub",
+                      "name": "The Grand Duke Pub",
+                      "topic": "All about happy hour",
+                      "invite": ["@alice:example.com", "@bob:example.com"],
+                      "invite_3pid": [
+                        {
+                          "id_server": "identity.example.com",
+                          "id_access_token": "abc123_OpaqueString",
+                          "medium": "email",
+                          "address": "alice@example.com"
+                        }
+                      ],
+                      "room_version": "11",
+                      "creation_content": {
+                        "m.federate": false
+                      },
+                      "initial_state": [
+                        {
+                          "type": "m.room.join_rules",
+                          "state_key": "",
+                          "content": {
+                            "join_rule": "public"
+                          }
+                        },
+                        {
+                          "type": "m.room.history_visibility",
+                          "state_key": "",
+                          "content": {
+                            "history_visibility": "shared"
+                          }
+                        }
+                      ],
+                      "preset": "private_chat",
+                      "is_direct": false,
+                      "power_level_content_override": {
+                        "users_default": 0,
+                        "events_default": 0,
+                        "state_default": 50,
+                        "ban": 50,
+                        "kick": 50,
+                        "redact": 50,
+                        "invite": 0,
+                        "events": {
+                          "m.room.name": 50,
+                          "m.room.power_levels": 100
+                        },
+                        "users": {
+                          "@alice:example.com": 100
+                        }
+                      }
+                    }
+                    """,
                     true,
                     true))
             .willReturn(
                 okJson(
                     """
-                        { "room_id": "%s" }
-                        """
+                    { "room_id": "%s" }
+                    """
                         .formatted(expectedRoomId))));
     InitialRoomConfiguration config =
         new InitialRoomConfiguration(
@@ -168,8 +168,8 @@ class RoomServiceTest {
             .withRequestBody(
                 equalToJson(
                     """
-                        { "room_id": "%s" }
-                        """
+                    { "room_id": "%s" }
+                    """
                         .formatted(ROOM_ID),
                     true,
                     true))
@@ -190,11 +190,11 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                        {
-                          "room_id": "%s",
-                          "servers": ["example.com", "other.org"]
-                        }
-                        """
+                    {
+                      "room_id": "%s",
+                      "servers": ["example.com", "other.org"]
+                    }
+                    """
                         .formatted(ROOM_ID))));
 
     var response = client.room().resolveAlias(alias);
@@ -225,10 +225,10 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                        {
-                          "aliases": ["#general:example.com", "#main:example.com"]
-                        }
-                        """)));
+                    {
+                      "aliases": ["#general:example.com", "#main:example.com"]
+                    }
+                    """)));
 
     var response = client.room().getAliasesOfARoom(ROOM_ID);
 
@@ -248,10 +248,10 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                        {
-                          "joined_rooms": ["%s"]
-                        }
-                        """
+                    {
+                      "joined_rooms": ["%s"]
+                    }
+                    """
                         .formatted(ROOM_ID))));
 
     var response = client.room().getJoinedRooms();
@@ -268,11 +268,11 @@ class RoomServiceTest {
             .withRequestBody(
                 equalToJson(
                     """
-                        {
-                          "reason": "Welcome!",
-                          "user_id": "@alice:example.com"
-                        }
-                        """,
+                    {
+                      "reason": "Welcome!",
+                      "user_id": "@alice:example.com"
+                    }
+                    """,
                     true,
                     true))
             .willReturn(okJson("{}")));
@@ -292,8 +292,8 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                        { "room_id": "%s" }
-                        """
+                    { "room_id": "%s" }
+                    """
                         .formatted(ROOM_ID))));
 
     var response =
@@ -310,8 +310,8 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                        { "room_id": "%s" }
-                        """
+                    { "room_id": "%s" }
+                    """
                         .formatted(ROOM_ID))));
 
     var response =
@@ -330,8 +330,8 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                        { "room_id": "%s" }
-                        """
+                    { "room_id": "%s" }
+                    """
                         .formatted(ROOM_ID))));
 
     var response = client.room().knockOn(ROOM_ID, "I want to join", List.of("server1.org"));
@@ -365,11 +365,11 @@ class RoomServiceTest {
             .withRequestBody(
                 equalToJson(
                     """
-                        {
-                          "reason": "Test reason",
-                          "user_id": "@example:example.com"
-                        }
-                        """,
+                    {
+                      "reason": "Test reason",
+                      "user_id": "@example:example.com"
+                    }
+                    """,
                     true,
                     true))
             .willReturn(okJson("{}")));
@@ -386,11 +386,11 @@ class RoomServiceTest {
             .withRequestBody(
                 equalToJson(
                     """
-                        {
-                          "reason": "Test reason",
-                          "user_id": "@example:example.com"
-                        }
-                        """,
+                    {
+                      "reason": "Test reason",
+                      "user_id": "@example:example.com"
+                    }
+                    """,
                     true,
                     true))
             .willReturn(okJson("{}")));
@@ -407,11 +407,11 @@ class RoomServiceTest {
             .withRequestBody(
                 equalToJson(
                     """
-                        {
-                          "reason": "Test reason",
-                          "user_id": "@example:example.com"
-                        }
-                        """,
+                    {
+                      "reason": "Test reason",
+                      "user_id": "@example:example.com"
+                    }
+                    """,
                     true,
                     true))
             .willReturn(okJson("{}")));
@@ -432,8 +432,8 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                        { "visibility": "public" }
-                        """)));
+                    { "visibility": "public" }
+                    """)));
 
     var response = client.room().getRoomDirectoryVisibilityType(ROOM_ID);
 
@@ -459,24 +459,24 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
+                    {
+                      "chunk": [
                         {
-                          "chunk": [
-                            {
-                              "room_id": "!abc123:example.com",
-                              "name": "General",
-                              "topic": "A test room",
-                              "avatar_url": "mxc://example.com/abc123",
-                              "num_joined_members": 42,
-                              "world_readable": true,
-                              "guest_can_join": false,
-                              "join_rule": "public"
-                            }
-                          ],
-                          "next_batch": "p190q",
-                          "prev_batch": "p1902",
-                          "total_room_count_estimate": 1
+                          "room_id": "!abc123:example.com",
+                          "name": "General",
+                          "topic": "A test room",
+                          "avatar_url": "mxc://example.com/abc123",
+                          "num_joined_members": 42,
+                          "world_readable": true,
+                          "guest_can_join": false,
+                          "join_rule": "public"
                         }
-                        """)));
+                      ],
+                      "next_batch": "p190q",
+                      "prev_batch": "p1902",
+                      "total_room_count_estimate": 1
+                    }
+                    """)));
 
     var response = client.room().getPublishedRoomDirectory(1, "example.com", null);
 
@@ -494,20 +494,20 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
+                    {
+                      "chunk": [
                         {
-                          "chunk": [
-                            {
-                              "room_id": "!abc123:example.com",
-                              "name": "General",
-                              "num_joined_members": 10,
-                              "world_readable": false,
-                              "guest_can_join": false,
-                              "join_rule": "public"
-                            }
-                          ],
-                          "total_room_count_estimate": 1
+                          "room_id": "!abc123:example.com",
+                          "name": "General",
+                          "num_joined_members": 10,
+                          "world_readable": false,
+                          "guest_can_join": false,
+                          "join_rule": "public"
                         }
-                        """)));
+                      ],
+                      "total_room_count_estimate": 1
+                    }
+                    """)));
 
     var response =
         client
@@ -534,21 +534,21 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                        {
-                          "room_id": "!abc123:example.com",
-                          "canonical_alias": "#general:example.com",
-                          "name": "General",
-                          "topic": "A test room",
-                          "avatar_url": "mxc://example.com/abc123",
-                          "num_joined_members": 42,
-                          "world_readable": true,
-                          "guest_can_join": false,
-                          "join_rule": "public",
-                          "room_type": null,
-                          "room_version": "10",
-                          "membership": null
-                        }
-                        """)));
+                    {
+                      "room_id": "!abc123:example.com",
+                      "canonical_alias": "#general:example.com",
+                      "name": "General",
+                      "topic": "A test room",
+                      "avatar_url": "mxc://example.com/abc123",
+                      "num_joined_members": 42,
+                      "world_readable": true,
+                      "guest_can_join": false,
+                      "join_rule": "public",
+                      "room_type": null,
+                      "room_version": "10",
+                      "membership": null
+                    }
+                    """)));
 
     // TODO: Check via args across the api and see if via should be a URI
     var response = client.room().getRoomSummary(roomIdOrAlias, List.of("example.com"));

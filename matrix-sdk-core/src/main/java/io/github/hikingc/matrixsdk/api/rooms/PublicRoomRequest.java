@@ -11,7 +11,8 @@ package io.github.hikingc.matrixsdk.api.rooms;
 ///   supplied, rather than via an explicit flag.
 /// @param thirdPartyInstanceId the specific third-party network/protocol to request from the
 ///   homeserver. Can only be used if `includeAllNetworks` is `false`.
-/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3thirdpartyprotocols">
+/// @see <a
+/// href="https://spec.matrix.org/v1.19/client-server-api/#get_matrixclientv3thirdpartyprotocols">
 ///   `/thirdparty/protocols`</a>, the endpoint that returns the instance_id of a `Protocol`
 public record PublicRoomRequest(
     RoomFilter filter,

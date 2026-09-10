@@ -16,7 +16,8 @@ import java.util.Map;
 ///   to power level required.
 ///
 ///   Though not a default, when the server sends the initial power levels event during [room
-///   creation][io.github.hikingc.matrixsdk.api.Room#create(io.github.hikingc.matrixsdk.api.rooms.InitialRoomConfiguration)]
+///
+/// creation][io.github.hikingc.matrixsdk.api.Room#create(io.github.hikingc.matrixsdk.api.rooms.InitialRoomConfiguration)]
 ///   in room versions 12 and higher, the
 ///   [`m.room.tombstone`][io.github.hikingc.matrixsdk.api.events.server.state.RoomTombstoneEvent]
 ///   event MUST be explicitly defined and given a power level higher than state_default. For

@@ -25,7 +25,8 @@ import org.jspecify.annotations.NonNull;
 ///   When not present or invalid, the child room is not considered to be part of the space.
 /// @see <a href="https://spec.matrix.org/v1.19/appendices/#routing">Routing in the spec.</a>
 /// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#spaces">Spaces in spec.</a>
-/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#ordering-of-children-within-a-space">
+/// @see <a
+/// href="https://spec.matrix.org/v1.19/client-server-api/#ordering-of-children-within-a-space">
 ///   Ordering of spaces in spec. </a>
 public record SpaceChild(
     String order, Boolean suggested, @NonNull @JsonProperty(required = true) List<String> via)

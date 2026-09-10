@@ -1,11 +1,10 @@
 package io.github.hikingc.matrixsdk.api.events.matrix.room.message;
 
 import io.github.hikingc.matrixsdk.api.events.crypto.JWK;
-import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage;
-
 import java.util.Map;
 
-/// Holds information of an encrypted file as the extension to [RoomMessage].
+/// Holds information of an encrypted file as the extension to
+/// [a Room Message][io.github.hikingc.matrixsdk.api.events.matrix.room.RoomMessage].
 ///
 /// @param url the URL to the file.
 /// @param key a [JSON Web Key][JWK]

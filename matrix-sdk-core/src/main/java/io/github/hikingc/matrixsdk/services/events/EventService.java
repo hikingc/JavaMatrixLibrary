@@ -242,6 +242,7 @@ public class EventService implements Event {
             context.domainInformation().homeserver().baseUrl(),
             "/_matrix/media" + "/v3/upload/" + rawPath,
             args);
+    //noinspection EmptyTryBlock
     try (var _ = httpTransport.putResource(uploadTargetUri, resource, context.token())) {
       // do nothing
     } catch (IOException e) {

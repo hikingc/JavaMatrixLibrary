@@ -11,7 +11,8 @@ import org.jspecify.annotations.Nullable;
 ///   should use the Java package naming convention if not in the following enum
 ///   [CancelCode.Known]**
 /// @param mRelatesTo required when sent as an in-room message. Indicates the
-///   [`m.key.verification.request`][io.github.hikingc.matrixsdk.api.events.server.message.KeyVerificationRequestEvent]
+///
+/// [`m.key.verification.request`][io.github.hikingc.matrixsdk.api.events.server.message.KeyVerificationRequestEvent]
 ///   that this message is related to. **Note that for encrypted messages, this property should be
 ///   in the unencrypted portion of the event.**
 /// @param reason a human-readable description of the `code`. **The client should only rely on this

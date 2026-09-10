@@ -27,13 +27,13 @@ public final class Validator {
   /// @param name                            it's name
   /// @param restrictLocalpartToAlphanumeric whether it should be evaluated against only
   ///   alphanumeric characters
-  /// @param domainOptional
+  /// @param domainOptional if its optional the domain check.
   static void validateSigilId(
-          String value,
-          char sigil,
-          String name,
-          boolean restrictLocalpartToAlphanumeric,
-          boolean domainOptional) {
+      String value,
+      char sigil,
+      String name,
+      boolean restrictLocalpartToAlphanumeric,
+      boolean domainOptional) {
     Objects.requireNonNull(value, name + " must not be null");
 
     if (value.isEmpty()) {
@@ -50,7 +50,7 @@ public final class Validator {
 
     if (firstColon < 0 && !domainOptional) {
       throw new IllegalArgumentException(
-              name + " must contain ':' separating opaqueId from server name");
+          name + " must contain ':' separating opaqueId from server name");
     }
 
     int opaqueIdEnd = firstColon < 0 ? value.length() : firstColon;
@@ -63,7 +63,7 @@ public final class Validator {
 
     if (restrictLocalpartToAlphanumeric && !localPart.matches("[a-zA-Z0-9]+")) {
       throw new IllegalArgumentException(
-              name + " opaqueId should only contain alphanumeric characters");
+          name + " opaqueId should only contain alphanumeric characters");
     }
 
     if (firstColon < 0) {

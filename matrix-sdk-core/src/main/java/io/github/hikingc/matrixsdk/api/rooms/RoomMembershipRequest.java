@@ -1,7 +1,6 @@
 package io.github.hikingc.matrixsdk.api.rooms;
 
 import io.github.hikingc.matrixsdk.api.identifiers.UserID;
-
 import java.util.Objects;
 
 /// Required values to be supplied to actions like banning or kicking.

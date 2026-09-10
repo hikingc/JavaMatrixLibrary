@@ -5,6 +5,7 @@ import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.api.userdata.UserProfile;
 import io.github.hikingc.matrixsdk.api.userdata.UsersFound;
 import io.github.hikingc.matrixsdk.context.ClientContext;
+import io.github.hikingc.matrixsdk.exceptions.MatrixException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
@@ -43,8 +44,8 @@ public class UserDataService implements UserData {
     int limitToUse = (limit != null) ? limit : 10;
     byte[] payload =
         """
-                    {"limit": "%d","search_term":"%s"}
-                    """
+        {"limit": "%d","search_term":"%s"}
+        """
             .formatted(limitToUse, searchTerm)
             .getBytes();
 
@@ -86,22 +87,28 @@ public class UserDataService implements UserData {
     Objects.requireNonNull(keyName, "The key name must no be null");
     Objects.requireNonNull(valueName, "The value name must no be null");
     var serializedJson = Mapper.createObjectFromMap(Map.ofEntries(Map.entry(keyName, valueName)));
-
-    httpTransport.putRequest(
-        URI.create(
-            context.domainInformation().homeserver().baseUrl()
-                + PROFILE_DIR
-                + userId
-                + "/"
-                + keyName),
-        serializedJson,
-        context.token());
+    //noinspection EmptyTryBlock
+    try (var _ =
+        httpTransport.putRequest(
+            URI.create(
+                context.domainInformation().homeserver().baseUrl()
+                    + PROFILE_DIR
+                    + userId
+                    + "/"
+                    + keyName),
+            serializedJson,
+            context.token())) {
+      // do nothing
+    } catch (IOException e) {
+      throw new MatrixIOException("Failed to set user profile property.", e);
+    }
   }
 
   @Override
   public void deleteUserProfileProperty(UserID userId, String keyName) {
     Objects.requireNonNull(keyName, "The key name must no be null");
 
+    //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.deleteRequest(
             URI.create(
@@ -113,7 +120,7 @@ public class UserDataService implements UserData {
             context.token())) {
       // do nothing
     } catch (IOException e) {
-      throw new MatrixIOException("Failed to delete user profile property", e);
+      throw new MatrixIOException("Failed to delete user profile property.", e);
     }
   }
 }

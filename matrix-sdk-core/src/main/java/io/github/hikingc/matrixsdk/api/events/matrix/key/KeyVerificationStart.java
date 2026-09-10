@@ -11,7 +11,8 @@ import org.jspecify.annotations.NonNull;
 ///
 /// @param fromDevice the device ID which is initiating the request.
 /// @param mRelatesTo required when sent as an in-room message. Indicates the
-///   [`m.key.verification.request`][io.github.hikingc.matrixsdk.api.events.server.message.KeyVerificationRequestEvent]
+///
+/// [`m.key.verification.request`][io.github.hikingc.matrixsdk.api.events.server.message.KeyVerificationRequestEvent]
 ///   that this message is related to. **Note that for encrypted messages, this property should be
 ///   in the unencrypted portion of the event.**
 /// @param method the verification method to use.
@@ -21,7 +22,8 @@ import org.jspecify.annotations.NonNull;
 /// @param transactionId required when sent as a to-device message. An opaque identifier for the
 ///   verification process. Must be unique with respect to the devices involved. Must be the same as
 ///   the `transaction_id` given in the
-///   [`m.key.verification.request`][io.github.hikingc.matrixsdk.api.events.server.message.KeyVerificationRequestEvent]
+///
+/// [`m.key.verification.request`][io.github.hikingc.matrixsdk.api.events.server.message.KeyVerificationRequestEvent]
 ///   if this process is originating from a request.
 
 public record KeyVerificationStart(

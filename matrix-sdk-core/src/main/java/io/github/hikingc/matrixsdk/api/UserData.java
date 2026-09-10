@@ -12,7 +12,8 @@ import io.github.hikingc.matrixsdk.exceptions.MatrixInterruptedException;
 /// avoid synchronization blocks that cause carrier thread pinning during network I/O.
 ///
 /// Unless otherwise noted, every method in this interface throws [MatrixIOException] if the request
-/// or response payload cannot be processed, and [MatrixInterruptedException] if the server's response
+/// or response payload cannot be processed, and [MatrixInterruptedException] if the server's
+/// response
 /// status is not successful.
 ///
 /// @see <a href="https://spec.matrix.org/v1.18/client-server-api/#user-data">Matrix Client-Server

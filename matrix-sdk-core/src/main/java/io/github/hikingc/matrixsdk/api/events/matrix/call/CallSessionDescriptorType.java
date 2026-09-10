@@ -10,5 +10,4 @@ public enum CallSessionDescriptorType {
   /// Offer type
   @JsonProperty("offer")
   OFFER
-
 }
