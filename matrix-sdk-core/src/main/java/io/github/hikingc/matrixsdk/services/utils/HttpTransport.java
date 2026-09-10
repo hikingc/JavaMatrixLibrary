@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,11 +44,15 @@ public class HttpTransport {
 
   private final Logger logger = LoggerFactory.getLogger(HttpTransport.class);
 
-  /// Constructor to initialize the HTTP Client.
+  /// Instantiates the class.
   ///
-  /// @param httpClient a valid [HttpClient].
-  public HttpTransport(HttpClient httpClient) {
-    client = httpClient;
+  /// @param httpClient a valid [HttpClient], if not supplied it will create a default one with a
+  ///   10-second timeout.
+  public HttpTransport(@Nullable HttpClient httpClient) {
+    client =
+        httpClient == null
+            ? HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build()
+            : httpClient;
   }
 
   /// Handles return code validation from Matrix servers.
