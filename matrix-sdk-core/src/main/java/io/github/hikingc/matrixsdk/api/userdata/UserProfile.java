@@ -1,6 +1,7 @@
 package io.github.hikingc.matrixsdk.api.userdata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,9 +9,9 @@ import java.util.Map;
 /// All key parameters of a user's profile. The server might respond with additional profile
 /// fields which will be deserialized in the additionalFields map.
 ///
-/// @param avatarUrl the user’s avatar URL if they have set one, otherwise not present.
-/// @param displayName the user’s display name if they have set one, otherwise not present.
-/// @param mTz the user’s time zone.
+/// @param avatarUrl        the user’s avatar URL if they have set one, otherwise not present.
+/// @param displayName      the user’s display name if they have set one, otherwise not present.
+/// @param mTz              the user’s time zone.
 /// @param additionalFields additional profile fields.
 public record UserProfile(
     URI avatarUrl, String displayName, String mTz, Map<String, Object> additionalFields) {
