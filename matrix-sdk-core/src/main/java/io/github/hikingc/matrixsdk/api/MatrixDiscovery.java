@@ -76,9 +76,9 @@ public class MatrixDiscovery {
     }
   }
 
-  /// Retrieve the `.well-known/matrix/support` data.
+  /// Retrieve the `.well-known/matrix/policy_server` data.
   ///
-  /// @return a [ServerSupportInformation] record object with data.
+  /// @return a [PolicyServerInformation] record object with data.
   /// @throws MatrixException when the payload cannot be processed
   public PolicyServerInformation fetchPolicyServer() {
     try {
