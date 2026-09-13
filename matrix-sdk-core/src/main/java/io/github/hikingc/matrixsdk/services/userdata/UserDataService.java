@@ -5,7 +5,6 @@ import io.github.hikingc.matrixsdk.api.identifiers.UserID;
 import io.github.hikingc.matrixsdk.api.userdata.UserProfile;
 import io.github.hikingc.matrixsdk.api.userdata.UsersFound;
 import io.github.hikingc.matrixsdk.context.ClientContext;
-import io.github.hikingc.matrixsdk.exceptions.MatrixException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
