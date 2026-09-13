@@ -207,6 +207,20 @@
                 <version>3.10.2</version>
                 <configuration>
                     <java>
+                        <excludes> <!--Google format breaks javadocs after 100 lines and screws up [links]-->
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/events/matrix/key/*.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/rooms/ThirdPartySigned.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/auth/BrowserLauncher.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/rooms/queries/JoinRoomRequest.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/events/matrix/room/message/EncryptedFile.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/events/matrix/room/message/ThumbnailInfo.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/events/matrix/room/*.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/Room.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/Event.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/well_known/PolicyServerInformation.java</exclude>
+                            <exclude>src/main/java/io/github/hikingc/matrixsdk/api/well_known/ServerSupportInformation.java</exclude>
+                        </excludes>
+                        <!--https://github.com/google/google-java-format/pull/1434 -->
                         <googleJavaFormat>
                             <version>1.30.0</version>
                             <reflowLongStrings>true</reflowLongStrings>
