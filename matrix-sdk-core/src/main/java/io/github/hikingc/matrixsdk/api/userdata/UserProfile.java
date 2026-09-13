@@ -1,7 +1,6 @@
 package io.github.hikingc.matrixsdk.api.userdata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
