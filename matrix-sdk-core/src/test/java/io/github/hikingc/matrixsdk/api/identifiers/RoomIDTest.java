@@ -3,10 +3,9 @@ package io.github.hikingc.matrixsdk.api.identifiers;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class RoomIDTest {
@@ -29,6 +28,7 @@ class RoomIDTest {
         "!a", // v12
         "!opaque.with-chars_and~more", // v12
       })
+  @DisplayName("Check valid RoomID strings")
   void withValidStrings_ReturnRoomID(String roomId) {
     assertDoesNotThrow(() -> RoomID.create(roomId), "Exception not expected for input: " + roomId);
   }
@@ -51,6 +51,7 @@ class RoomIDTest {
         "!abc123:", // trailing colon w/ empty domain
         "!abc 123", // whitespace still invalid
       })
+  @DisplayName("Check invalid RoomID strings")
   void withInvalidStrings_ThrowsException(String roomId) {
     assertThrows(
         IllegalArgumentException.class,
@@ -58,19 +59,8 @@ class RoomIDTest {
         "Exception expected for input:" + roomId);
   }
 
-  @ParameterizedTest
-  @NullSource
-  void withNull_ThrowsException(String roomId) {
-    assertThrows(NullPointerException.class, () -> RoomID.create(roomId));
-  }
-
-  @ParameterizedTest
-  @EmptySource
-  void withEmpty_ThrowsException(String roomId) {
-    assertThrows(IllegalArgumentException.class, () -> RoomID.create(roomId));
-  }
-
   @Test
+  @DisplayName("Check RoomID null throws")
   void withNull_ThrowsNPE() {
     assertThrows(NullPointerException.class, () -> RoomID.create(null));
   }

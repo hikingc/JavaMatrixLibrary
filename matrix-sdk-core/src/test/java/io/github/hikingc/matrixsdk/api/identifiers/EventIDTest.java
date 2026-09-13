@@ -3,9 +3,9 @@ package io.github.hikingc.matrixsdk.api.identifiers;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class EventIDTest {
@@ -31,6 +31,7 @@ class EventIDTest {
         "$has\"quote",
         "$ " // single space after sigil is still non-empty content
       })
+  @DisplayName("Check valid EventID strings")
   void withValidStrings_ReturnEventID(String id) {
     assertDoesNotThrow(() -> EventID.create(id), "Exception not expected for input: " + id);
   }
@@ -43,8 +44,10 @@ class EventIDTest {
         "!acR1l0raRc2h8DzKlR4E9RAxwbrIY8v_4V-1kfBGCiA", // wrong sigil (Room ID)
         "#acR1l0raRc2h8DzKlR4E9RAxwbrIY8v_4V-1kfBGCiA", // wrong sigil (Room Alias)
         " ", // no sigil at all, just whitespace
-        "$" // sigil present but zero content after it
+        "$", // sigil present but zero content after it
+        ""
       })
+  @DisplayName("Check invalid EventID strings")
   void withInvalidStrings_ThrowsException(String id) {
     assertThrows(
         IllegalArgumentException.class,
@@ -52,15 +55,9 @@ class EventIDTest {
         "Exception expected for input: " + id);
   }
 
-  @ParameterizedTest
-  @NullSource
-  void withNull_ThrowsException(String id) {
-    assertThrows(NullPointerException.class, () -> EventID.create(id));
-  }
-
-  @ParameterizedTest
-  @EmptySource
-  void withEmpty_ThrowsException(String id) {
-    assertThrows(IllegalArgumentException.class, () -> EventID.create(id));
+  @Test
+  @DisplayName("Check EventID null throws")
+  void withNull_ThrowsException() {
+    assertThrows(NullPointerException.class, () -> EventID.create(null));
   }
 }

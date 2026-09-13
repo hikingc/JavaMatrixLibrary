@@ -15,6 +15,7 @@ import org.instancio.junit.Given;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import tools.jackson.databind.json.JsonMapper;
@@ -47,6 +48,7 @@ class FilterServiceTest {
   }
 
   @Test
+  @DisplayName("Publish a filter and get a server generated ID")
   void publishFilter_WithACorrectPayload_thenReturnAnId() {
     String json = mapper.writeValueAsString(filterDefinition);
     stubFor(
@@ -66,6 +68,7 @@ class FilterServiceTest {
   }
 
   @Test
+  @DisplayName("Get a filter definition from a server generated ID")
   void getFilter_WithACorrectPayload_ThenReturnAFilterDefinition() {
     final String FILTER_ID = "ABC123";
     String json = mapper.writeValueAsString(filterDefinition);

@@ -3,10 +3,9 @@ package io.github.hikingc.matrixsdk.api.identifiers;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class UserIDTest {
@@ -32,6 +31,7 @@ class UserIDTest {
         "@example:127.0.0.1",
         "@example:127.0.0.1:8448"
       })
+  @DisplayName("Check valid UserID strings")
   void withValidStrings_ReturnUserID(String userId) {
     assertDoesNotThrow(() -> UserID.create(userId), "Exception not expected for input: " + userId);
   }
@@ -56,6 +56,7 @@ class UserIDTest {
         "", // empty string
         "@" // sigil only
       })
+  @DisplayName("Check invalid UserID strings")
   void withInvalidStrings_ThrowsException(String userId) {
     assertThrows(
         IllegalArgumentException.class,
@@ -63,20 +64,9 @@ class UserIDTest {
         "Exception expected for input:" + userId);
   }
 
-  @ParameterizedTest
-  @NullSource
-  void withNull_ThrowsException(String userId) {
-    assertThrows(NullPointerException.class, () -> UserID.create(userId));
-  }
-
-  @ParameterizedTest
-  @EmptySource
-  void withEmpty_ThrowsException(String userId) {
-    assertThrows(IllegalArgumentException.class, () -> UserID.create(userId));
-  }
-
   @Test
-  void withNull_ThrowsNPE() {
+  @DisplayName("Check UserID null throws")
+  void withNull_ThrowsException() {
     assertThrows(NullPointerException.class, () -> UserID.create(null));
   }
 }

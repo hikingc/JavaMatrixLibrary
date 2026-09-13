@@ -43,14 +43,12 @@ class MatrixOAuthLoginTest {
   }
 
   private static void sendCallback(int port, String rawQuery) {
-    try {
-      HttpClient.newHttpClient()
-          .send(
-              HttpRequest.newBuilder(
-                      URI.create("http://127.0.0.1:" + port + "/callback?" + rawQuery))
-                  .GET()
-                  .build(),
-              HttpResponse.BodyHandlers.discarding());
+    try (var client = HttpClient.newHttpClient()) {
+      client.send(
+          HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/callback?" + rawQuery))
+              .GET()
+              .build(),
+          HttpResponse.BodyHandlers.discarding());
     } catch (Exception e) {
       throw new RuntimeException("Fake browser failed to hit callback", e);
     }
@@ -141,9 +139,9 @@ class MatrixOAuthLoginTest {
                     .withStatus(201)
                     .withHeader("Content-Type", "application/json")
                     .withBody(
-"""
-{"client_id": "test-client-id"}\
-""")));
+                        """
+                        {"client_id": "test-client-id"}\
+                        """)));
   }
 
   @Test

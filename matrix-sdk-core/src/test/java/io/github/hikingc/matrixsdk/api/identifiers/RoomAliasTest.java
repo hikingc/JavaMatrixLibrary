@@ -3,10 +3,9 @@ package io.github.hikingc.matrixsdk.api.identifiers;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class RoomAliasTest {
@@ -28,6 +27,7 @@ class RoomAliasTest {
         "#general:[2001:db8::1]",
         "#general:127.0.0.1"
       })
+  @DisplayName("Check valid RoomAliasID strings")
   void withValidStrings_ReturnRoomAlias(String alias) {
     assertDoesNotThrow(() -> RoomAlias.create(alias), "Exception not expected for input: " + alias);
   }
@@ -49,6 +49,7 @@ class RoomAliasTest {
         "",
         "#"
       })
+  @DisplayName("Check invalid RoomAliasID strings")
   void withInvalidStrings_ThrowsException(String alias) {
     assertThrows(
         IllegalArgumentException.class,
@@ -56,19 +57,8 @@ class RoomAliasTest {
         "Exception expected for input:" + alias);
   }
 
-  @ParameterizedTest
-  @NullSource
-  void withNull_ThrowsException(String alias) {
-    assertThrows(NullPointerException.class, () -> RoomAlias.create(alias));
-  }
-
-  @ParameterizedTest
-  @EmptySource
-  void withEmpty_ThrowsException(String alias) {
-    assertThrows(IllegalArgumentException.class, () -> RoomAlias.create(alias));
-  }
-
   @Test
+  @DisplayName("Check RoomAliasID null throws")
   void withNull_ThrowsNPE() {
     assertThrows(NullPointerException.class, () -> RoomAlias.create(null));
   }

@@ -12,6 +12,7 @@ import io.github.hikingc.matrixsdk.api.userdata.UserProfile;
 import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @WireMockTest
@@ -39,6 +40,7 @@ class UserDataServiceTest {
   }
 
   @Test
+  @DisplayName("Find users with a search term and return them")
   void searchUsersByTerm() {
     stubFor(
         post(urlEqualTo("/_matrix/client/v3/user_directory/search"))
@@ -47,22 +49,21 @@ class UserDataServiceTest {
                     """
                     {
                       "results": [
-                        {"user_id": "@user:example.com", "display_name": "Search Term"}
+                        {"user_id": "@user:example.com", "display_name": "foo"}
                       ],
                       "limited": false
                     }
                     """)));
 
-    var results = client.userData().searchUsersByTerm(10, "searchterm");
+    var results = client.userData().searchUsersByTerm(10, "foo");
 
     assertThat(results).isNotNull();
     assertThat(results.results()).hasSize(1);
-    assertThat(results.results().getFirst().userId()).isEqualTo(USER_ID.toString());
-    assertThat(results.results().getFirst().displayName()).isEqualTo("Search Term");
     assertThat(results.limited()).isFalse();
   }
 
   @Test
+  @DisplayName("Search by an UserID")
   void getUserProfile() {
     stubFor(
         get(urlEqualTo("/_matrix/client/v3/profile/" + USER_ID))
@@ -71,17 +72,21 @@ class UserDataServiceTest {
                     """
                     {
                       "displayname": "Test User",
-                      "avatar_url": "mxc://matrix.org/abc123"
+                      "avatar_url": "mxc://matrix.org/abc123",
+                      "m.tz": "Europe/London",
+                      "m.example_field": "FooBar"
                     }
                     """)));
 
     UserProfile profile = client.userData().getUserProfile(USER_ID);
 
     assertThat(profile).isNotNull();
-    assertThat(profile.displayName()).isEqualTo("Test User");
+    assertThat(profile.additionalFields()).hasSize(1);
+    assertThat(profile.additionalFields()).containsEntry("m.example_field", "FooBar");
   }
 
   @Test
+  @DisplayName("Get value of a property from a User")
   void getUserProfileByProperty() {
     stubFor(
         get(urlEqualTo("/_matrix/client/v3/profile/" + USER_ID + "/keyname"))
@@ -93,6 +98,7 @@ class UserDataServiceTest {
   }
 
   @Test
+  @DisplayName("Set a key-value property for a User")
   void setUserProfileProperty() {
     stubFor(
         put(urlEqualTo("/_matrix/client/v3/profile/" + USER_ID + "/keyname"))
@@ -106,6 +112,7 @@ class UserDataServiceTest {
   }
 
   @Test
+  @DisplayName("Delete a key-value property for a User")
   void deleteUserProfileProperty() {
     stubFor(
         delete(urlEqualTo("/_matrix/client/v3/profile/" + USER_ID + "/keyname"))

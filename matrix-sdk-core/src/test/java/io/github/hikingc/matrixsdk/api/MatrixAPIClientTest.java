@@ -9,6 +9,7 @@ import io.github.hikingc.matrixsdk.api.well_known.DomainInformation;
 import org.instancio.junit.Given;
 import org.instancio.junit.InstancioExtension;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -33,6 +34,7 @@ class MatrixAPIClientTest {
   }
 
   @Test
+  @DisplayName("Initialize client correctly")
   void getWellKnown_WithAllRequiredProperties_thenReturnCorrectSerialization(
       WireMockRuntimeInfo wireMockRuntimeInfo) {
     MatrixClient client =

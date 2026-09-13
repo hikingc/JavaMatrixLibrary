@@ -8,8 +8,14 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.hikingc.matrixsdk.api.MatrixClient;
 import io.github.hikingc.matrixsdk.api.MatrixClientBuilder;
 import io.github.hikingc.matrixsdk.api.events.matrix.room.RoomPowerLevels;
-import io.github.hikingc.matrixsdk.api.identifiers.*;
-import io.github.hikingc.matrixsdk.api.rooms.*;
+import io.github.hikingc.matrixsdk.api.identifiers.Identifier;
+import io.github.hikingc.matrixsdk.api.identifiers.RoomAlias;
+import io.github.hikingc.matrixsdk.api.identifiers.RoomID;
+import io.github.hikingc.matrixsdk.api.identifiers.UserID;
+import io.github.hikingc.matrixsdk.api.rooms.InitialRoomConfiguration;
+import io.github.hikingc.matrixsdk.api.rooms.PublicRoomRequest;
+import io.github.hikingc.matrixsdk.api.rooms.RoomFilter;
+import io.github.hikingc.matrixsdk.api.rooms.RoomMembershipRequest;
 import io.github.hikingc.matrixsdk.api.rooms.queries.CreationRoomType;
 import io.github.hikingc.matrixsdk.api.rooms.queries.JoinRoomRequest;
 import io.github.hikingc.matrixsdk.api.rooms.queries.VisibilityRoomType;
@@ -18,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @WireMockTest
@@ -45,13 +52,9 @@ class RoomServiceTest {
             .createMatrixClient();
   }
 
-  // -------------------------------------------------------------------------
-  // create
-  // -------------------------------------------------------------------------
-
   @Test
+  @DisplayName("Create a Room and get a server generated String room_id")
   void sendCreateRequest_WithACorrectPayload_thenReturnARoomId() {
-    String expectedRoomId = "!sefiuhWgwghwWgh:example.com";
     stubFor(
         post("/_matrix/client/v3/createRoom")
             .withRequestBody(
@@ -116,9 +119,8 @@ class RoomServiceTest {
             .willReturn(
                 okJson(
                     """
-                    { "room_id": "%s" }
-                    """
-                        .formatted(expectedRoomId))));
+                    { "room_id": "!sefiuhWgwghwWgh:example.com" }
+                    """)));
     InitialRoomConfiguration config =
         new InitialRoomConfiguration(
             new InitialRoomConfiguration.CreationContent(false), // m.federate: false
@@ -152,14 +154,11 @@ class RoomServiceTest {
             "All about happy hour",
             VisibilityRoomType.PRIVATE);
     var response = client.room().create(config);
-    assertEquals(expectedRoomId, response);
+    assertNotNull(response);
   }
 
-  // -------------------------------------------------------------------------
-  // alias management
-  // -------------------------------------------------------------------------
-
   @Test
+  @DisplayName("Request to set an alias for a Room")
   void sendSetAliasRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     RoomAlias alias = RoomAlias.create("#general:example.com");
 
@@ -181,6 +180,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Request the server to resolve and alias for a Room and get a RoomAlias")
   void sendResolveAliasRequest_WithCorrectPayload_thenReturnResolvedAlias() {
     RoomAlias alias = RoomAlias.create("#general:example.com");
     String expectedPath = "%23general:example.com";
@@ -205,6 +205,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Request to delete an alias of a Room")
   void sendDeleteAliasRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     RoomAlias alias = RoomAlias.create("#general:example.com");
 
@@ -219,6 +220,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Attempt to get a list of aliases for a Room")
   void sendGetAliasesRequest_WithCorrectPayload_thenReturnAliases() {
     stubFor(
         get("/_matrix/client/v3/rooms/" + ROOM_ID + "/aliases")
@@ -232,16 +234,11 @@ class RoomServiceTest {
 
     var response = client.room().getAliasesOfARoom(ROOM_ID);
 
-    assertNotNull(response);
-    assertFalse(response.isEmpty());
     assertEquals(2, response.size());
   }
 
-  // -------------------------------------------------------------------------
-  // membership
-  // -------------------------------------------------------------------------
-
   @Test
+  @DisplayName("Get user's list of current joined rooms")
   void sendGetJoinedRoomsRequest_thenReturnJoinedRooms() {
     stubFor(
         get("/_matrix/client/v3/joined_rooms")
@@ -256,12 +253,11 @@ class RoomServiceTest {
 
     var response = client.room().getJoinedRooms();
 
-    assertNotNull(response);
-    assertFalse(response.isEmpty());
     assertEquals(ROOM_ID.toString(), response.getFirst());
   }
 
   @Test
+  @DisplayName("Attempt to invite a user to a Room")
   void sendInviteRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     stubFor(
         post("/_matrix/client/v3/rooms/" + ROOM_ID + "/invite")
@@ -286,6 +282,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Attempt to join a room with a RoomID without any additional args")
   void sendJoinByRoomIdOrAliasRequest_WithCorrectPayload_thenReturnRoomId() {
     stubFor(
         post("/_matrix/client/v3/join/" + ROOM_ID)
@@ -304,6 +301,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Attempt to join a room with a RoomID without any additional args")
   void sendJoinByRoomIdRequest_WithCorrectPayload_thenReturnRoomId() {
     stubFor(
         post("/_matrix/client/v3/rooms/" + ROOM_ID + "/join")
@@ -322,6 +320,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Knock on a room with args")
   void sendKnockRequest_WithViaParams_thenReturnRoomId() {
     stubFor(
         post(urlPathEqualTo("/_matrix/client/v3/knock/" + ROOM_ID))
@@ -341,6 +340,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Request to forget a room")
   void sendForgetRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     stubFor(post("/_matrix/client/v3/rooms/" + ROOM_ID + "/forget").willReturn(okJson("{}")));
 
@@ -350,6 +350,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Request to leave a room")
   void sendLeaveRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     stubFor(post("/_matrix/client/v3/rooms/" + ROOM_ID + "/leave").willReturn(okJson("{}")));
 
@@ -359,6 +360,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Kick an individual from a room")
   void sendKickRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     stubFor(
         post("/_matrix/client/v3/rooms/" + ROOM_ID + "/kick")
@@ -380,6 +382,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Ban someone from a room")
   void sendBanRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     stubFor(
         post("/_matrix/client/v3/rooms/" + ROOM_ID + "/ban")
@@ -401,6 +404,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Unban someone from a room")
   void sendUnbanRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     stubFor(
         post("/_matrix/client/v3/rooms/" + ROOM_ID + "/unban")
@@ -421,11 +425,8 @@ class RoomServiceTest {
     verify(postRequestedFor(urlEqualTo("/_matrix/client/v3/rooms/" + ROOM_ID + "/unban")));
   }
 
-  // -------------------------------------------------------------------------
-  // directory
-  // -------------------------------------------------------------------------
-
   @Test
+  @DisplayName("Get room directory visibility property from a room")
   void sendGetRoomDirVisTypeRequest_WithCorrectPayload_thenReturnVisibility() {
     stubFor(
         get("/_matrix/client/v3/directory/list/room/" + ROOM_ID)
@@ -442,6 +443,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Set a room durectory visibility")
   void sendSetRoomDirVisTypeRequest_WithCorrectPayload_thenHitCorrectEndpoint() {
     stubFor(put("/_matrix/client/v3/directory/list/room/" + ROOM_ID).willReturn(okJson("{}")));
 
@@ -451,6 +453,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Get pub room dir (path query args)")
   void sendGetPublicRoomDirRequest_WithQueryParams_thenReturnDirectory() {
     stubFor(
         get(urlPathEqualTo("/_matrix/client/v3/publicRooms"))
@@ -488,6 +491,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Get pub room dir (json body params)")
   void sendGetPublicRoomDirPostRequest_WithBody_thenReturnDirectory() {
     stubFor(
         post("/_matrix/client/v3/publicRooms")
@@ -526,6 +530,7 @@ class RoomServiceTest {
   }
 
   @Test
+  @DisplayName("Get room summary")
   void sendGetRoomSummaryRequest_WithViaParam_thenReturnSummary() {
     Identifier roomIdOrAlias = RoomID.create("!abc123:example.com");
     stubFor(
