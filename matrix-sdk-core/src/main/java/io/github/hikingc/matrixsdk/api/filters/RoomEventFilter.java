@@ -15,6 +15,8 @@
  */
 package io.github.hikingc.matrixsdk.api.filters;
 
+import io.github.hikingc.matrixsdk.api.events.queries.QueryParametersSync;
+
 import java.util.List;
 
 /// Holds additional granular filters for events in a room.
