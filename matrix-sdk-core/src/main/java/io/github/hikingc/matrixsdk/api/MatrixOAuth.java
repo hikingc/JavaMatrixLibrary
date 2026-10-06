@@ -51,9 +51,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/// This class handles endpoints to retrieve essential data to operate with Matrix servers, it
-/// provides a basic implementation of the OAuth 2.0 API, and additional methods to retrieve
-/// metainformation such as server [URI]s and who's tokens are being held.
+/// This class handles endpoints of the OAuth 2.0 API login, client registration, refresh token flow
+/// and so on.
 ///
 /// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#oauth-20-api">Matrix
 ///   Client-Server API Specification for OAuth 2.0</a>
