@@ -30,6 +30,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 
+/// This class handles endpoints of the Legacy Matrix API.
+///
+/// @see <a href="https://spec.matrix.org/v1.19/client-server-api/#legacy-api">Matrix
+///   Client-Server API Specification for this Auth framework.</a>
 public class MatrixLegacyAuth extends BaseAuth {
 
     private final Logger logger = LoggerFactory.getLogger(MatrixLegacyAuth.class);
