@@ -1,3 +1,18 @@
+/*
+ * Copyright 2026 hikingc
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.github.hikingc.matrixsdk.api.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,10 +28,9 @@ import org.jspecify.annotations.NonNull;
 /// @param expiresInMs  the lifetime of the access token, in milliseconds. Once the access token has expired a new access token can be obtained by using the provided refresh token. If no refresh token is provided, the client will need to re-log in to obtain a new access token. If not given, the client can assume that the access token will not expire.
 /// @param refreshToken the server_name of the homeserver on which the account has been registered.
 /// @param userId       the fully-qualified Matrix ID for the account.
-public record LegacyMetadata(@JsonProperty(required = true) @NonNull String accessToken,
-                             @JsonProperty(required = true) @NonNull String deviceId,
-                             String expiresInMs,
-                             String refreshToken,
-                             @JsonProperty(required = true) @NonNull String userId) {
-
-}
+public record LegacyMetadata(
+    @JsonProperty(required = true) @NonNull String accessToken,
+    @JsonProperty(required = true) @NonNull String deviceId,
+    String expiresInMs,
+    String refreshToken,
+    @JsonProperty(required = true) @NonNull String userId) {}

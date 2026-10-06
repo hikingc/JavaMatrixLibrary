@@ -27,12 +27,6 @@ import io.github.hikingc.matrixsdk.exceptions.MatrixException;
 import io.github.hikingc.matrixsdk.exceptions.MatrixIOException;
 import io.github.hikingc.matrixsdk.services.utils.HttpTransport;
 import io.github.hikingc.matrixsdk.services.utils.Mapper;
-import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.NullUnmarked;
-import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -50,6 +44,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /// This class handles endpoints of the OAuth 2.0 API login, client registration, refresh token flow
 /// and so on.
@@ -60,287 +59,289 @@ import java.util.concurrent.TimeoutException;
 @NullMarked
 public class MatrixOAuth extends BaseAuth {
 
-    private final Logger logger = LoggerFactory.getLogger(MatrixOAuth.class);
-    private final HttpTransport httpTransport;
-    private final Random random = new SecureRandom();
-    private final DomainInformation domainInformation;
+  private final Logger logger = LoggerFactory.getLogger(MatrixOAuth.class);
+  private final HttpTransport httpTransport;
+  private final Random random = new SecureRandom();
+  private final DomainInformation domainInformation;
 
-    /// Instantiates the authenticator and checks if the supplied `baseUrl` is valid.
-    ///
-    /// @param httpClient        if supplied, the [HttpClient] that the library will use to perform calls,
-    ///   otherwise the library will create one.
-    /// @param domainInformation required to perform calls.
-    /// @throws MatrixException if the supplied `baseUrl` is not a matrix server.
-    public MatrixOAuth(@Nullable HttpClient httpClient, DomainInformation domainInformation) {
-        super(httpClient, domainInformation);
-        this.httpTransport = new HttpTransport(httpClient);
-        this.domainInformation = domainInformation;
-        this.getVersions(null);
+  /// Instantiates the authenticator and checks if the supplied `baseUrl` is valid.
+  ///
+  /// @param httpClient        if supplied, the [HttpClient] that the library will use to perform
+  /// calls, otherwise the library will create one.
+  /// @param domainInformation required to perform calls.
+  /// @throws MatrixException if the supplied `baseUrl` is not a matrix server.
+  public MatrixOAuth(@Nullable HttpClient httpClient, DomainInformation domainInformation) {
+    super(httpClient, domainInformation);
+    this.httpTransport = new HttpTransport(httpClient);
+    this.domainInformation = domainInformation;
+    this.getVersions(null);
+  }
+
+  private static String generateCodeChallenge(String codeVerifier) {
+    MessageDigest digest;
+    try {
+      digest = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+      throw new MatrixException("Error during code challenge generation.", e);
+    }
+    byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.US_ASCII));
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+  }
+
+  /// Reads a callback response and extracts a key.
+  ///
+  /// @param url the callback url, separated by query parameters.
+  /// @param key the key to be extracted.
+  /// @return `null` if not found, otherwise the key value.
+  @NullUnmarked
+  private static String extractQueryParam(String url, String key) {
+    if (url == null) {
+      return null;
+    }
+    for (String pair : url.split("&")) {
+      String[] kv = pair.split("=", 2);
+      if (kv.length == 2 && kv[0].equals(key)) {
+        return java.net.URLDecoder.decode(kv[1], StandardCharsets.UTF_8);
+      }
+    }
+    return null;
+  }
+
+  /// Get the OAuth 2.0 authorization server metadata, as defined in RFC 8414
+  ///
+  /// @return an [AuthMetadata] object.
+  /// @throws MatrixIOException when the payload cannot be processed
+  public AuthMetadata getAuthMetadata() {
+    var uri =
+        httpTransport.generateEncodedURI(
+            domainInformation.homeserver().baseUrl(), "/_matrix/client/v1/auth_metadata", null);
+    var responseBody = httpTransport.getRequest(uri, null);
+    return Mapper.getObjectFromInputStream(responseBody, AuthMetadata.class);
+  }
+
+  /// Runs the full MSC2965/2966/2967 OAuth 2.0 flow: discovery, dynamic client registration, PKCE
+  /// authorization via a loopback callback server, and token exchange.
+  ///
+  /// This flow is intended for native local clients that can invoke a browser and receive
+  /// callbacks, it follows Matrix "authorization code flow".
+  ///
+  /// @param clientName the client name
+  /// @param port       the port connection
+  /// @param deviceId   the device id
+  /// @return a [TokenMetadata] with all the necessary information about the tokens.
+  /// @throws MatrixIOException when a network or parsing step fails.
+  /// @throws MatrixException   when the auth code is not supported by the server.
+  public TokenMetadata performOAuthLogin(String clientName, int port, String deviceId) {
+    return performOAuthLogin(clientName, port, deviceId, this::openBrowser);
+  }
+
+  /// Runs the full MSC2965/2966/2967 OAuth 2.0 flow: discovery, dynamic client registration, PKCE
+  /// authorization via a loopback callback server, and token exchange.
+  ///
+  /// This flow is intended for native local clients that can invoke a browser and receive
+  /// callbacks, it follows Matrix "authorization code flow".
+  ///
+  /// @param clientName the client name.
+  /// @param port       the port connection.
+  /// @param deviceId   the device id.
+  /// @param launcher   the browser launcher.
+  /// @return a [TokenMetadata] with all the necessary information about the tokens.
+  /// @throws MatrixIOException when a network or parsing step fails.
+  /// @throws MatrixException   when the auth code is not supported by the server.
+  public TokenMetadata performOAuthLogin(
+      String clientName, int port, String deviceId, BrowserLauncher launcher) {
+    // We get the auth metadata
+    var metadata = this.getAuthMetadata();
+    if (!metadata.grantTypesSupported().contains("authorization_code")) {
+      throw new MatrixException("Authorization code is not supported.");
     }
 
-    private static String generateCodeChallenge(String codeVerifier) {
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            throw new MatrixException("Error during code challenge generation.", e);
-        }
-        byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.US_ASCII));
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+    // Create our redirect
+    String redirectUri = "http://127.0.0.1:" + port + "/callback";
+
+    // Encode the endpoint parameters to register
+    Map<String, Object> map = new HashMap<>();
+    map.put("client_name", clientName);
+    map.put("redirect_uris", List.of(redirectUri));
+    map.put("grant_types", List.of("authorization_code", "refresh_token"));
+    map.put("token_endpoint_auth_method", "none");
+    map.put("application_type", "native");
+    map.put("client_uri", "https://github.com/hikingc/JavaMatrixLibrary");
+    var mappedInput = Mapper.createObjectFromMap(map);
+
+    // Send the payload using the aforementioned record obtained and get the client_id
+    var responseBody =
+        httpTransport.postRequest(metadata.registrationEndpoint(), mappedInput, null);
+    String responseBodyString = responseBody.toString();
+    logger.info("Registration response: {}", responseBodyString);
+
+    var clientId = Mapper.getStringValueOfAJsonKey(responseBody, "client_id");
+    if (clientId.isBlank()) {
+      throw new MatrixIOException("Dynamic client registration failed or returned no client_id.");
     }
 
-    /// Reads a callback response and extracts a key.
-    ///
-    /// @param url the callback url, separated by query parameters.
-    /// @param key the key to be extracted.
-    /// @return `null` if not found, otherwise the key value.
-    @NullUnmarked
-    private static String extractQueryParam(String url, String key) {
-        if (url == null) {
-            return null;
-        }
-        for (String pair : url.split("&")) {
-            String[] kv = pair.split("=", 2);
-            if (kv.length == 2 && kv[0].equals(key)) {
-                return java.net.URLDecoder.decode(kv[1], StandardCharsets.UTF_8);
+    // Finish registering client, now we do the login flow
+
+    // We generate values
+    String codeVerifier = generateCodeVerifier();
+    String codeChallenge = generateCodeChallenge(codeVerifier);
+    String state = generateRandomUrlSafeString(24);
+    // https://element-hq.github.io/matrix-authentication-service/reference/scopes.html#urnmatrixclientapi
+    String scope = "urn:matrix:client:api:* urn:matrix:client:device:" + deviceId;
+
+    Map<String, Object> mapAuth = new HashMap<>();
+    mapAuth.put("response_type", "code"); // Always
+    mapAuth.put("client_id", clientId);
+    mapAuth.put("scope", scope);
+    mapAuth.put("state", state);
+    mapAuth.put(
+        "response_mode", "query"); // It MUST be `query` to extract the values properly later.
+    mapAuth.put("code_challenge", codeChallenge);
+    mapAuth.put("code_challenge_method", "S256"); // Always
+    // Send the payload, parameters are not encoded
+    // https://spec.matrix.org/v1.19/client-server-api/#authorisation-code-flow
+    var uriAuth =
+        httpTransport.generateRawURI(
+            metadata.authorizationEndpoint().toString(),
+            metadata.authorizationEndpoint().getPath(),
+            mapAuth); // We will use this for opening a browser
+
+    CompletableFuture<String> authorizationCode = new CompletableFuture<>();
+
+    // The http handler
+    HTTPHandler handler =
+        (req, res) -> {
+          String query = req.getQueryString();
+          logger.debug("Authorization code query: {}", query);
+          String returnedState =
+              extractQueryParam(query, "state"); // Returned regardless of success or failure
+          String code = extractQueryParam(query, "code");
+          String responseBodyCallback;
+
+          if (code == null) {
+            String error = extractQueryParam(query, "error");
+            String errorDescription = extractQueryParam(query, "error_description");
+            String errorUri = extractQueryParam(query, "error_uri");
+            ErrorResponse response = new ErrorResponse(error, errorDescription, null);
+            if (errorUri != null) {
+              response =
+                  new ErrorResponse(
+                      error,
+                      errorDescription + ", see:" + errorUri + " for more information.",
+                      null);
             }
-        }
-        return null;
+            authorizationCode.completeExceptionally(
+                new MatrixException("Authorization failed: " + response));
+            return;
+          }
+
+          // We validate that the state and code are received
+          if (!state.equals(returnedState)) {
+            responseBodyCallback = "State mismatch; possible CSRF, aborting.";
+            authorizationCode.completeExceptionally(new MatrixException(responseBodyCallback));
+            return;
+          }
+          // If all went well
+          authorizationCode.complete(code);
+          responseBodyCallback = "Login complete. You can close this tab and return to the app.";
+
+          // After that we set the status as 200 and continue down the happy path
+          byte[] bytes = responseBodyCallback.getBytes(StandardCharsets.UTF_8);
+          res.setStatus(200);
+          res.setContentLength(bytes.length);
+          try (OutputStream os = res.getOutputStream()) {
+            os.write(bytes);
+          } catch (IOException e) {
+            throw new MatrixException("Error writing to output stream", e);
+          }
+        };
+
+    String code; // authorizationCode will bring us this.
+    try (HTTPServer server =
+        new HTTPServer()
+            .withHandler(handler)
+            .withListener(
+                new HTTPListenerConfiguration(InetAddress.ofLiteral("127.0.0.1"), port))) {
+      server.start();
+
+      logger.debug("URI AUTH: {}", uriAuth);
+      launcher.open(uriAuth);
+      code = authorizationCode.get(5, TimeUnit.MINUTES); // Might modify later...?
+    } catch (IOException | InterruptedException | ExecutionException | TimeoutException e) {
+      Thread.currentThread().interrupt();
+      throw new MatrixException("A fatal error has ceased authorization flow.", e);
     }
 
-    /// Get the OAuth 2.0 authorization server metadata, as defined in RFC 8414
-    ///
-    /// @return an [AuthMetadata] object.
-    /// @throws MatrixIOException when the payload cannot be processed
-    public AuthMetadata getAuthMetadata() {
-        var uri =
-                httpTransport.generateEncodedURI(
-                        domainInformation.homeserver().baseUrl(), "/_matrix/client/v1/auth_metadata", null);
-        var responseBody = httpTransport.getRequest(uri, null);
-        return Mapper.getObjectFromInputStream(responseBody, AuthMetadata.class);
+    String tokenRequestBody =
+        "grant_type=authorization_code"
+            + "&code="
+            + URLEncoder.encode(code, StandardCharsets.UTF_8)
+            + "&redirect_uri="
+            + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
+            + "&client_id="
+            + URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+            + "&code_verifier="
+            + URLEncoder.encode(codeVerifier, StandardCharsets.UTF_8);
+
+    var tokenRes = httpTransport.postAuth(metadata.tokenEndpoint(), tokenRequestBody);
+
+    return Mapper.getObjectFromInputStream(tokenRes, TokenMetadata.class);
+  }
+
+  /// Attempts to retrieve new [TokenMetadata] by exchanging a refresh token for a new auth token.
+  ///
+  /// @param tokenMetadata either a previous [TokenMetadata] from a refresh or the data received
+  ///   from [#performOAuthLogin(String, int, String, BrowserLauncher)]
+  /// @return a refreshed [TokenMetadata].
+  /// @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-6">RFC 6749 section 6.</a>
+  public TokenMetadata attemptRefreshToken(TokenMetadata tokenMetadata) {
+    String refreshToken = tokenMetadata.refreshToken();
+    var metadata = this.getAuthMetadata();
+    if (!metadata.grantTypesSupported().contains("refresh_token")) {
+      throw new MatrixException("Refresh token not supported");
     }
+    String tokenRequestBody =
+        "grant_type=refresh_token&refresh_token=%s"
+            .formatted(URLEncoder.encode(refreshToken, StandardCharsets.UTF_8));
+    var refreshRes = httpTransport.postAuth(metadata.tokenEndpoint(), tokenRequestBody);
 
-    /// Runs the full MSC2965/2966/2967 OAuth 2.0 flow: discovery, dynamic client registration, PKCE
-    /// authorization via a loopback callback server, and token exchange.
-    ///
-    /// This flow is intended for native local clients that can invoke a browser and receive
-    /// callbacks, it follows Matrix "authorization code flow".
-    ///
-    /// @param clientName the client name
-    /// @param port       the port connection
-    /// @param deviceId   the device id
-    /// @return a [TokenMetadata] with all the necessary information about the tokens.
-    /// @throws MatrixIOException when a network or parsing step fails.
-    /// @throws MatrixException   when the auth code is not supported by the server.
-    public TokenMetadata performOAuthLogin(String clientName, int port, String deviceId) {
-        return performOAuthLogin(clientName, port, deviceId, this::openBrowser);
+    return Mapper.getObjectFromInputStream(refreshRes, TokenMetadata.class);
+  }
+
+  public void attemptRevokeToken(TokenMetadata tokenMetadata, @Nullable String cliendId) {
+    String accessToken = tokenMetadata.accessToken();
+    var metadata = this.getAuthMetadata();
+    String body = "token=%s".formatted(accessToken);
+    if (cliendId != null) {
+      body += "&client_id=%s".formatted(accessToken);
     }
-
-    /// Runs the full MSC2965/2966/2967 OAuth 2.0 flow: discovery, dynamic client registration, PKCE
-    /// authorization via a loopback callback server, and token exchange.
-    ///
-    /// This flow is intended for native local clients that can invoke a browser and receive
-    /// callbacks, it follows Matrix "authorization code flow".
-    ///
-    /// @param clientName the client name.
-    /// @param port       the port connection.
-    /// @param deviceId   the device id.
-    /// @param launcher   the browser launcher.
-    /// @return a [TokenMetadata] with all the necessary information about the tokens.
-    /// @throws MatrixIOException when a network or parsing step fails.
-    /// @throws MatrixException   when the auth code is not supported by the server.
-    public TokenMetadata performOAuthLogin(
-            String clientName, int port, String deviceId, BrowserLauncher launcher) {
-        // We get the auth metadata
-        var metadata = this.getAuthMetadata();
-        if (!metadata.grantTypesSupported().contains("authorization_code")) {
-            throw new MatrixException("Authorization code is not supported.");
-        }
-
-        // Create our redirect
-        String redirectUri = "http://127.0.0.1:" + port + "/callback";
-
-        // Encode the endpoint parameters to register
-        Map<String, Object> map = new HashMap<>();
-        map.put("client_name", clientName);
-        map.put("redirect_uris", List.of(redirectUri));
-        map.put("grant_types", List.of("authorization_code", "refresh_token"));
-        map.put("token_endpoint_auth_method", "none");
-        map.put("application_type", "native");
-        map.put("client_uri", "https://github.com/hikingc/JavaMatrixLibrary");
-        var mappedInput = Mapper.createObjectFromMap(map);
-
-        // Send the payload using the aforementioned record obtained and get the client_id
-        var responseBody =
-                httpTransport.postRequest(metadata.registrationEndpoint(), mappedInput, null);
-        String responseBodyString = responseBody.toString();
-        logger.info("Registration response: {}", responseBodyString);
-
-        var clientId = Mapper.getStringValueOfAJsonKey(responseBody, "client_id");
-        if (clientId.isBlank()) {
-            throw new MatrixIOException("Dynamic client registration failed or returned no client_id.");
-        }
-
-        // Finish registering client, now we do the login flow
-
-        // We generate values
-        String codeVerifier = generateCodeVerifier();
-        String codeChallenge = generateCodeChallenge(codeVerifier);
-        String state = generateRandomUrlSafeString(24);
-        // https://element-hq.github.io/matrix-authentication-service/reference/scopes.html#urnmatrixclientapi
-        String scope = "urn:matrix:client:api:* urn:matrix:client:device:" + deviceId;
-
-        Map<String, Object> mapAuth = new HashMap<>();
-        mapAuth.put("response_type", "code"); // Always
-        mapAuth.put("client_id", clientId);
-        mapAuth.put("scope", scope);
-        mapAuth.put("state", state);
-        mapAuth.put(
-                "response_mode", "query"); // It MUST be `query` to extract the values properly later.
-        mapAuth.put("code_challenge", codeChallenge);
-        mapAuth.put("code_challenge_method", "S256"); // Always
-        // Send the payload, parameters are not encoded
-        // https://spec.matrix.org/v1.19/client-server-api/#authorisation-code-flow
-        var uriAuth =
-                httpTransport.generateRawURI(
-                        metadata.authorizationEndpoint().toString(),
-                        metadata.authorizationEndpoint().getPath(),
-                        mapAuth); // We will use this for opening a browser
-
-        CompletableFuture<String> authorizationCode = new CompletableFuture<>();
-
-        // The http handler
-        HTTPHandler handler =
-                (req, res) -> {
-                    String query = req.getQueryString();
-                    logger.debug("Authorization code query: {}", query);
-                    String returnedState =
-                            extractQueryParam(query, "state"); // Returned regardless of success or failure
-                    String code = extractQueryParam(query, "code");
-                    String responseBodyCallback;
-
-                    if (code == null) {
-                        String error = extractQueryParam(query, "error");
-                        String errorDescription = extractQueryParam(query, "error_description");
-                        String errorUri = extractQueryParam(query, "error_uri");
-                        ErrorResponse response = new ErrorResponse(error, errorDescription, null);
-                        if (errorUri != null) {
-                            response =
-                                    new ErrorResponse(
-                                            error,
-                                            errorDescription + ", see:" + errorUri + " for more information.",
-                                            null);
-                        }
-                        authorizationCode.completeExceptionally(
-                                new MatrixException("Authorization failed: " + response));
-                        return;
-                    }
-
-                    // We validate that the state and code are received
-                    if (!state.equals(returnedState)) {
-                        responseBodyCallback = "State mismatch; possible CSRF, aborting.";
-                        authorizationCode.completeExceptionally(new MatrixException(responseBodyCallback));
-                        return;
-                    }
-                    // If all went well
-                    authorizationCode.complete(code);
-                    responseBodyCallback = "Login complete. You can close this tab and return to the app.";
-
-                    // After that we set the status as 200 and continue down the happy path
-                    byte[] bytes = responseBodyCallback.getBytes(StandardCharsets.UTF_8);
-                    res.setStatus(200);
-                    res.setContentLength(bytes.length);
-                    try (OutputStream os = res.getOutputStream()) {
-                        os.write(bytes);
-                    } catch (IOException e) {
-                        throw new MatrixException("Error writing to output stream", e);
-                    }
-                };
-
-        String code; // authorizationCode will bring us this.
-        try (HTTPServer server =
-                     new HTTPServer()
-                             .withHandler(handler)
-                             .withListener(
-                                     new HTTPListenerConfiguration(InetAddress.ofLiteral("127.0.0.1"), port))) {
-            server.start();
-
-            logger.debug("URI AUTH: {}", uriAuth);
-            launcher.open(uriAuth);
-            code = authorizationCode.get(5, TimeUnit.MINUTES); // Might modify later...?
-        } catch (IOException | InterruptedException | ExecutionException | TimeoutException e) {
-            Thread.currentThread().interrupt();
-            throw new MatrixException("A fatal error has ceased authorization flow.", e);
-        }
-
-        String tokenRequestBody =
-                "grant_type=authorization_code"
-                        + "&code="
-                        + URLEncoder.encode(code, StandardCharsets.UTF_8)
-                        + "&redirect_uri="
-                        + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
-                        + "&client_id="
-                        + URLEncoder.encode(clientId, StandardCharsets.UTF_8)
-                        + "&code_verifier="
-                        + URLEncoder.encode(codeVerifier, StandardCharsets.UTF_8);
-
-        var tokenRes = httpTransport.postAuth(metadata.tokenEndpoint(), tokenRequestBody);
-
-        return Mapper.getObjectFromInputStream(tokenRes, TokenMetadata.class);
+    //noinspection EmptyTryBlock
+    try (var _ =
+        httpTransport.postAuth(
+            URI.create(metadata.revocationEndpoint() + "/oauth2/revoke"), body)) {
+      // do nothing
+    } catch (Exception e) {
+      throw new MatrixException("Revoke token failed.", e);
     }
+  }
 
-    /// Attempts to retrieve new [TokenMetadata] by exchanging a refresh token for a new auth token.
-    ///
-    /// @param tokenMetadata either a previous [TokenMetadata] from a refresh or the data received
-    ///   from [#performOAuthLogin(String, int, String, BrowserLauncher)]
-    /// @return a refreshed [TokenMetadata].
-    /// @see <a href="https://datatracker.ietf.org/doc/html/rfc6749#section-6">RFC 6749 section 6.</a>
-    public TokenMetadata attemptRefreshToken(TokenMetadata tokenMetadata) {
-        String refreshToken = tokenMetadata.refreshToken();
-        var metadata = this.getAuthMetadata();
-        if (!metadata.grantTypesSupported().contains("refresh_token")) {
-            throw new MatrixException("Refresh token not supported");
-        }
-        String tokenRequestBody =
-                "grant_type=refresh_token&refresh_token=%s"
-                        .formatted(URLEncoder.encode(refreshToken, StandardCharsets.UTF_8));
-        var refreshRes = httpTransport.postAuth(metadata.tokenEndpoint(), tokenRequestBody);
+  private String generateCodeVerifier() {
+    byte[] randomBytes = new byte[32];
+    random.nextBytes(randomBytes);
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+  }
 
-        return Mapper.getObjectFromInputStream(refreshRes, TokenMetadata.class);
+  private String generateRandomUrlSafeString(int numBytes) {
+    byte[] randomBytes = new byte[numBytes];
+    random.nextBytes(randomBytes);
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+  }
+
+  private void openBrowser(URI url) throws IOException {
+    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+      Desktop.getDesktop().browse(url);
+    } else {
+      logger.warn("Could not auto-open a browser. Open this URL manually: {}", url);
     }
-
-    public void attemptRevokeToken(TokenMetadata tokenMetadata, @Nullable String cliendId) {
-        String accessToken = tokenMetadata.accessToken();
-        var metadata = this.getAuthMetadata();
-        String body = "token=%s".formatted(accessToken);
-        if (cliendId != null) {
-            body += "&client_id=%s".formatted(accessToken);
-        }
-        //noinspection EmptyTryBlock
-        try (var _ = httpTransport.postAuth(URI.create(metadata.revocationEndpoint() + "/oauth2/revoke"), body)) {
-            // do nothing
-        } catch (Exception e) {
-            throw new MatrixException("Revoke token failed.", e);
-        }
-    }
-
-    private String generateCodeVerifier() {
-        byte[] randomBytes = new byte[32];
-        random.nextBytes(randomBytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
-    }
-
-    private String generateRandomUrlSafeString(int numBytes) {
-        byte[] randomBytes = new byte[numBytes];
-        random.nextBytes(randomBytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
-    }
-
-    private void openBrowser(URI url) throws IOException {
-        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            Desktop.getDesktop().browse(url);
-        } else {
-            logger.warn("Could not auto-open a browser. Open this URL manually: {}", url);
-        }
-    }
+  }
 }
