@@ -42,13 +42,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @WireMockTest
-class MatrixOAuthLoginTest {
+class MatrixOAuthTest {
 
   private static MatrixOAuth matrixAuth;
   private static String baseUrl;
   private static DomainInformation DISCOVERY_RESPONSE;
   private int callbackPort;
-  private TokenMetadata tokens = new TokenMetadata("ABCD", null, null, null, null);
+  private final TokenMetadata tokens = new TokenMetadata("ABCD", null, null, null, null);
 
   @BeforeAll
   static void setUpDiscovery(WireMockRuntimeInfo wireMockRuntimeInfo) {
