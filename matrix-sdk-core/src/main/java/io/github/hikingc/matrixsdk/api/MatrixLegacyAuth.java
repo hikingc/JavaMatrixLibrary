@@ -49,7 +49,11 @@ public class MatrixLegacyAuth extends BaseAuth {
         this.getVersions(null);
     }
 
-
+    /// Permits user authentication with an `access_token` for use with [MatrixClient].
+    ///
+    /// @param username a valid [UserID]
+    /// @param password the user's password
+    /// @return Authentication metadata and access tokens.
     public LegacyMetadata performAuthLogin(UserID username, String password) {
         String payload = """
                 {
