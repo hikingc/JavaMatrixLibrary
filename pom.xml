@@ -34,9 +34,10 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git://github.com/hikingc/JavaMatrixClient.git</connection>
-        <developerConnection>scm:git:ssh://github.com/hikingc/JavaMatrixClient.git</developerConnection>
-        <url>https://github.com/hikingc/JavaMatrixClient/tree/main</url>
+        <connection>scm:git:https://github.com/hikingc/JavaMatrixClient.git</connection>
+        <developerConnection>scm:git:git@github.com:hikingc/JavaMatrixClient.git</developerConnection>
+        <url>https://github.com/hikingc/JavaMatrixClient</url>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
