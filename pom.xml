@@ -108,12 +108,6 @@
                 <version>2.0.18</version>
             </dependency>
 
-            <!-- publishing -->
-            <dependency>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.11.0</version>
-            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -130,6 +124,12 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.8.15</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                        <altDeploymentRepository>local::file:${maven.multiModuleProjectDirectory}/target/staging-deploy</altDeploymentRepository>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
