@@ -308,6 +308,12 @@ public class MatrixOAuth extends BaseAuth {
     return Mapper.getObjectFromInputStream(refreshRes, TokenMetadata.class);
   }
 
+  /// Attempts to revoke tokens.
+  ///
+  /// @param tokenMetadata either a previous [TokenMetadata] from a refresh or the data received
+  ///   from [#performOAuthLogin(String, int, String, BrowserLauncher)]
+  /// @param cliendId optional client identifier to aid in the auditory of revokation. Revocation will be performed regardless of input
+  /// @see <a href="https://datatracker.ietf.org/doc/html/rfc7009">RFC 7009.</a>
   public void attemptRevokeToken(TokenMetadata tokenMetadata, @Nullable String cliendId) {
     String accessToken = tokenMetadata.accessToken();
     var metadata = this.getAuthMetadata();
@@ -318,7 +324,7 @@ public class MatrixOAuth extends BaseAuth {
     //noinspection EmptyTryBlock
     try (var _ =
         httpTransport.postAuth(
-            URI.create(metadata.revocationEndpoint() + "/oauth2/revoke"), body)) {
+            URI.create(metadata.revocationEndpoint().toString()), body)) {
       // do nothing
     } catch (Exception e) {
       throw new MatrixException("Revoke token failed.", e);
